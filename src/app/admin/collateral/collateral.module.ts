@@ -14,6 +14,8 @@ import {
 
 import { CreateOrEditUserModalComponent } from "../zero-base/users/create-or-edit-user-modal.component";
 import { EditUserPermissionsModalComponent } from "../zero-base/users/edit-user-permissions-modal.component";
+import { OutsideShareholderComponent } from './outside-shareholder/outside-shareholder.component';
+import { OutsideShareholderEditComponent } from "./outside-shareholder/outside-shareholder-edit.component";
 
 @NgModule({
     imports: [
@@ -23,9 +25,8 @@ import { EditUserPermissionsModalComponent } from "../zero-base/users/edit-user-
         collateralServiceProxyModule,
     ],
     declarations: [
-
-
-      
+    OutsideShareholderComponent,
+    OutsideShareholderEditComponent
     ],
     exports: [],
     providers: [],

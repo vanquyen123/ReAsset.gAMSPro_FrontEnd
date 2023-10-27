@@ -1,0 +1,171 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div id="page-list-area">
+        <div class="m-subheader">
+            <div class="row align-items-center">
+                <div class="mr-auto col-auto">
+                    <a
+                        [routerLink]="rootPage()"
+                        class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                    >
+                        <span>Trang chủ</span>
+                    </a>
+                    <h3
+                        class="m-subheader__title m-subheader__title--separator"
+                    >
+                        <!-- Begin Title -->
+                        <span>Danh mục cổ đông ngoài</span>
+                        <!-- End Title -->
+                    </h3>
+                </div>
+                <div class="col text-right mt-3 mt-md-0">
+                    <div class="btn-group dropdown mr-2">
+                        <button class="btn btn-outline-success">
+                            <i class="far fa-file-excel"></i>
+                            Xuất Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content"
+            class="m-content">
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__body">
+                    <form class="horizontal-form filter-form"
+                        autocomplete="off">
+                        <div class="m-form m-form--label-align-right">
+                            <div class="row align-items-center m--margin-bottom-30">
+                                <!-- Begin Filter -->
+                                <!-- Đơn vị -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Mã cổ đông ngoài</label>
+                                        <input 
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <!-- Mã phòng -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Tên cổ đông ngoài</label>
+                                        <input 
+                                            name="deP_CODEFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <!-- Tên phòng ban -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>MST/CMND/CCCD/Hộ chiếu</label>
+                                        <input 
+                                            name="deP_NAMEFilter"
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-12"></div>
+                                <!-- Khối -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Hoạt động</label>
+                                        <select2-custom 
+                                            name="grouP_ID">
+                                        </select2-custom>
+                                    </div>
+                                </div>
+
+                                <!-- Trạng thái duyệt -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Trạng thái duyệt</label>
+                                        <all-code-select name="autH_STATUS"
+                                            >
+                                        </all-code-select>
+                                    </div>
+                                </div>
+                                <!-- End Filter -->
+                                <div style="display:none;"
+                                    class="col-md-12">
+                                    <div class="form-group">
+                                        <button 
+                                            class="btn btn-primary btn-search"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row align-items-center">
+                        <div class="primeng-datatable-container">
+                            <div class="spinner-border m-5"
+                                role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <core-table #coreTable
+                                class="custom-table ui-table">
+                                <thead>
+                                    <tr>
+                                        <!-- Begin Table Column -->
+                                        <!-- STT -->
+                                        <th class="center">
+                                            <span style="width: 40px">STT</span>
+                                        </th>
+                                        <!-- Mã phòng -->
+                                        <th style="width:30%"
+                                            sortField="deP_CODE">
+                                            <span style="width: 150px">Mã cổ đông ngoài</span>
+                                        </th>
+                                        <!-- Tên phòng ban -->
+                                        <th style="width:40%"
+                                            sortField="deP_NAME">
+                                            <span style="width: 150px">Tên cổ đông ngoài</span>
+                                        </th>
+                                        <!-- Mã đơn vị -->
+                                        <!-- <th style="width:30%"
+                                            sortField="brancH_CODE">
+                                            <span style="width: 150px">{{l("BranchCode")}}</span>
+                                        </th> -->
+                                        <!-- Tên đơn vị -->
+                                        <th style="width:30%"
+                                            sortField="brancH_CODE">
+                                            <span style="width: 150px">MST/CMND/CCCD/Hộ chiếu</span>
+                                        </th>
+                                        <!-- Dao Code -->
+                                        <!-- <th sortField="DAO_CODE">
+                                            <span style="width: 150px">{{l("DaoCode")}}</span>
+                                        </th> -->
+                                        <!-- Dao Name -->
+                                        <!-- <th sortField="DAO_NAME">
+                                            <span style="width: 150px">{{l("DaoName")}}</span>
+                                        </th> -->
+
+                                        <!-- Khối -->
+                                        <th sortField=""
+                                            style="width:100%">
+                                            <span style="width: 200px">Hoạt động</span>
+                                        </th>
+                                        <!-- Trạng thái duyệt -->
+                                        <th sortField="AUTH_STATUS_NAME">
+                                            <span style="width: 150px">Trạng thái duyệt</span>
+                                        </th>
+                                        <th sortField="">
+                                          <span style="width: 150px">Ghi chú</span>
+                                      </th>
+                                        <!-- End Table Column -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </core-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

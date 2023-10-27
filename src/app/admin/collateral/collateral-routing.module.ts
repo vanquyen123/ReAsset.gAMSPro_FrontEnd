@@ -1,7 +1,8 @@
 import { NgModule } from "@angular/core";
 import { NavigationEnd, Router, RouterModule } from "@angular/router";
 import { EditPageState } from "@app/ultilities/enum/edit-page-state";
-
+import { OutsideShareholderComponent } from "./outside-shareholder/outside-shareholder.component";
+import { OutsideShareholderEditComponent } from "./outside-shareholder/outside-shareholder-edit.component";
 
 
 @NgModule({
@@ -11,7 +12,11 @@ import { EditPageState } from "@app/ultilities/enum/edit-page-state";
                 path: "",
                 children: [
                     //quản ly ke
-                     ],
+                    {path: "outside-shareholder", component: OutsideShareholderComponent, data: { permission: 'Pages.Administration.Department' }},
+                    {path: "outside-shareholder-add", component: OutsideShareholderEditComponent, data: { permission: 'Pages.Administration.Department.Create', editPageState: EditPageState.add }},
+                    {path: "outside-shareholder-edit", component: OutsideShareholderEditComponent, data: { permission: 'Pages.Administration.Department.Edit', editPageState: EditPageState.edit }},
+                    {path: "outside-shareholder-view", component: OutsideShareholderEditComponent, data: { permission: 'Pages.Administration.Department.View', editPageState: EditPageState.viewDetail }}
+                ],
             },
         ]),
     ],

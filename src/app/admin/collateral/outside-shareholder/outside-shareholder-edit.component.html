@@ -1,0 +1,167 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                    <span>{{l("Department_Title")}}</span>
+                </h3>
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                    <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                    <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate autocomplete="off">
+                    <div class="modal-body row">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-2-input-page></auth-status-2-input-page>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <!-- Mã phòng -->
+                                <div class="col-md-12">
+                                    <div class="form-group required">
+                                        <label>Mã cổ đông ngoài</label>
+                                        <input maxlength="15" class="form-control" type="text" name="" maxleght="15">
+                                        <!-- <div class="error-message">
+                                            <span>{{l('DepartmentCode')}}
+                                                {{l("ValidationRequired")}}</span>
+                                            <span>{{l('DepartmentCode')}}
+                                                {{l("Invalidation")}}</span>
+                                        </div> -->
+                                    </div>
+                                </div>
+                                <!-- Tên phòng ban -->
+                                <div class="col-md-12">
+                                    <div class="form-group required">
+                                        <label>Tên cổ đông ngoài</label>
+                                        <input class="form-control" type="text" maxlength="200">
+                                        <!-- <div class="error-message" >
+                                            <span>{{l('DepartmentName')}}
+                                                {{l("ValidationRequired")}}</span>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <!-- Tên đơn vị -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>MST/CMND/ CCCD/Hộ chiếu</label>
+                                        <input class="form-control" type="text" maxlength="20">
+                                        <!-- <div class="error-message" >
+                                            <span >{{l('BranchName')}}
+                                                {{l("ValidationRequired")}}</span>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <!-- Nhóm phòng ban -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Địa chỉ </label>
+                                        <input class="form-control" type="text" maxlength="200">
+                                        <!-- <div class="error-message" >
+                                            <span>{{l('DepartmentGroup')}}
+                                                {{l("ValidationRequired")}}</span>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Email </label>
+                                        <input class="form-control" type="text" maxlength="200">
+                                        <!-- <div class="error-message" >
+                                            <span>{{l('DepartmentGroup')}}
+                                                {{l("ValidationRequired")}}</span>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 my-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" style="width: 18px; height: 18px;">
+                                        <label class="form-check-label">{{l("IsActive")}}</label>
+                                    </div>
+                                </div>
+
+                                <!-- Số điện thoại -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="PhoneNumber">{{l("PhoneNumber")}}</label>
+                                        <input id="PhoneNumber" type="text" class="form-control" pattern="{{s('gAMSProCore.PhoneNumberRegexValidation')}}"  maxlength="24">
+                                        <!-- <div class="error-message">
+                                            <span >
+                                                {{l("PhoneNumberInvalid")}}</span>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <!-- Dao Code -->
+                                <!-- <div class="col-md-10">
+                                    <div class="form-group">
+                                        <label>{{l("DaoCode")}} </label>
+                                        <input class="form-control" [disabled]="disableInput" type="text" #daO_CODE="ngModel" name="daO_CODE" [(ngModel)]="inputModel.daO_CODE">
+                                    </div>
+                                </div> -->
+
+                                <!-- Dao Name -->
+                                <!-- <div class="col-md-10">
+                                    <div class="form-group">
+                                        <label>{{l("DaoName")}} </label>
+                                        <input class="form-control" [disabled]="disableInput" type="text" #daO_NAME="ngModel" name="daO_NAME" [(ngModel)]="inputModel.daO_NAME">
+                                    </div>
+                                </div> -->
+
+                                <!-- Hoạt động -->
+                                <!-- <div class="col-md-10">
+                                    <div class="form-group outter-vertical-center">
+                                        <div class="form-group inner-vertical-center">
+                                            <label class="m-checkbox" for="recorD_STATUS">{{l("IsActive")}}
+                                                <input type="checkbox"
+                                                    [disabled]="disableInput"
+                                                    id="recorD_STATUS"
+                                                    #recorD_STATUS
+                                                    name="recorD_STATUS"
+                                                    [checked]="inputModel.recorD_STATUS == '1'"
+                                                    (change)="inputModel.recorD_STATUS = recorD_STATUS.checked? '1' : '0'">
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <!-- Ghi chú -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>{{l("Note")}}</label>
+                                        <textarea class="form-control" type="text"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <branch-modal #branchModal [multiple]="false" (onSelect)="onSelectBranch($event)"></branch-modal> -->
