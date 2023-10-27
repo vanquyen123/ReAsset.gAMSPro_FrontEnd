@@ -1,0 +1,89 @@
+<div [ngClass]="{'m-grid m-grid--hor m-grid--root m-page': !useFullWidthLayout(), 'm-content': useFullWidthLayout() }"
+    [style.text-align]="useFullWidthLayout() ? 'center' : 'left'">
+    <div [ngClass]="{'m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-grid--tablet-and-mobile m-grid--hor-tablet-and-mobile m-login m-login--1 m-login--singin': !useFullWidthLayout(), 'row':useFullWidthLayout()}"
+        id="m_login">
+        <div
+            [ngClass]="{'m-grid__item m-grid__item--order-tablet-and-mobile-2 m-login__aside': !useFullWidthLayout(), 'col-md-12': useFullWidthLayout()}">
+            <div [ngClass]="{'m-stack m-stack--hor m-stack--desktop': !useFullWidthLayout()}">
+                <div [ngClass]="{'m-stack__item m-stack__item--fluid': !useFullWidthLayout()}"
+                    style="background-image: url('../assets/logo/BackGround_HDB.png');">
+                    <!-- <div class="account-header"
+                        style="background-image:url('../assets/logo/Frame\ 92.jpg')">
+                        <div class="account-logo">
+                            <img width="158.67px;"
+                                height="51.14px;"
+                                left="50px;"
+                                top="14px;"
+                                src="{{logoLogin}}" />
+                        </div>
+                        <div class="login-description">
+                        </div>
+                    </div> -->
+                    <header mHeader
+                        #mHeader
+                        class="m-grid__item m-header">
+                        <div class="m-header__top">
+                            <div
+                                class="m-container {{ui.getContainerClass()}} m-container--xxl m-container--full-height">
+                                <div class="m-stack m-stack--ver m-stack--desktop">
+                                    <!-- BEGIN: Brand -->
+                                    <!-- <default-brand
+                                        class="m-stack__item m-brand  m-brand--skin-{{currentTheme.baseSettings.menu.asideSkin}} d-print-non">
+                                    </default-brand> -->
+
+
+                                    <!-- END: Brand -->
+                                    <div class="m-stack__item m-stack__item--fluid m-header-head m-brand--skin-{{currentTheme.baseSettings.header.headerSkin}} d-print-none"
+                                        style="background: radial-gradient(41.33% 41.33% at 50% 50%, #F5E123 0%, #E39825 0.01%, #C2122A 100%);">
+                                        <div style="width: 89%;
+                                            height: 50px;
+                                            font-style: normal;
+                                            font-weight: 800;
+                                            font-size: 20px;
+                                            line-height: 29px;
+                                            color: #FFFFFF;
+                                            text-align: center;
+                                            position: absolute;
+                                            display: flex;
+                                            align-items: center;
+                                            ">
+                                            <img style="
+                                                width: 203.2px;
+                                                height: 60px;
+                                                margin-left: 0%;
+                                                margin-right: 33%;
+                                                filter: drop-shadow(0px 4px 4px rgba(198, 33, 42, 0.15));"
+                                                src="../assets/logo/web_logo_login.png"
+                                                alt="">
+                                            <img src="../../../../../assets/logo/Frame.png"
+                                                style="border-right:1px solid #fff;padding-right: 4px;    height: 75%;">
+
+                                            <div style="padding-left: 4px;">{{l('HDbankHeaderInfo')}}</div>
+                                        </div>
+
+                                        <!-- BEGIN: Topbar -->
+                                        <!-- <topbar></topbar> -->
+                                        <!-- END: Topbar -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <div class="m-login__wrapper">
+                        <div class="m-login__logo">
+                            <a (click)="goToHome()">
+                            </a>
+                        </div>
+                        <div *ngIf="showTenantChange()"
+                            class="content tenant-change-box">
+                            <tenant-change></tenant-change>
+                        </div>
+                        <router-outlet></router-outlet>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

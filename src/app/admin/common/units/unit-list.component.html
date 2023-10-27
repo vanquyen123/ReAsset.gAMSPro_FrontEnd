@@ -1,0 +1,127 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div id="page-list-area">
+        <div class="m-subheader">
+            <div class="row align-items-center">
+                <div class="mr-auto col-auto">
+                    <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                        <span>{{l("HomePage")}}</span>
+                    </a>
+                    <h3 class="m-subheader__title m-subheader__title--separator">
+                        <!-- Begin Title -->
+                        <span>{{l("Unit_Title")}}</span>
+                        <!-- End Title -->
+                    </h3>
+                </div>
+                <div class="col text-right mt-3 mt-md-0">
+                    <div class="btn-group dropdown mr-2">
+                        <button class=" btn btn-outline-success" *ngIf="appToolbar.buttonSearchEnable" (click)="exportExcel()">
+                            <i class="far fa-file-excel"></i>
+                            {{l("ExcelOperations")}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="content" class="m-content">
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__body">
+                    <form class="horizontal-form filter-form" autocomplete="off">
+                        <div class="m-form m-form--label-align-right">
+                            <div class="row align-items-center m--margin-bottom-30">
+                                <!-- Begin Filter -->
+                                <!-- Mã đơn vị tính -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("UnitCode")}}</label>
+                                        <input [(ngModel)]="filterInput.uniT_CODE" name="uniT_CODE" autoFocus class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!-- Tên đơn vị tính -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("UnitName")}}</label>
+                                        <input [(ngModel)]="filterInput.uniT_NAME" name="uniT_NAME" class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!-- Trạng thái duyệt -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("AuthStatus")}}</label>
+                                        <all-code-select name="autH_STATUS" [(ngModel)]="filterInput.autH_STATUS" [emptyText]="l('SelectAll')" [cdName]="'AUTH_STATUS'">
+                                        </all-code-select>
+                                    </div>
+                                </div>
+                                <!-- End Filter -->
+                                <div style="display:none;" class="col-md-12">
+                                    <div class="form-group">
+                                        <button *ngIf="appToolbar.buttonSearchEnable" class="btn btn-primary btn-search" (click)="onSearch()">{{l('Search')}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row align-items-center">
+                        <div class="primeng-datatable-container {{dataTable.isLoading}}">
+                            <div class="spinner-border m-5" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <core-table #coreTable class="custom-table ui-table" (reloadPage)="search()">
+                                <thead>
+                                    <tr>
+                                        <!-- Begin Table Column -->
+                                        <!-- STT -->
+                                        <th class="center">
+                                            <span style="width: 40px">{{l("No")}}</span>
+                                        </th>
+                                        <!-- Mã đơn vị tính -->
+                                        <th style="width:30%" sortField="UNIT_CODE">
+                                            <span style="width: 150px">{{l("UnitCode")}}</span>
+                                        </th>
+                                        <!-- Tên đơn vị tính -->
+                                        <th style="width:30%" sortField="UNIT_NAME">
+                                            <span style="width: 150px">{{l("UnitName")}}</span>
+                                        </th>
+                                        <!-- Ghi chú -->
+                                        <th style="width:40%" sortField="NOTES">
+                                            <span style="width: 150px">{{l("Notes")}}</span>
+                                        </th>
+                                        <!-- Hoạt động -->
+                                        <th sortField="RECORD_STATUS">
+                                            <span style="width: 150px">{{l("IsActive")}}</span>
+                                        </th>
+                                        <!-- Trạng thái duyệt -->
+                                        <th sortField="AUTH_STATUS">
+                                            <span style="width: 150px">{{l("AuthStatus")}}</span>
+                                        </th>
+                                        <!-- End Table Column -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let record of dataTable.records" class="selectable" (dblclick)="onDblclick(record)" (click)="selectRow($event,record)">
+                                        <!-- Begin Table Value -->
+                                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount + dataTable.records.indexOf(record)) + 1}}
+                                        </td>
+                                        <!-- Mã đơn vị tính -->
+                                        <td><span class="mo-header"></span>{{record.uniT_CODE}}</td>
+                                        <!-- Tên đơn vị tính -->
+                                        <td><span class="mo-header"></span>{{record.uniT_NAME}}</td>
+                                        <!-- Ghi chú -->
+                                        <td><span class="mo-header"></span>{{record.notes}}</td>
+                                        <!-- Hoạt động -->
+                                        <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                        <!-- Trạng thái duyệt -->
+                                        <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                        <!-- End Table Value -->
+                                    </tr>
+                                </tbody>
+                            </core-table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

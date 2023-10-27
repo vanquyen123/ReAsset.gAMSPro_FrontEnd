@@ -1,0 +1,94 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                    <span>{{l("Unit_Title")}}</span>
+                </h3>
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                        <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <!--
+        <div class="alert alert-danger" role="alert">
+            <div class="alert-text">Có lỗi xảy ra!</div>
+        </div>
+        -->
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                    <div class="modal-body row">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-input-page>
+                            </div>
+                        </div>
+                        <!-- Mã đơn vị tính -->
+                        <div class="col-md-3">
+                            <div class="form-group required">
+                                <label>{{l("UnitCode")}} </label>
+                                <input maxlength="15" class="form-control" [disabled]="true" type="text" #uniT_CODE="ngModel" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" name="uniT_CODE" [(ngModel)]="inputModel.uniT_CODE">
+                                <!-- <div class="error-message" *ngIf="uniT_CODE.invalid && isShowError">
+                                    <span *ngIf="uniT_CODE?.errors.required">{{l('UnitCode')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="uniT_CODE?.errors.pattern">{{l('UnitCode')}}
+                                            {{l("Invalidation")}}</span>
+                                </div> -->
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Tên đơn vị tính -->
+                        <div class="col-md-3">
+                            <div class="form-group required">
+                                <label>{{l("UnitName")}} </label>
+                                <input required class="form-control" [disabled]="disableInput" type="text" #uniT_NAME="ngModel" name="uniT_NAME" [(ngModel)]="inputModel.uniT_NAME" maxlength="200">
+                                <div class="error-message" *ngIf="uniT_NAME.invalid && isShowError">
+                                    <span *ngIf="uniT_NAME?.errors.required">{{l('UnitName')}}
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Hoạt động -->
+                        <div class="col-md-3">
+                            <div class="form-group outter-vertical-center">
+                                <div class="form-group inner-vertical-center">
+                                    <label class="m-checkbox" for="recorD_STATUS">{{l("IsActive")}}
+                                        <input type="checkbox" [disabled]="disableInput" id="recorD_STATUS" #recorD_STATUS name="recorD_STATUS"
+                                        [checked]="inputModel.recorD_STATUS == '1'"(change)="inputModel.recorD_STATUS = recorD_STATUS.checked? '1' : '0'">
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Ghi chú -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>{{l("Note")}}</label>
+                                <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>

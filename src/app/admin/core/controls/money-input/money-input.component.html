@@ -1,0 +1,1 @@
+<input [maxlength]="maxlength" class="{{inputCss}}" [disabled]="disabled" type="text" [ngModel]="_ngModel" (keypress)="onKeyPress($event)" (focusout)="onFocusOut($event)" #control [cleave]="{ numeral: true, numeralThousandsGroupStyle: 'thousand' }">

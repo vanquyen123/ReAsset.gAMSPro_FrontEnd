@@ -1,0 +1,43 @@
+<input #control hidden/>
+<div *ngIf="!showButtonOnly" class="pointer" (click)="showUpLoadModal()">
+    <div *ngIf="imageSources.length > 0">
+        <div class="border-radius">
+            <!-- <slideshow #slideshow 
+                [height]="'200px'"
+                [autoPlay]="true"
+                [showArrows]="false"
+                [imageUrls]="imageSources"
+                >
+            </slideshow> -->
+            <div class="slide-holder">
+                <img [src]="currentImgSrc" class="show-img" [ngStyle]="{'opacity': opacity}">
+            </div>
+        </div>
+
+        <div class="row py-0 pl-1 pr-3 mt-3">
+            <div class="col-md-3 pb-3 pt-0 pl-3 pr-0 position-relative" *ngFor="let item of imageSources; let i = index">
+                <div *ngIf="i < 7" (mouseenter)='showSlide(i)' class="w-100 h-100">
+                    <img class="carousel-thumb border-radius border-red-hover" [src]="item" [ngClass]="{'carousel-thumb-active':i == currentIndex}">
+                </div>
+                <div *ngIf="i == 7" class="w-100 h-100">
+                    <div class="carousel-thumb border-radius border-red-hover see-more">
+                        Xem thêm
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="imageSources.length == 0">
+        <div class="carousel-empty">{{title}}</div>
+    </div>
+
+</div>
+<div class="file-input-group file-group">
+    <div id="{{idProgress}}" #loading></div>
+</div>
+
+<image-carousel-upload-modal [title]="title" [disabled]="disabled" #imageUpload>
+</image-carousel-upload-modal>
+
+<input type="file" accept=".jpg, .jpeg, .png, .gif" [multiple]="true" (change)="uploadFile($event)" hidden #fileControl />

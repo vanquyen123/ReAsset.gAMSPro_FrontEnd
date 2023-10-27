@@ -1,0 +1,140 @@
+/* style sheet for "A4" printing */
+
+@media print and (width: 21cm) and (height: 29.7cm) {
+    @page {
+        margin: 3cm;
+    }
+}
+
+@media print {
+    footer {page-break-after: always;}
+    }
+/* style sheet for "letter" printing */
+
+@media print and (width: 8.5in) and (height: 11in) {
+    @page {
+        margin: 1in;
+    }
+}
+
+
+/* A4 Landscape*/
+/* 
+@page {
+    size: A4 landscape;
+    margin: 10%;
+} */
+
+body {
+    /* this affects the margin on the content before sending to printer */
+    margin: 0px;
+}
+
+table {
+    page-break-inside: auto
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: always
+}
+
+
+
+@font-face {
+    font-family: 'Arial Unicode MS';
+    src: url('/assets/fonts/arial-unicode-ms.ttf');
+}
+@font-face {
+    font-family: 'VDBrevia-Black';
+    src: url('/assets/fonts/VDBrevia-Black.otf');
+}
+@font-face {
+    font-family: 'pck-font';
+    src: url('/assets/fonts/courier-new.ttf');
+}
+
+* {
+    font-family: 'Arial Unicode MS';
+}
+
+.parent-page {
+    page-break-inside: auto
+}
+
+.item-page {
+    page-break-inside: avoid;
+    page-break-after: auto
+}
+
+.pck * {
+    font-size: 11.5pt !important;
+    font-family: 'pck-font'!important
+}
+
+.pck-title {
+    font-size: 1.3em !important;
+}
+
+.pck-table {}
+
+.pck-table>tbody>tr>td {
+    vertical-align: top;
+    padding-bottom: -2.75px;
+}
+
+.pck-table>tbody>tr>td.rowpd {
+    padding-bottom: 6.5px !important;
+}
+
+.pck-table>tbody>tr>td.rowpb-l {
+    padding-bottom: 9px !important;
+}
+
+.pck-table>tbody>tr>td.rowpb-l-1 {
+    padding-bottom: 14px !important;
+}
+
+td.tkc-section {
+    line-height: 0pt !important;
+}
+
+.hr-dash {
+    display: flex;
+    border-top: dashed 1px white;
+    height: 1px;
+    /* background: black!important; */
+    margin-bottom: 4.7px;
+    /* Individual border image properties */
+    border-image-source: url('/assets/img/dashed_border.png?v=5');
+    border-image-slice: 2;
+    border-image-repeat: repeat;
+    border-image-width: 1px;
+}
+
+.pck-table>tbody>tr>td {
+    vertical-align: top;
+    padding-bottom: 6px;
+}
+
+.hr-dash-xs {
+    display: flex;
+    border-top: dashed 1px white;
+    height: 1px;
+    /* background: black!important; */
+    margin-top: 14.5px;
+    /* Individual border image properties */
+    border-image-source: url('/assets/img/dashed_border_xs.png?v=8');
+    border-image-slice: 2;
+    border-image-repeat: repeat;
+    border-image-width: 1px;
+}
+
+table {
+    page-break-inside: auto
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: always
+}

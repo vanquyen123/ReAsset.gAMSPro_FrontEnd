@@ -1,0 +1,133 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()"
+                    class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()"
+                    class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                    <span>{{l("UsersHeaderInfo")}}</span>
+                </h3>
+                <span [ngSwitch]="editPageState"
+                    class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                    <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                    <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content"
+        class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm"
+                    id="editForm"
+                    novalidate
+                    (ngSubmit)="saveInput()"
+                    autocomplete="off">
+                    <div class="modal-body row">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-input-page>
+                            </div>
+                        </div>
+
+                        <!-- Tên đăng nhập -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("UserName")}}</label>
+                                <input maxlength="15"
+                                    class="form-control"
+                                    [disabled]="disableInput"
+                                    type="text"
+                                    required
+                                    #tlnanme="ngModel"
+                                    name="tlnanme"
+                                    [(ngModel)]="inputModel.tlnanme">
+                                <div class="error-message"
+                                    *ngIf="tlnanme.invalid && isShowError">
+                                    <span *ngIf="tlnanme?.errors.required">{{l('UserName')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="tlnanme?.errors.pattern">{{l('UserName')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mã đơn vị -->
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label>{{l("BranchCode")}}</label>
+                                <select2-custom name="brancH_ID"
+                                    [(ngModel)]="inputModel.brancH_ID"
+                                    #brancH_ID="ngModel"
+                                    [(list)]="branchs"
+                                    [emptyText]="l('SelectAll')"
+                                    [valueMember]="'brancH_ID'"
+                                    [displayMember]="'brancH_CODE|brancH_NAME'">
+                                </select2-custom>
+                                <div class="error-message"
+                                    *ngIf="brancH_ID.invalid && isShowError">
+                                    <span *ngIf="brancH_ID?.errors.required">{{l('BranchCode')}}
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("Email")}}</label>
+                                <input class="form-control"
+                                    [disabled]="disableInput"
+                                    type="text"
+                                    type="email"
+                                    #email="ngModel"
+                                    pattern="{{s('gAMSProCore.EmailRegexValidation')}}"
+                                    name="email"
+                                    [(ngModel)]="inputModel.email">
+                                <div class="error-message"
+                                    *ngIf="email && email.invalid && isShowError">
+                                    <span *ngIf="email?.errors.pattern">
+                                        {{l("Email")}} {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Họ tên -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("NameSurname")}} </label>
+                                <input required
+                                    class="form-control"
+                                    [disabled]="disableInput"
+                                    type="text"
+                                    #name="ngModel"
+                                    name="name"
+                                    [(ngModel)]="inputModel.name"
+                                    maxlength="200">
+                                <div class="error-message"
+                                    *ngIf="name.invalid && isShowError">
+                                    <span *ngIf="name?.errors.required">{{l('NameSurname')}}
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>

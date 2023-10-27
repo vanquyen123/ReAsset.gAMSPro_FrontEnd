@@ -1,0 +1,49 @@
+<div *ngIf="authStatus==AuthStatusConsts.Confirm" class="auth-status-input-page">
+    <i class="pi pi-check success-text"></i>
+    <span>{{l('TKSSApproved')}}</span>
+</div>
+
+<div *ngIf="authStatus==AuthStatusConsts.Reject" class="auth-status-input-page">
+    <i class="pi pi-times error-text"></i>
+    <span>{{l('Reject')}}</span>
+</div>
+
+<div *ngIf="authStatus==AuthStatusConsts.Access" class="auth-status-input-page">
+    <i class="pi pi-check success-text"></i>
+    <span>{{l('ConfirmedWaitTKSS')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.Approve" class="auth-status-input-page">
+    <i class="pi pi-check success-text"></i>
+    <span>{{l('ConfirmedWaitKSS')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.NotApprove" class="auth-status-input-page">
+    <i class="pi pi-plus success-text"></i>
+    <span>{{l('WaiTAppr')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.ApproveDeputy" class="auth-status-input-page">
+    <i class="pi pi-check success-text"></i>
+    <span>{{l('DeputyApproved')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.AccessStorekeepers" class="auth-status-input-page">
+    <i class="pi pi-plus success-text"></i>
+    <span>{{l('WaitDeputyApproved')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.AccessStorekeepersKhoi" class="auth-status-input-page">
+    <i class="pi pi-plus success-text"></i>
+    <span>{{l('WaitKhoiApproved')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.ApproveKhoi" class="auth-status-input-page">
+    <i class="pi pi-check success-text"></i>
+    <span>{{l('KhoiApproved')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.ApproveImportWareF" class="auth-status-input-page">
+    <i class="pi pi-plus success-text"></i>
+    <span>{{l('WaitStorekeepersAccess')}}</span>
+</div>
+<div *ngIf="authStatus==AuthStatusConsts.FinishCheck" class="auth-status-input-page">
+    <i class="pi pi-check success-text"></i>
+    <span>{{l('FinishStorekeepers')}}</span>
+</div>
+
+
+

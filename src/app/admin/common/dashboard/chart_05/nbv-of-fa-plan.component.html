@@ -1,0 +1,5 @@
+<!-- <div (window:resize)="onResize($event)" id="BarChartMulti" style="height: 570px;width:100%; display: flex; justify-content: center;"></div> -->
+<div style="display: block;height: 540px;display: flex; justify-content: center; cursor: pointer;">
+  <canvas style="margin-top: 5%;" baseChart height="300" [datasets]="this.barChartData" [labels]="this.barChartLabels" [options]="barChartOptions"
+    [legend]="barChartLegend" [chartType]="barChartType" [colors]="chartColors"></canvas>
+</div>

@@ -1,0 +1,3 @@
+<select #control  class="{{inputCss}}" hidden multiple [disabled]="disabled">
+    <option *ngFor="let item of _list" [value]="'v--'+item[valueMember]">{{getDisplay(item)}}</option>
+</select>

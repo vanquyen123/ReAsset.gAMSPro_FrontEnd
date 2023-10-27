@@ -1,0 +1,63 @@
+<div class="toolbar-component m-content float-on-top" style="height: 37px;padding-top: 0px !important;">
+    <button *ngIf="isList && !buttonAddHidden" [disabled]="enable? !buttonAddEnable : true" (click)="add()" class="btn btn-primary">
+        <i class="pi pi-plus"></i>
+        <span>{{l("Add")}}</span>
+    </button>
+    <button *ngIf="isList && !buttonUpdateHidden" [disabled]="enable? !buttonUpdateEnable : true" (click)="update()" class="btn btn-primary">
+        <i class="pi pi-pencil"></i>
+        <span>{{editLabel}}</span>
+    </button>
+    <button *ngIf="(isEdit || isAssUpdateReport)  && !buttonSaveHidden" [disabled]="enable? !buttonSaveEnable : true" (click)="save()" class="btn btn-primary">
+        <i class="pi pi-save"></i>
+        <span>{{l("Update")}}</span>
+    </button>
+    <button *ngIf="isList && !buttonDeleteHidden" [disabled]="enable? !buttonDeleteEnable : true" (click)="delete()" class="btn btn-primary">
+        <i class="pi pi-times"></i>
+        <span>{{l("Delete")}}</span>
+    </button>
+    <button *ngIf="(isList || isAssUpdateReport) && !buttonSearchHidden" [disabled]="enable? !buttonSearchEnable : true" (click)="search()" class="btn btn-primary">
+        <i class="pi pi-search"></i>
+        <span>{{l("Search")}}</span>
+    </button>
+    <button *ngIf="false" [disabled]="enable? !buttonResetSearchEnable : true" (click)="resetSearch()" class="btn btn-primary">
+        <i class="pi pi-refresh"></i>
+        <span>{{l("ResetSearch")}}</span>
+    </button>
+    <button *ngIf="isList && !buttonViewDetailHidden" [disabled]="enable? !buttonViewDetailEnable : true" (click)="viewDetail()" class="btn btn-primary">
+        <i class="pi pi-eye"></i>
+        <span>{{l("View")}}</span>
+    </button>
+    <button *ngIf="isEdit && !buttonRejectHidden" [disabled]="enable? !buttonRejectEnable: true" (click)="reject()" class="btn btn-primary">
+        <i class="bi bi-backspace"></i>
+        {{l("Reject")}}
+    </button>
+    <button *ngIf="isEdit && !buttonApproveHidden" [disabled]="enable? !buttonApproveEnable : true" (click)="approve()" class="btn btn-primary">
+        <i class="pi pi-check"></i>
+        <span>{{l("Approve")}}</span>
+    </button>
+    <button *ngIf="isEdit && !buttonAccessHidden" [disabled]="enable? !buttonAccessEnable: true" (click)="access()" class="btn btn-primary">
+        <i class="bi bi-check-circle"></i>
+        {{l("Access")}}
+    </button> 
+    <button *ngIf="isEdit && !buttonApproveKSSHidden" [disabled]="enable? !buttonApproveKSSEnable: true" (click)="approveKSS()" class="btn btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        {{l("ApproveKSS")}}
+    </button>
+    <button *ngIf="isEdit && !buttonAccessStorekeepersHidden" [disabled]="enable? !buttonAccessStorekeepersEnable: true" (click)="accessStorekeepers()" class="btn btn-primary">
+        <i class="bi bi-check-square"></i>
+        {{l("AccessStorekeepers")}}
+    </button> 
+    <button *ngIf="isEdit && !buttonApproveDeputyHidden" [disabled]="enable? !buttonApproveDeputyEnable: true" (click)="approveDeputy()" class="btn btn-primary">
+        <i class="bi bi-check2-square"></i>
+        {{l("ApproveDeputy")}}
+    </button> 
+    <button *ngIf="isEdit && !buttonApproveKhoiHidden" [disabled]="enable? !buttonApproveKhoiEnable: true" (click)="approveKhoi()" class="btn btn-primary">
+        <i class="bi bi-check2-square"></i>
+        {{l("ApproveKhoi")}}
+    </button> 
+    <button *ngIf="isEdit && !buttonFinishCheckHidden" [disabled]="enable? !buttonFinishCheckEnable: true" (click)="FinishCheck()" class="btn btn-primary">
+        <i class="bi bi-shield-check"></i>
+        {{l("FinishCheck")}}
+    </button> 
+  
+</div>

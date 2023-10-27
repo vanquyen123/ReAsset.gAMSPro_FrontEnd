@@ -1,0 +1,229 @@
+<div class=""
+    [@routerTransition]>
+    <!-- <div class="m-login__signin" [@routerTransition]> -->
+    <!-- <div class="m-login__head">
+        
+    </div> -->
+    <div style="height: calc(100vh - 50px); width: 100vw; margin-top: 50px; overflow: auto;">
+        <div
+            style="max-width: 450px; min-height: 615px; background: white; border-radius: 20px; margin: 32px auto 40px auto;display: flex; flex-direction: column; align-content: center; justify-content: center;">
+            <div style="height: 533px; display: flex; flex-direction: column;">
+                <div>
+                    <img src="./assets/logo/LogoHDBank.png"
+                        class="imglogin">
+                </div>
+
+                <form *ngIf="s('gAMSProCore.LoginMethod') != LoginMethod.adfs"
+                    #loginForm="ngForm"
+                    class="formlogin"
+                    method="post"
+                    novalidate
+                    (ngSubmit)="login()">
+                    <div class="title">
+                        <h1 class="ng-nhp-h-thng">{{l("Login System")}}</h1>
+                    </div>
+
+                    <div style="padding: 20px; background: #FFFFFF; box-shadow: 0px 1px 21px rgb(234 167 41 / 15%); border-radius: 5px;">
+                        <div class="form-group m-form__group input-from-login">
+                            <span style="display: flex ; margin-left: 13px;"><label class="labelusername"
+                                    id="label">{{l('UserName')}}</label></span>
+                            <div style="position: relative ;">
+                                <img class="icon-person"
+                                    src="../../assets/img/person.svg"
+                                    alt="">
+                                <input #userNameOrEmailAddressInput="ngModel"
+                                    [(ngModel)]="loginService.authenticateModel.userNameOrEmailAddress"
+                                    autoFocus
+                                    style="display: unset ;"
+                                    class="input-login"
+                                    type="text"
+                                    autocomplete="off"
+                                    placeholder="{{l('EnterUserName')}}"
+                                    name="userNameOrEmailAddress"
+                                    required />
+                            </div>
+                            <validation-messages [labelName]="l('UserName')"
+                                [formCtrl]="userNameOrEmailAddressInput"></validation-messages>
+                        </div>
+    
+                        <div class="form-group m-form__group input-from-login">
+                            <span style="display: flex ; margin-left: 13px;"><label class="labelpassword"
+                                    id="label">{{l('Password')}}</label></span>
+                            <div style="position: relative ;">
+                                <img class="icon-password"
+                                    src="../../assets/img/Vector.svg"
+                                    alt="">
+                                <input #passwordInput="ngModel"
+                                    [(ngModel)]="loginService.authenticateModel.password"
+                                    style="display: unset ;"
+                                    class="input-login"
+                                    type="password"
+                                    autocomplete="off"
+                                    placeholder="{{l('EnterPassword')}}"
+                                    name="password"
+                                    required
+                                    maxlength="32" />
+                            </div>
+                            <validation-messages [labelName]="l('Password')"
+                                [formCtrl]="passwordInput"></validation-messages>
+                        </div>
+                        <div class="form-check fromcheckremember">
+                            <input class="form-check-input checkboxrememberme"
+                                [(ngModel)]="loginService.rememberMe"
+                                name="rememberMe"
+                                type="checkbox"
+                                value="true"
+                                id="flexCheckChecked" />
+                            <label class="form-check-label labelrememberme"
+                                for="flexCheckChecked">{{"RememberMe" | localize}}</label>
+                        </div>
+                        <div class="m-login__form-sub input-remember-button">
+                            <!-- <div class="check-box">
+                            
+                                <input  class="form-control"
+                                [(ngModel)]="loginService.rememberMe"
+                                type="checkbox"
+                                name="rememberMe"
+                                value="true"/>
+                                <div class="remember">{{"RememberMe" | localize}}</div> 
+                               </div> -->
+    
+                            <!-- <div class="col m--align-left">
+                                <label class="m-checkbox m-checkbox--primary">
+                                    <input class="form-control"
+                                        [(ngModel)]="loginService.rememberMe"
+                                        type="checkbox"
+                                        name="rememberMe"
+                                        value="true" />
+                                    <span>{{"RememberMe" | localize}}</span>
+                                </label>
+                                
+                            </div> -->
+                            <div class="col m--align-right">
+                                <!-- <button type="submit" class="btn btn-primary m-btn m-btn--pill m-btn--custom m-btn--air">{{"LogIn" | localize}}</button> -->
+                                <div class="button"> <button type="submit"
+                                        class="overlap-group-1">
+                                        <div class="ng-nhp">{{"LogIn" | localize}}</div>
+                                    </button></div>
+                            </div>
+                        </div>
+    
+                        <div class="m-login__form-action">
+                            <a routerLink="/account/forgot-password"
+                                *ngIf="canFogotPassword"
+                                id="forget-password"
+                                class="m-link forget-password">{{"ForgotPassword" | localize}}</a>
+                        </div>
+                    </div>
+                    
+
+                </form>
+            </div>
+
+        </div>
+        <div>
+            <ul style="border-bottom: 1px solid rgba(51,51,51,.2);
+            border-top: 1px solid rgba(51,51,51,.2);
+            justify-content: center;
+            padding: 32px 0;
+            width: 100%;
+            display: flex;">
+                <li style="border-left: none;
+                padding-left: 0; padding: 0 13.5px">
+                    <p style="margin: 0; color: #333;
+                    font-size: .875rem;
+                    line-height: 26px;">Bản quyền @ 2021 thuộc về HDBank</p>
+                </li>
+                <li style="border-left: 1px solid rgba(51,51,51,.2);
+                padding: 0 13.5px;"><a style="    color: #333;
+        font-size: .875rem;
+        line-height: 26px;
+        margin-bottom: 0;"
+               href="/account/terms-of-use">Điều khoản sử dụng</a></li>
+                <li style="    border-left: 1px solid rgba(51,51,51,.2);
+                padding: 0 13.5px;"><a style="    color: #333;
+        font-size: .875rem;
+        line-height: 26px;
+        margin-bottom: 0;"
+                        href="/vi/sitemap">Sơ đồ trang</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- <div class="group-26">
+        <div class="rectangle-15"></div>
+        <div class="rectangle-16"></div>
+        <div class="rectangle-17"></div>
+        <div class="rectangle-18"></div>
+      </div> -->
+    <div class="adfs-section"
+        *ngIf="s('gAMSProCore.LoginMethod') == LoginMethod.adfs && hasAdfsError">
+        <label class="adfs-error">{{l('InvalidLoginAdfs')}}</label>
+    </div>
+
+    <div class="adfs-section"
+        *ngIf="s('gAMSProCore.LoginMethod') == LoginMethod.adfs">
+        <a href="{{adfsRemoteUrl}}"
+            class="btn-btn-primary btn-try-again-adfs">{{l('TryAgain')}}</a>
+    </div>
+
+    <!-- <div class="login-options" *ngIf="(multiTenancySideIsTeanant || !isMultiTenancyEnabled) && loginService.externalLoginProviders.length > 0">
+        <h4>{{"LoginWith" | localize}}</h4>
+        <ul class="social-icons">
+            <li *ngFor="let provider of loginService.externalLoginProviders">
+                <a class="social-login-icon social-icon-color {{provider.icon}}" (click)="externalLogin(provider)" title="{{provider.name}}"></a>
+            </li>
+        </ul>
+    </div> -->
+    <!-- <div style="display: flex;flex-direction: row;">
+        <div style="height: 47px
+        ">
+            <img src="../../../assets/logo/logoGsoft.png" style="    position: relative;
+            bottom: 115px;">
+        </div>
+        <div style="height:47px; display: flex;align-items: center;">
+            <img src="../../../assets/logo/Rectangle 98.png" style="margin-right:10px; margin-left: 32px;">
+           <p style="font-family: 'Roboto';
+           font-style: normal;
+           font-weight: 700;
+           font-size: 14px;
+           line-height: 16px;
+           letter-spacing: 0.05em;
+           
+           color: #2A3072;
+           margin-bottom:0 !important"> gAMSPro v.3.0.{{releaseDate}} © Copyright 
+
+            <a 
+                            style="cursor: pointer; color: rgb(0 141 241);">Terms of use</a> 
+            </p>
+        </div> -->
+
+    <!-- -->
+
+
+    <!--<a (click)='termsOfUse()'
+                            style="cursor: pointer; color: rgb(0 141 241);">Terms of use</a>-->
+
+    <!-- </div> -->
+    <div class="m-stack__item m-stack__item--center">
+        <div class="m-login__account">
+            <span *ngIf="false && isSelfRegistrationAllowed">
+                <a routerLink="/account/register"
+                    id="register-btn"
+                    class="m-link m-link--primary m-login__account-link">{{"CreateAnAccount" | localize}}</a>
+                <span class="pipe-divider"> | </span>
+            </span>
+            <span *ngIf="false && !multiTenancySideIsTeanant && isTenantSelfRegistrationAllowed">
+                <a routerLink="/account/select-edition"
+                    id="register-btn"
+                    class="m-link m-link--primary m-login__account-link">{{"NewTenant" | localize}}</a>
+                <span class="pipe-divider"> | </span>
+            </span>
+            <a *ngIf="canEmailActive"
+                routerLink="/account/email-activation"
+                id="email-activation-btn"
+                class="m-link m-link--primary m-login__account-link">{{"EmailActivation" | localize}}</a>
+        </div>
+    </div>
+</div>

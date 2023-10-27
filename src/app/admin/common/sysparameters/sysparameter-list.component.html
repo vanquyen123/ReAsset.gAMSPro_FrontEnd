@@ -1,0 +1,126 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div id="page-list-area">
+        <div class="m-subheader">
+            <div class="row align-items-center">
+                <div class="mr-auto col-auto">
+                    <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                        <span>{{l("HomePage")}}</span>
+                    </a>
+                    <h3 class="m-subheader__title m-subheader__title--separator">
+                        <!-- Begin Title -->
+                        <span>{{l("SysParameter_Title")}}</span>
+                        <!-- End Title -->
+                    </h3>
+                </div>
+                <div class="col text-right mt-3 mt-md-0">
+                    <div class="btn-group dropdown mr-2">
+                        <button class=" btn btn-outline-success" *ngIf="appToolbar.buttonSearchEnable" (click)="exportExcel()">
+                            <i class="far fa-file-excel"></i>
+                            {{l("ExcelOperations")}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content" class="m-content">
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__body">
+                    <form class="horizontal-form filter-form" autocomplete="off">
+                        <div class="m-form m-form--label-align-right">
+                            <div class="row align-items-center m--margin-bottom-30">
+                                <!-- Begin Filter -->
+                                <!-- Mã tham số -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("ParaKey")}}</label>
+                                        <input [(ngModel)]="filterInput.paraKey" name="ParaKeyFilter" autoFocus class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!-- Giá trị tham số -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("ParaValue")}}</label>
+                                        <input [(ngModel)]="filterInput.paraValue" name="ParaValueFilter" class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!--  -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("DataType")}}</label>
+                                        <input [(ngModel)]="filterInput.dataType" name="DataTypeFilter" class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!-- Kiểu dữ liệu -->
+                                <!-- End Filter -->
+                                <div style="display:none;" class="col-md-12">
+                                    <div class="form-group">
+                                        <button *ngIf="appToolbar.buttonSearchEnable" class="btn btn-primary btn-search" (click)="onSearch()">{{l('Search')}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row align-items-center">
+                        <div class="primeng-datatable-container {{dataTable.isLoading}}">
+                            <div class="spinner-border m-5" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <core-table #coreTable class="custom-table ui-table" (reloadPage)="search()">
+                                <thead>
+                                    <tr>
+                                        <!-- Begin Table Column -->
+                                        <!-- STT -->
+                                        <th class="center">
+                                            <span style="width: 40px">{{l("No")}}</span>
+                                        </th>
+                                        <!-- Mã tham số -->
+                                        <th sortField="PARAKEY">
+                                            <span style="width: 150px">{{l("ParaKey")}}</span>
+                                        </th>
+                                        <!-- Giá trị tham số -->
+                                        <th sortField="PARAVALUE">
+                                            <span style="width: 150px">{{l("ParaValue")}}</span>
+                                        </th>
+                                        <!-- Kiểu dữ liệu -->
+                                        <th sortField="DATATYPE">
+                                            <span style="width: 150px">{{l("DataType")}}</span>
+                                        </th>
+                                        <!-- Thông tin mô tả -->
+                                        <th sortField="DESCRIPTION">
+                                            <span style="width: 150px">{{l("Description")}}</span>
+                                        </th>
+                                        <!-- Hoạt động -->
+                                        <th sortField="RECORD_STATUS">
+                                            <span style="width: 150px">{{l("IsActive")}}</span>
+                                        </th>
+                                        <!-- End Table Column -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let record of dataTable.records" class="selectable" (dblclick)="onDblclick(record)" (click)="selectRow($event,record)">
+                                        <!-- Begin Table Value -->
+                                        <!-- STT -->
+                                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount + dataTable.records.indexOf(record)) + 1}}
+                                        </td>
+                                        <!-- Mã tham số -->
+                                        <td><span class="mo-header"></span>{{record.paraKey}}</td>
+                                        <!-- Giá trị tham số -->
+                                        <td><span class="mo-header"></span>{{record.paraValue}}</td>
+                                        <!-- Kiểu dữ liệu -->
+                                        <td><span class="mo-header"></span>{{record.dataType}}</td>
+                                        <!-- Thông tin mô tả -->
+                                        <td><span class="mo-header"></span>{{record.description}}</td>
+                                        <!-- Hoạt động -->
+                                        <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                        <!-- End Table Value -->
+                                    </tr>
+                                </tbody>
+                            </core-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

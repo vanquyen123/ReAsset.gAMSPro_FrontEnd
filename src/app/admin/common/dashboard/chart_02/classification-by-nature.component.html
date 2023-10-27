@@ -1,0 +1,15 @@
+<div class="pt-5" style="height: 320px; cursor: pointer;">
+      <canvas baseChart style="margin-top: 5%"
+        [data]="pieChartData" 
+        [labels]="pieChartLabels" 
+        [chartType]="pieChartType"
+        [options]="pieChartOptions"
+        [plugins]="pieChartPlugins"
+        [legend]="pieChartLegend"
+        [colors]="chartColors">
+      </canvas>
+    </div>
+    
+<!-- <div style="height: 320px;">
+      <div class="pt-3" (window:resize)="onResize($event)" id="doughnutChart" style="height: 100%"></div>
+</div> -->

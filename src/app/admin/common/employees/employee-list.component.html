@@ -1,0 +1,174 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div id="page-list-area">
+        <div class="m-subheader">
+            <div class="row align-items-center">
+                <div class="mr-auto col-auto">
+                    <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                        <span>{{l("HomePage")}}</span>
+                    </a>
+                    <h3 class="m-subheader__title m-subheader__title--separator">
+                        <!-- Begin Title -->
+                        <span>{{l("Employee_Title")}}</span>
+                        <!-- End Title -->
+                    </h3>
+                </div>
+                <div class="col text-right mt-3 mt-md-0">
+                    <div class="btn-group dropdown mr-2">
+                        <button class=" btn btn-outline-success" *ngIf="appToolbar.buttonSearchEnable" (click)="exportExcel()">
+                            <i class="far fa-file-excel"></i>
+                            {{l("ExcelOperations")}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content" class="m-content">
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__body">
+                    <form class="horizontal-form filter-form" autocomplete="off">
+                        <div class="m-form m-form--label-align-right">
+                            <div class="row align-items-center m--margin-bottom-30">
+                                <!-- Begin Filter -->
+                                <!-- Mã nhân viên -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("EmployeeCode")}}</label>
+                                        <input [(ngModel)]="filterInput.emP_CODE" name="emP_CODE" autoFocus class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!-- Họ tên nhân viên -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("EmpFullName")}}</label>
+                                        <input [(ngModel)]="filterInput.emP_NAME" name="emP_NAME" class="form-control m-input" type="text">
+                                    </div>
+                                </div>
+                                <!-- Trạng thái duyệt -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("AuthStatus")}}</label>
+                                        <all-code-select name="autH_STATUS" [(ngModel)]="filterInput.autH_STATUS" [emptyText]="l('SelectAll')" [cdName]="'AUTH_STATUS'">
+                                        </all-code-select>
+                                    </div>
+                                </div>
+                                <!-- Tên đơn vị -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("BranchName")}}</label>
+                                        <select2-custom name="brancH_ID" [(ngModel)]="filterInput.brancH_ID" [(list)]="branchs" (onChangeSelect2)="onChangeBranch($event)" [emptyText]="l('SelectAll')" [valueMember]="'brancH_ID'" [displayMember]="'brancH_CODE|brancH_NAME'">
+                                        </select2-custom>
+                                    </div>
+                                </div>
+                                <!-- Phòng ban -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("DepId")}}</label>
+                                        <select2-custom name="deP_ID" [(ngModel)]="filterInput.deP_ID" [list]="departments" [emptyText]="l('SelectAll')" [valueMember]="'deP_ID'" [displayMember]="'deP_CODE|deP_NAME'">
+                                        </select2-custom>
+                                    </div>
+                                </div>
+                                <!-- Đơn vị độc lập -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label></label>
+                                        <checkbox-control #level="ngModel" name="level" [label]="l('IndependentUnit')" [checked]="true" [TrueValue]="'UNIT'" [FalseValue]="'ALL'" [(ngModel)]="filterInput.level"></checkbox-control>
+                                    </div>
+                                </div>
+                                <!-- End Filter -->
+                                <div style="display:none;" class="col-md-12">
+                                    <div class="form-group">
+                                        <button *ngIf="appToolbar.buttonSearchEnable" class="btn btn-primary btn-search" (click)="onSearch()">{{l('Search')}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row align-items-center">
+                        <div class="primeng-datatable-container {{dataTable.isLoading}}">
+                            <div class="spinner-border m-5" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <core-table #coreTable class="custom-table ui-table" (reloadPage)="search()">
+                                <thead>
+                                    <tr>
+                                        <!-- Begin Table Column -->
+                                        <!-- STT -->
+                                        <th class="center">
+                                            <span style="width: 40px">{{l("No")}}</span>
+                                        </th>
+                                        <!-- Mã nhân viên -->
+                                        <th style="width:20%" sortField="EMP_CODE">
+                                            <span style="width: 112px">{{l("EmployeeCode")}}</span>
+                                        </th>
+                                        <!-- Họ tên nhân viên -->
+                                        <th style="width:20%" sortField="EMP_NAME">
+                                            <span style="width: 135px">{{l("EmpFullName")}}</span>
+                                        </th>
+                                        <!-- Tên khu vực -->
+                                        <th style="width:20%" sortField="KHU_VUC">
+                                            <span style="width: 98px">{{l("Area")}}</span>
+                                        </th>
+                                        <!-- Mã đơn vị -->
+                                        <th style="width:20%" sortField="chI_NHANH_CODE">
+                                            <span style="width: 138px">{{l("BranchCode")}}</span>
+                                        </th>
+                                        <!-- Phòng giao dịch -->
+                                        <th style="width:20%" sortField="PGD">
+                                            <span style="width: 132px">{{l("SubBranch")}}</span>
+                                        </th>
+                                        <!-- Phòng ban -->
+                                        <th sortField="DEP_NAME">
+                                            <span style="width: 150px">{{l("DepId")}}</span>
+                                        </th>
+                                        <!-- Ghi chú -->
+                                        <th sortField="NOTES">
+                                            <span style="width: 150px">{{l("Notes")}}</span>
+                                        </th>
+                                        <!-- Hoạt động -->
+                                        <th sortField="RECORD_STATUS">
+                                            <span style="width: 150px">{{l("IsActive")}}</span>
+                                        </th>
+                                        <!-- Trạng thái duyệt -->
+                                        <th sortField="AUTH_STATUS">
+                                            <span style="width: 150px">{{l("AuthStatus")}}</span>
+                                        </th>
+                                        <!-- End Table Column -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let record of dataTable.records" class="selectable" (dblclick)="onDblclick(record)" (click)="selectRow($event,record)">
+                                        <!-- Begin Table Value -->
+                                        <!-- STT -->
+                                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount + dataTable.records.indexOf(record)) + 1}}
+                                        </td>
+                                        <!-- Mã nhân viên -->
+                                        <td><span class="mo-header"></span>{{record.emP_CODE}}</td>
+                                        <!-- Tên nhân viên -->
+                                        <td><span class="mo-header"></span>{{record.emP_NAME}}</td>
+                                        <!-- Tên khu vực -->
+                                        <td><span class="mo-header"></span>{{record.khU_VUC}}</td>
+                                        <!-- Mã đơn vị -->
+                                        <td><span class="mo-header"></span>{{record.chI_NHANH_CODE}}</td>
+                                        <!-- Phòng giao dịch -->
+                                        <td><span class="mo-header"></span>{{record.pgd}}</td>
+                                        <!-- Tên phòng ban -->
+                                        <td><span class="mo-header"></span>{{record.deP_NAME}}</td>
+                                        <!-- Ghi chú -->
+                                        <td><span class="mo-header"></span>{{record.notes}}</td>
+                                        <!-- Hoạt động -->
+                                        <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                        <!-- Trạng thái duyệt -->
+                                        <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                        <!-- End Table Value -->
+                                    </tr>
+                                </tbody>
+                            </core-table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

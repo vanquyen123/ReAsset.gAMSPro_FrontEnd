@@ -1,0 +1,240 @@
+.select2-selection__rendered {
+    display: block;
+    width: 100%;
+    height: calc(2.95rem + 2px);
+    padding: .85rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+}
+
+.btn-search {
+    margin-top: 15px;
+}
+
+span.app-menu-actions {
+    position: absolute;
+    left: 330px;
+    margin-top: 5px;
+}
+
+span.app-menu-actions>span:not(:first-child) {
+    margin-left: 60px;
+}
+
+.app-menu-item>span:first-child>span:first-child {
+    position: absolute;
+    left: 5px;
+}
+
+.app-menu-actions-title {
+    position: sticky;
+    padding-left: 285px;
+    top: 0px;
+    margin-bottom: -20px;
+    background-color: white;
+    width: 100%;
+    height: 40px;
+    z-index: 10000;
+}
+
+.app-menu-actions-title>span {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+    margin-left: 20px;
+    margin-top: 10px;
+    /* max-width: 70px; */
+}
+
+span.app-menu-item.grid-table.ng-star-inserted:not(:first-child)>span:first-child>span.form-group {
+    position: inherit;
+    display: inline-block;
+}
+
+.m-aside-menu .m-menu__nav>.m-menu__item>.m-menu__link {
+    padding: 0px 5px !important;
+}
+
+.modal-dialog.modal-lg {
+    min-width: 80vw;
+}
+
+.app-menu-name {
+    display: inline-block;
+    width: 100%;
+    position: absolute;
+    padding-top: 8px;
+    padding-bottom: 9px;
+}
+
+grid-permission .app-menu-item>span:first-child>span:first-child {
+    padding-top: 5px;
+}
+
+span.m-menu__link.m-menu__toggle.ng-star-inserted {
+    background-color: white !important;
+}
+
+span.m-menu__link.m-menu__toggle.ng-star-inserted>span>span>.form-group {
+    margin-top: 5px;
+}
+
+grid-permission .app-menu-father-node {
+    font-weight: 500!important;
+}
+
+span.m-menu__link.m-menu__toggle.ng-star-inserted:hover {
+    background-color: #ededfd !important;
+}
+
+grid-permission div.form-group>input.form-control.grid-filter {
+    display: inline;
+    width: 90%;
+}
+
+div.form-group>button {
+    display: inline;
+}
+
+span.app-menu-actions-name {
+    max-width: 80px;
+    text-align: center;
+    display: none;
+    position: relative;
+    vertical-align: -webkit-baseline-middle;
+    padding-right: 5px;
+}
+
+
+/* .sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+  } */
+
+@media(max-width:920px) {
+    span.m-menu__link {
+        display: block!important;
+        height: initial!important;
+    }
+    span.m-menu__link>* {
+        display: block!important;
+    }
+    span.app-menu-actions {
+        position: unset;
+        display: block;
+        padding-bottom: 20px;
+        max-width: 75vw;
+    }
+    .app-menu-actions-title {
+        display: none;
+    }
+    span.app-menu-actions>span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    span.app-menu-actions>span:not(:first-child) {
+        margin-left: 5px;
+    }
+    .m-menu__ver-arrow {
+        visibility: hidden;
+    }
+    span.app-menu-actions-name {
+        display: inline-block;
+    }
+}
+
+.m-menu__ver-arrow {
+    position: absolute;
+    left: 5px;
+    padding-top: 20px;
+    transform: none;
+}
+
+.arrow-collapse {
+    /* animation: rotationCollapse 0.4s both !important; */
+    transform: rotate(-90deg);
+    padding-top: 25px !important;
+    padding-right: 3px !important;
+}
+
+
+/* @keyframes rotationCollapse {
+    0% {
+            transform: rotate(0deg);
+    }
+    100% {
+    }
+} */
+
+
+/* .m-menu__submenu,.m-menu__submenu * {
+        background: aquamarine!important;
+    } */
+
+.m-menu__submenu {
+    overflow: hidden
+}
+
+grid-permission .m-aside-menu .m-menu__nav {
+    color: #212528;
+}
+
+grid-permission .m-aside-menu .m-menu__nav>.m-menu__item>.m-menu__submenu .m-menu__subnav>.m-menu__item>.m-menu__link {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.header-preview {
+    margin-top: 4%;
+    margin-left: 40%;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.content-header-preview {
+    padding-top: 1px;
+    padding-bottom: 15px;
+    background-color: #EEE;
+    margin-bottom: 15px;
+}
+
+.previewContent {
+    word-wrap: break-word;
+    overflow: scroll;
+    max-height: calc(100vh - 200px);
+}
+
+.previewContent p {
+    color: black !important;
+}
+
+.cke_inner:not(.cke_maximized) div.cke_contents {
+    height: 600px !important;
+}
+
+.modal-dialog.modal-lg1200 {
+    min-width: 1200px !important;
+}
+
+grid-permission .m-aside-menu .m-menu__nav>li {
+    border-left: solid 1px #17719c;
+    border-right: solid 1px #17719c;
+}
+
+grid-permission .m-aside-menu.m-aside-menu--skin-light .m-menu__nav>li.m-menu__item.m-menu__item--submenu.m-menu__item--open>.m-menu__link .m-checkbox>span:after {
+    border-color: white!important;
+}
+
+tab.m-tabs__item.tab-pane .m-checkbox-list {
+    height: 30px!important
+}

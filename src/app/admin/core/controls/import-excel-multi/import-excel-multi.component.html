@@ -1,0 +1,3 @@
+<input #fileControl [class]="inputCss" name="uploadXlsx" 
+[id]="id" type="file" (change)="onUploadFile($event)" (click)="fileInputClick($event)" 
+[accept]="fileExtension" [hidden]="hidden" [disabled]="disable" multiple>

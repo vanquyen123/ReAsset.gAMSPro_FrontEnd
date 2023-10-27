@@ -1,0 +1,66 @@
+<div [@routerTransition]>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <a [routerLink]="rootPage()"
+                    class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 class="m-subheader__title m-subheader__title--separator">
+                    <!-- Begin Title -->
+                    <span>{{l("UploadSystemFile")}}</span>
+                    <!-- End Title -->
+                </h3>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <form class="horizontal-form filter-form" #exportForm="ngForm" id='exportForm' autocomplete="off"
+                    novalidate>
+                    <div class="m-form m-form--label-align-right">
+                        <div class="row align-items-center m--margin-bottom-30">
+                            <div class="col-md-8 row">
+                                <!-- Begin Filter -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{l("ChooseFile")}}</label>
+                                        <!-- <file-system  [ngModelOptions]="{standalone: true}" [(ngModel)]="filterInput.URL"></file-system> -->
+                                        <file-system #fileControl type="text" [inpCss]="'form-control'" name="filE_ATTACHMENT"></file-system>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{l("RelativePath")}}</label>
+                                        <input class="form-control" name="URL" required [(ngModel)]="filterInput.URL" #urlPath/>
+                                        <div class="error-message" *ngIf="urlPath.invalid && isShowError">
+                                            <span *ngIf="urlPath?.errors.required">{{l('URL')}}
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label></label>
+                                        <div>
+                                            <button (click)="uploadFile()" type="button"
+                                                class="btn btn-primary">{{l('UploadFile')}}</button>
+                                            <!-- <button (click)="showReportTemplate()"
+                                                class="btn btn-primary">Report</button> -->
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

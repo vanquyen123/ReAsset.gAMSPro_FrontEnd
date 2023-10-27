@@ -1,0 +1,122 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                    <span>{{l("Employee_Title")}}</span>
+                </h3>
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                    <div class="modal-body row">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-input-page>
+                            </div>
+                        </div>
+                        <!-- Mã nhân viên -->
+                        <div class="col-md-3">
+                            <div class="form-group required">
+                                <label>{{l("EmployeeCode")}} </label>
+                                <input maxlength="15" required class="form-control" [disabled]="disableInput" type="text" #emP_CODE="ngModel" name="emP_CODE" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.emP_CODE">
+                                <div class="error-message" *ngIf="emP_CODE.invalid && isShowError">
+                                    <span *ngIf="emP_CODE?.errors.required">{{l('EmployeeCode')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="emP_CODE?.errors.pattern">{{l('EmployeeCode')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Tên nhân viên -->
+                        <div class="col-md-3">
+                            <div class="form-group required">
+                                <label>{{l("EmpFullName")}}</label>
+                                <input required class="form-control" type="text" [disabled]="disableInput" #emP_NAME="ngModel" name="emP_NAME" [(ngModel)]="inputModel.emP_NAME" maxlength="200">
+                                <div class="error-message" *ngIf="emP_NAME.invalid && isShowError">
+                                    <span *ngIf="emP_NAME?.errors.required">{{l('EmployeeName')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="emP_NAME?.errors.pattern">{{l('EmployeeName')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Mã đơn vị -->
+                        <div class="col-md-3">
+                            <div class="form-group required">
+                                <label>{{l("BranchCode")}}</label>
+                                <select2-custom (onChangeSelect2)="onChangeBranch($event)" [emptyText]="l('NullSelect')" [disabled]="disableInput" required name="brancH_ID" [(ngModel)]="inputModel.brancH_ID" #brancH_ID="ngModel" [(list)]="branchs" [emptyText]="" [valueMember]="'brancH_ID'"
+                                    [displayMember]="'brancH_CODE|brancH_NAME'">
+                                </select2-custom>
+                                <div class="error-message" *ngIf="brancH_ID.invalid && isShowError">
+                                    <span *ngIf="brancH_ID?.errors.required">{{l('BranchCode')}}
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Phòng ban -->
+                        <div *ngIf="branchType == 'HS'" class="col-md-3">
+                            <div class="form-group">
+                                <label>{{l("DepId")}}</label>
+                                <div class="group">
+                                    <input class="form-control" type="text" #departmentName="ngModel" name="departmentName" [disabled]="true" [(ngModel)]="inputModel.deP_NAME">
+                                    <button class="btn btn-primary ng-star-inserted" [disabled]="disableInput" type='button' (click)="depModal.show()">{{l("...")}}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Hoạt động -->
+                        <div class="col-md-3">
+                            <div class="form-group outter-vertical-center">
+                                <div class="form-group inner-vertical-center">
+                                    <label class="m-checkbox" for="recorD_STATUS">{{l("IsActive")}}
+                                        <input type="checkbox"
+                                            id="recorD_STATUS"
+                                            [disabled]="disableInput"
+                                            #recorD_STATUS
+                                            name="recorD_STATUS"
+                                            [checked]="inputModel.recorD_STATUS == '1'"
+                                            (change)="inputModel.recorD_STATUS = recorD_STATUS.checked? '1' : '0'">
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12"></div>
+                        <!-- Ghi chú -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>{{l("Note")}}</label>
+                                <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>
+<dep-modal #depModal [multiple]="false" (onSelect)="onSelectDepartment($event)"></dep-modal>

@@ -1,0 +1,23 @@
+.is-block-input-page span {
+    color: #008018;
+    font-weight: 500;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.is-block-input-page i {
+    font-size: 18px;
+}
+
+.is-block-input-page i.error-text,
+.is-block-input-page i.error-text~span {
+    color: red;
+}
+
+i.error-text {
+    vertical-align: middle;
+}
+
+.is-block-input-page i.error-text~span {
+    vertical-align: middle;
+}

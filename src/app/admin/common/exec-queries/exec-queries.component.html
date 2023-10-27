@@ -1,0 +1,63 @@
+<div [@routerTransition]>
+
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <h3 class="m-subheader__title m-subheader__title--separator">
+                    <span>{{l("Exec Query")}}</span>
+                </h3>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <form novalidate (ngSubmit)="onSubmit()">
+                    <br>
+                    <p>Query string:</p>
+                    <textarea style="max-height:700px!important" name="txtQuery" rows="20" [(ngModel)]='strQuery' style="width: 100%;"></textarea>
+                    <br>
+                    <div id="stt" *ngIf="tables.length !== 0">
+                        <span *ngIf="status">Status: Execute queries successfully!</span>
+                        <span *ngIf="!status">Status: Execute queries failed!</span>
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Execute">
+                    <input class="btn btn-primary" (click)="onReset()" type="reset" value="Clear">
+                    <div *ngIf="IsNotReset">
+
+                        <table id="_table" *ngFor="let table of tables">
+                            <tr>
+                                <th *ngFor="let _title of table.header">{{_title}}</th>
+                            </tr>
+                            <tr *ngFor="let row of table.rows">
+                                <td *ngFor="let col of row">{{col}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #_table {
+        margin: 15px 0 15px 10px;
+    }
+    
+    #_table td,
+    th {
+        border: 2px solid black;
+        background-color: azure;
+        padding: 2px 5px 2px 5px;
+    }
+    
+    #_table th {
+        text-align: center;
+    }
+</style>

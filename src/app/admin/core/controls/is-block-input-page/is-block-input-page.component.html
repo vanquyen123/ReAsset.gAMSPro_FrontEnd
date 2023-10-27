@@ -1,0 +1,11 @@
+<div *ngIf="isBlock == '1'" class="is-block-input-page">
+    <i class="pi pi-lock success-text"></i>
+    <span>{{l('Đã khóa')}}</span>
+</div>
+<div *ngIf="isBlock != '1'" class="is-block-input-page">
+    <i class="pi pi-lock-open success-text"></i>
+    <span>{{l('Đang mở')}}</span>
+</div>
+
+
+

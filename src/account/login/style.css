@@ -1,0 +1,286 @@
+@import url("https://fonts.googleapis.com/css?family=Be+Vietnam:400,700|Roboto:400");
+
+.rectangle-16 {
+  background-color:
+    #eaa729;
+  height: 16px;
+  margin-left: 0;
+  width: 1920px;
+}
+
+.rectangle-15 {
+  background-color:
+    #f6e822;
+  height: 16px;
+  width: 1920px;
+}
+
+.ng-nhp {
+  width: 98px;
+  height: 19px;
+
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  /* identical to box height */
+
+  letter-spacing: 0.05em;
+
+  color: #FFFFFF;
+
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin: 15px 10px 10px 98px;
+}
+
+.check-box {
+  align-items: center;
+  display: flex;
+}
+
+.rectangle-17 {
+  background-color:
+    #e37c2b;
+  height: 16px;
+  margin-left: 0;
+  width: 1920px;
+}
+
+.rectangle-18 {
+  background-color: #C2122A;
+  height: 16px;
+  margin-left: 0;
+  width: 1920px;
+}
+
+.formlogin {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  margin-top: 14%;
+  align-items: flex-end;
+  border-radius: 5px;
+  box-shadow: 0px 3px 7px #d6522b61;
+  display: flex;
+  height: 51px;
+  margin-top: 24px;
+  min-width: 320px;
+}
+
+.input-from-login {
+  /* padding-right: 25%; */
+}
+
+.input-remember-button {
+  /* padding-left: 8%; */
+}
+
+#label {
+  /* position: static;
+  height: 23px;
+  left: 0px;
+  top: 0px; */
+
+  font-family: 'Be Vietnam';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 23px;
+  letter-spacing: 0.05em;
+
+  color: #C2122A;
+
+
+  /* Inside auto layout */
+
+  /* flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin: 8px 0px;
+  margin-left: 55px; */
+}
+
+.title {
+  padding: 10% 0%;
+}
+
+.imglogin {
+  width: 248px;
+  height: 88px;
+}
+
+.remember {
+  font-family: 'Be Vietnam';
+  font-size: 14px;
+  font-weight: bold;
+  color: #525557;
+}
+
+.m--align-left span {
+  margin-left: 196%;
+  position: absolute;
+  margin-top: 7%;
+  height: 20px;
+  font-family: 'Be Vietnam';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  color: #525557;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin-top: -102%;
+  margin-left: 29%;
+}
+
+.labelpassword {
+  padding-right: 56%;
+}
+
+.labelusername {
+  /* padding-right: 41%;
+  padding-top: 9%; */
+}
+
+::placeholder {
+  width: 194px;
+  height: 20px;
+
+  font-family: 'Be Vietnam';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+
+  /* Xám nhạt */
+
+  color: #838383;
+
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.overlap-group-1 {
+  border: none;
+  align-items: flex-start;
+  background-size: 100% 100%;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  left: 0px;
+  top: 10%;
+  border-radius: 5px;
+  padding: 16px, 24px, 16px, 24px;
+  background: linear-gradient(180deg, #C4C4C4 -5.88%, #F6E822 -5.88%, #EAA729 59.56%, #E37C2B 100%);
+  width: 320px;
+  height: 52px;
+}
+
+.icon-person, .icon-password {
+  position: absolute;
+  top: calc(50% - 6px);
+  left: 9%;
+}
+
+input[type="checkbox"]:checked {
+  background-color: blue;
+}
+
+.labelrememberme {
+  width: 49px;
+  height: 20px;
+  font-family: 'Be Vietnam';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  align-items: center;
+  color: #525557;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin-left: 10px;
+}
+
+.fromcheckremember {
+  padding-right: 62%;
+}
+
+.checkboxrememberme {
+  box-sizing: border-box;
+
+  width: 14px;
+  height: 14px;
+
+  background: #FFFFFF;
+  border: 0.5px solid #A0A0A0;
+  border-radius: 2px;
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.input-login {
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 17px 24px 10px 40px;
+
+  position: static;
+  width: 320px;
+  height: 52px;
+  left: 0px;
+  top: 31px;
+
+  background: #FFFFFF;
+  border: 0.5px solid #A0A0A0;
+  border-radius: 5px;
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 8px 0px;
+}
+
+.ng-nhp-h-thng {
+  color: var(--abbey);
+  font-family: var(--font-family-be_vietnam);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0;
+  min-height: 35px;
+  min-width: 235px;
+  text-align: center;
+}
+
+.v30310322 {
+  color: var(--abbey);
+  font-family: var(--font-family-be_vietnam);
+  font-size: 16;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin-top: 8px;
+  min-height: 23px;
+  min-width: 101px;
+  text-align: center;
+}

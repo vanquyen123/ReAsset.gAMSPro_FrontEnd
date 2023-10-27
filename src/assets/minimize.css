@@ -1,0 +1,111 @@
+.form-group .btn,
+.user-group .btn,
+.input-group .input-group-append .btn,
+.file-input-group .btn,
+.form-control,
+.select2-selection__rendered {
+    padding-top: 5px!important;
+    padding-bottom: 5px!important;
+    padding-left: 5px!important;
+    padding-right: 5px!important;
+}
+
+.form-group .btn,
+.user-group .btn,
+.input-group .input-group-append .btn,
+.file-input-group .btn,
+.form-control:not(textarea),
+.select2-selection__rendered {
+    height: auto!important;
+    border-radius: 0px!important;
+}
+
+date-control:after {
+    font-size: 14px!important;
+}
+
+.form-control,
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.group-box,
+.form-control[disabled] {
+    border-color: #dbdce4!important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    min-height: 27px!important;
+}
+
+.select2-container--default .select2-dropdown {
+    border: 1px solid #dedede;
+    -webkit-box-shadow: 0px 0px 15px 1px rgba(69, 65, 78, 0.2);
+    box-shadow: -3px 0px 15px 1px rgba(165, 165, 165, 0.08);
+    border-radius: 0px!important;
+}
+
+.form-group {
+    margin-bottom: 3px!important;
+}
+
+.form-control,
+.form-control::placeholder {
+    font-size: 12px!important;
+}
+
+label {
+    margin-bottom: 0px!important;
+}
+
+.row.align-items-center.m--margin-bottom-30 {
+    margin-bottom: 10px!important;
+}
+
+.select2-container--default .select2-dropdown {
+    border: 1px solid #ebedf2;
+    -webkit-box-shadow: none!important;
+    box-shadow: none!important;
+}
+
+.select2-container--default .select2-results__option.select2-results__option--highlighted {
+    background: #ececec!important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background: #248dc1!important;
+    color: white!important;
+}
+
+.select2-container--default .select2-dropdown {
+    border-color: #dbdce4!important;
+}
+
+.m-form .form-control-label,
+.m-form label,
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: black;
+}
+
+textarea.form-control {
+    border-radius: 0px!important;
+}
+
+.btn {
+    border-radius: 0px!important;
+}
+
+.preview-template.modal .modal-content .modal-header {
+    padding: 8px !important;
+    padding-left: 55px !important;
+}
+
+.preview-template.modal .modal-content .modal-header .close {
+    margin-top: -3px !important;
+    margin-right: -9px !important;
+}
+
+.preview-template.modal .modal-content .modal-body {
+    padding: 5px !important;
+}
+
+.primeng-datatable-container .ui-table table thead tr th {
+    font-size: 13px!important;
+}

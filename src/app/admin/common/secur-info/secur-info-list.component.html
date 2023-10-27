@@ -1,0 +1,194 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div id="page-list-area">
+        <div class="m-subheader">
+            <div class="row align-items-center">
+                <div class="mr-auto col-auto">
+                    <a [routerLink]="rootPage()"
+                        class="m-subheader__title m-subheader__title--separator
+                        link-to-list-page home-page">
+                        <span>{{l("HomePage")}}</span>
+                    </a>
+                    <h3 class="m-subheader__title
+                        m-subheader__title--separator">
+
+                        <!-- Begin Title -->
+                        <span>{{l("SecurInfoList")}}</span>
+                        <!-- End Title -->
+                    </h3>
+                </div>
+                <!-- Export Excel -->
+                <div class="col text-right mt-3 mt-md-0">
+                    <!-- Xuất danh sách -->
+                    <button *ngIf="appToolbar.buttonSearchEnable" class="btn
+                        btn-outline-success"
+                        (click)="exportListExcel()">
+                        <i class="far fa-file-excel"></i>
+                        {{l("ExcelOperations")}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <form class="horizontal-form filter-form"
+                    autocomplete="off">
+                    <div class="m-form m-form--label-align-right">
+                        <div class="row align-items-center
+                            m--margin-bottom-30">
+                            <div class="col-md-12 row">
+                                <!-- Begin Filter -->
+                                <!-- Mã mức độ an toàn thông tin -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("SecurInfoCode")}}</label>
+                                        <input
+                                            [(ngModel)]="filterInput.secuR_INFO_CODE"
+                                            #secuR_INFO_CODE="ngModel"
+                                            name="secuR_INFO_CODE" autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+
+                                <!-- Tên mức độ an toàn thông tin -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("SecurInfoName")}}</label>
+                                        <input
+                                            [(ngModel)]="filterInput.secuR_INFO_NAME"
+                                            #secuR_INFO_NAME="ngModel"
+                                            name="secuR_INFO_NAME" autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                
+                                <!-- Trạng thái duyệt -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("AuthStatus")}}</label>
+                                        <all-code-select
+                                            #autH_STATUS="ngModel"
+                                            name="autH_STATUS"
+                                            [(ngModel)]="filterInput.autH_STATUS"
+                                            [emptyText]="l('SelectAll')"
+                                            [cdName]="'AUTH_STATUS'">
+                                        </all-code-select>
+                                    </div>
+                                </div>
+
+                                <!-- End Filter -->
+                                <div style="display:none;"
+                                    class="col-md-12">
+                                    <div class="form-group">
+                                        <button
+                                            *ngIf="appToolbar.buttonSearchEnable"
+                                            class="btn btn-primary
+                                            btn-search"
+                                            (click)="onSearch()">{{l('Search')}}</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                <div class="row align-items-center">
+                    <div class="primeng-datatable-container
+                        {{dataTable.isLoading}}">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <core-table #coreTable class="custom-table ui-table"
+                            (reloadPage)="search()">
+                            <thead>
+                                <tr>
+                                    <!-- Begin Table Column -->
+                                    <th class="center">
+                                        <span style="width: 40px">{{l("No")}}</span>
+                                    </th>
+                                    <!-- Mã mức độ an toàn thông tin -->
+                                    <th style="width: 25%"
+                                        sortField="secuR_INFO_CODE">
+                                        <span style="width: 230px">{{l("SecurInfoCode")}}</span>
+                                    </th>
+                                    <!-- Tên mức độ an toàn thông tin -->
+                                    <th style="width: 25%"
+                                        sortField="secuR_INFO_NAME">
+                                        <span style="width: 230px">{{l("SecurInfoName")}}</span>
+                                    </th>
+                                    <!-- Trạng thái hoạt động -->
+                                    <th style="width: 25%"
+                                        sortField="recorD_STATUS_NAME">
+                                        <span style="width: 150px">{{l("RecordStatus")}}</span>
+                                    </th>
+                                    <!-- Trạng thái duyệt -->
+                                    <th style="width: 25%"
+                                        sortField="autH_STATUS_NAME">
+                                        <span style="width: 150px">{{l("ApproveStatus")}}</span>
+                                    </th>
+                                    <!-- Người tạo -->
+                                    <th style="width: 25%"
+                                        sortField="makeR_ID">
+                                        <span style="width: 150px">{{l("MakerId")}}</span>
+                                    </th>
+                                    <!-- Ngày tạo -->
+                                    <th style="width: 25%"
+                                        sortField="creatE_DT">
+                                        <span style="width: 150px">{{l("CreateDate")}}</span>
+                                    </th>
+                                    <!-- Người duyệt -->
+                                    <th style="width: 25%"
+                                        sortField="checkeR_ID">
+                                        <span style="width: 150px">{{l("ApproveId")}}</span>
+                                    </th>
+                                    <!-- Ngày duyệt -->
+                                    <th style="width: 25%"
+                                        sortField="approvE_DT">
+                                        <span style="width: 150px">{{l("ApproveDate")}}</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let record of dataTable.records"
+                                    class="selectable"
+                                    [class.selected]="record ===
+                                    filterInput"
+                                    (dblclick)="onDblclick(record)"
+                                    (click)="selectRow($event,record)">
+                                    <!-- Begin Table Value -->
+                                    <td class="center"><span
+                                            class="mo-header"></span>{{(filterInputSearch.skipCount
+                                        + dataTable.records.indexOf(record))
+                                        + 1}}
+                                    </td>
+                                    <!-- Mã mức độ an toàn thông tin -->
+                                    <td><span class="mo-header"></span>{{record.secuR_INFO_CODE}}</td>
+                                    <!-- Tên mức độ an toàn thông tin -->
+                                    <td><span class="mo-header"></span>{{record.secuR_INFO_NAME}}</td>
+                                    <!-- Trạng thái hoạt động -->
+                                    <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                    <!-- Trạng thái duyệt -->
+                                    <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                    <!-- Người tạo-->
+                                    <td><span class="mo-header"></span>{{record.makeR_ID}}</td>
+                                    <!-- Ngày tạo -->
+                                    <td><span class="mo-header"></span>{{record.creatE_DT | dateFormatPipe}}</td>
+                                    <!-- Người duyệt -->
+                                    <td><span class="mo-header"></span>{{record.checkeR_ID}}</td>
+                                    <!-- Ngày duyệt -->
+                                    <td><span class="mo-header"></span>{{record.approvE_DT | dateFormatPipe}}</td>
+                                    <!-- End Table Value -->
+                                </tr>
+                            </tbody>
+                        </core-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

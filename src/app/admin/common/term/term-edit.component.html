@@ -1,0 +1,90 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title
+                    m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()" class="m-subheader__title
+                    m-subheader__title--separator link-to-list-page">
+
+                    <span>{{l("CommonTerm")}}</span>
+                </h3>
+
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                    <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                    <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate
+                    (ngSubmit)="saveInput()" autocomplete="off">
+                    <div class="modal-body row col-md-8">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-input-page
+                                    [authStatus]="inputModel.autH_STATUS"></auth-status-input-page>
+                            </div>
+                        </div>
+                        <!-- <input hidden class="form-control" type="text"
+                            #terM_ID="ngModel" name="terM_ID"
+                            [(ngModel)]="inputModel.terM_ID"> -->
+
+                        <!-- Mã đợt kiểm kê -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("TermCode")}}</label>
+                                <input (focusout)="focusOut()" required
+                                    maxlength="15" class="form-control"
+                                    type="text" #terM_CODE="ngModel"
+                                    [disabled]="disableInput" name="terM_CODE"
+                                    [(ngModel)]="inputModel.terM_CODE">
+                                <div class="error-message"
+                                    *ngIf="terM_CODE.invalid && isShowError">
+                                    <span *ngIf="terM_CODE?.errors.required">{{l('TermCode')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="terM_CODE?.errors.pattern">{{l('TermCode')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12"></div>
+
+                        <!-- Tên đợt kiểm kê -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("TermName")}}</label>
+                                <input (focusout)="focusOut()" required
+                                    maxlength="200" class="form-control"
+                                    type="text" #terM_NAME="ngModel"
+                                    [disabled]="disableInput" name="terM_NAME"
+                                    [(ngModel)]="inputModel.terM_NAME">
+                                <div class="error-message"
+                                    *ngIf="terM_NAME.invalid && isShowError">
+                                    <span *ngIf="terM_NAME?.errors.required">{{l('TermName')}}
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>

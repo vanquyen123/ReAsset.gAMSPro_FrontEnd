@@ -1,0 +1,168 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title
+                    m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()" class="m-subheader__title
+                    m-subheader__title--separator link-to-list-page">
+                    <span>{{l("AccountKTList")}}</span>
+                </h3>
+
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                    <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                    <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate
+                    (ngSubmit)="saveInput()"
+                    autocomplete="off">
+                    <div class="row col-md-12 modal-body">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-input-page
+                                    [authStatus]="inputModel.autH_STATUS"></auth-status-input-page>
+                            </div>
+                        </div>
+                        <input hidden class="form-control" type="text"
+                            #accounT_KT_ID="ngModel" name="accounT_KT_ID"
+                            [(ngModel)]="inputModel.accounT_KT_ID">
+
+                        <!-- Loại tài khoản KT -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("AccountKTType")}}</label>
+                                <all-code-select required
+                                    #accounT_KT_TYPE="ngModel"
+                                    [disabled]='disableInput'
+                                    name="accounT_KT_TYPE"
+                                    [(ngModel)]="inputModel.accounT_KT_TYPE"
+                                    [cdName]="'ACC_KT_TYPE'">
+                                </all-code-select>
+                                <div class="error-message"
+                                    *ngIf="accounT_KT_TYPE.invalid
+                                    && isShowError">
+                                    <span
+                                        *ngIf="accounT_KT_TYPE?.errors.required">{{l('AccountKTType')}}
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mã tài khoản KT -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("AccountKTCode")}}</label>
+                                <input (focusout)="focusOut()"
+                                    required
+                                    class="form-control"
+                                    type="text" #accounT_KT_CODE="ngModel"
+                                    [disabled]='disableInput'
+                                    name="accounT_KT_CODE"
+                                    [(ngModel)]="inputModel.accounT_KT_CODE">
+                                <div class="error-message"
+                                    *ngIf='accounT_KT_CODE.invalid &&
+                                    isShowError'>
+                                    <span
+                                        *ngIf='accounT_KT_CODE?.errors.required'>{{l('AccountKTCode')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span
+                                        *ngIf="accounT_KT_CODE?.errors.pattern">{{l('Model')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tên tài khoản KT -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("AccountKTName")}}</label>
+                                <input (focusout)="focusOut()" required
+                                    class="form-control"
+                                    type="text" #accounT_KT_NAME="ngModel"
+                                    [disabled]='disableInput'
+                                    name="accounT_KT_NAME"
+                                    [(ngModel)]="inputModel.accounT_KT_NAME">
+                                <div class="error-message"
+                                    *ngIf='accounT_KT_NAME.invalid &&
+                                    isShowError'>
+                                    <span
+                                        *ngIf='accounT_KT_NAME?.errors.required'>{{l('AccountKTName')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span
+                                        *ngIf="accounT_KT_NAME?.errors.pattern">{{l('Model')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tài khoản -->
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>{{l("AccountKTAccount")}}</label>
+                                <input (focusout)="focusOut()" required
+                                    class="form-control"
+                                    type="text" #accounT_KT_ACCOUNT="ngModel"
+                                    [disabled]='disableInput'
+                                    name="accounT_KT_ACCOUNT"
+                                    [(ngModel)]="inputModel.accounT_KT_ACCOUNT">
+                                <div class="error-message"
+                                    *ngIf='accounT_KT_ACCOUNT.invalid &&
+                                    isShowError'>
+                                    <span
+                                        *ngIf='accounT_KT_ACCOUNT?.errors.required'>{{l('AccountKTAccount')}}
+                                        {{l("ValidationRequired")}}</span>
+                                    <span
+                                        *ngIf="accounT_KT_ACCOUNT?.errors.pattern">{{l('Model')}}
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Ghi chú -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{l("Notes")}}</label>
+                                <textarea (focusout)="focusOut()"
+                                    class="form-control"
+                                    type="text" #notes="ngModel"
+                                    [disabled]='disableInput'
+                                    name="notes"
+                                    [(ngModel)]="inputModel.notes"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <!-- <label>{{l("RecordStatus")}}</label> -->
+                                <checkbox-control name="recorD_STATUS"
+                                    [label]="l('RecordStatus')"
+                                    #recorD_STATUS="ngModel"
+                                    [disabled]="disableInput"
+                                    [(ngModel)]="inputModel.recorD_STATUS"></checkbox-control>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+
+</div>

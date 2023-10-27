@@ -1,0 +1,26 @@
+{
+    "typescript.check.workspaceVersion": false,
+    "html.format.wrapAttributes": "force",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "node_modules": true,
+        "bin": true,
+        "obj": true,
+        "dist": true,
+        "dist1": true,
+        "dist2": true,
+        "dist3": true,
+        "dist4": true,
+        "dist5": true,
+        "Properties": true,
+        ".vs": true,
+        ".vscode": true,
+        "*.csproj": true,
+        "*.sln": true,
+        "*.csproj.user": true,
+        "*.suo": true
+    }
+}
