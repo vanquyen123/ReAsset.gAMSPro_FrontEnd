@@ -42,6 +42,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
     filterInput: REA_OUTSIDE_SHAREHOLDER_ENTITY;
     isApproveFunct: boolean;
     osh_ID: string;
+    checkIsActive = false;
 
   get disableInput(): boolean {
     return this.editPageState == EditPageState.viewDetail;
@@ -103,11 +104,23 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
   getOutsideShareholder() {
       this.outsideShareholderService.rEA_EMPLOYEE_ById(this.inputModel.o_SHAREHOLDER_ID).subscribe(response => {
           this.inputModel = response;
+          if(response.recorD_STATUS === "1") {
+            this.checkIsActive = true;
+          }
           if (this.inputModel.autH_STATUS == AuthStatusConsts.Approve) {
               this.appToolbar.setButtonApproveEnable(false);
           }
           this.updateView();
       });
+  }
+
+  onCheckActive() {
+    if(!this.checkIsActive) {
+        this.inputModel.recorD_STATUS = "1";
+    }
+    else {
+        this.inputModel.recorD_STATUS = "0";
+    }
   }
 
   saveInput() {

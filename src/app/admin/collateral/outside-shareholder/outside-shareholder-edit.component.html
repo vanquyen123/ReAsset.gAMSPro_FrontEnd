@@ -97,7 +97,7 @@
 
                                 <div class="col-md-12 my-2">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" [disabled]="disableInput" type="checkbox" #recorD_STATUS="ngModel" name="recorD_STATUS" [(ngModel)]="inputModel.recorD_STATUS" style="width: 18px; height: 18px;">
+                                        <input class="form-check-input" [disabled]="disableInput" type="checkbox" #recorD_STATUS="ngModel" name="recorD_STATUS" [(ngModel)]="checkIsActive" (click)="onCheckActive()" style="width: 18px; height: 18px;">
                                         <label class="form-check-label">{{l("IsActive")}}</label>
                                     </div>
                                 </div>
