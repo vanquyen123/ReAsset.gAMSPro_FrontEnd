@@ -11,6 +11,7 @@ import * as ApiServiceProxies from "../../../shared/service-proxies/service-prox
         ApiServiceProxies.BranchServiceProxy,
        
         ApiServiceProxies.SysParametersServiceProxy,
+        ApiServiceProxies.OutsideShareholderServiceProxy,
        
         {
             provide: HTTP_INTERCEPTORS,

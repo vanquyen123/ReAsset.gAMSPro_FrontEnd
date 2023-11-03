@@ -8,7 +8,7 @@
                         [routerLink]="rootPage()"
                         class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
                     >
-                        <span>Trang chủ</span>
+                        <span>{{l("HomePage")}}</span>
                     </a>
                     <h3
                         class="m-subheader__title m-subheader__title--separator"
@@ -20,9 +20,11 @@
                 </div>
                 <div class="col text-right mt-3 mt-md-0">
                     <div class="btn-group dropdown mr-2">
-                        <button class="btn btn-outline-success">
+                        <button class="btn btn-outline-success"
+                        *ngIf="appToolbar.buttonSearchEnable"
+                            (click)="exportExcel()">
                             <i class="far fa-file-excel"></i>
-                            Xuất Excel
+                            {{l("ExcelOperations")}}
                         </button>
                     </div>
                 </div>
@@ -38,22 +40,25 @@
                         <div class="m-form m-form--label-align-right">
                             <div class="row align-items-center m--margin-bottom-30">
                                 <!-- Begin Filter -->
-                                <!-- Đơn vị -->
+                                <!-- Mã cổ đông ngoài -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Mã cổ đông ngoài</label>
                                         <input 
+                                            [(ngModel)]="filterInput.o_SHAREHOLDER_ID"
+                                            name="o_SHAREHOLDER_IDFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
                                     </div>
                                 </div>
-                                <!-- Mã phòng -->
+                                <!-- Tên cổ đông ngoài -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Tên cổ đông ngoài</label>
                                         <input 
-                                            name="deP_CODEFilter"
+                                            [(ngModel)]="filterInput.o_SHAREHOLDER_NAME"
+                                            name="o_SHAREHOLDER_NAMEFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -64,7 +69,8 @@
                                     <div class="form-group">
                                         <label>MST/CMND/CCCD/Hộ chiếu</label>
                                         <input 
-                                            name="deP_NAMEFilter"
+                                            [(ngModel)]="filterInput.o_SHAREHOLDER_CODE"
+                                            name="o_SHAREHOLDER_CODEFilter"
                                             class="form-control m-input"
                                             type="text">
                                     </div>
@@ -74,9 +80,9 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Hoạt động</label>
-                                        <select2-custom 
-                                            name="grouP_ID">
-                                        </select2-custom>
+                                        <all-code-select 
+                                            >
+                                        </all-code-select>
                                     </div>
                                 </div>
 
@@ -85,7 +91,10 @@
                                     <div class="form-group">
                                         <label>Trạng thái duyệt</label>
                                         <all-code-select name="autH_STATUS"
-                                            >
+                                            [(ngModel)]="filterInput.autH_STATUS"
+                                            [emptyText]="l('SelectAll')"
+                                            [cdName]="'AUTH_STATUS_2'"
+                                            [cdType]="'AUTH_STATUS_2'">
                                         </all-code-select>
                                     </div>
                                 </div>
@@ -93,8 +102,9 @@
                                 <div style="display:none;"
                                     class="col-md-12">
                                     <div class="form-group">
-                                        <button 
-                                            class="btn btn-primary btn-search"></button>
+                                        <button *ngIf="appToolbar.buttonSearchEnable"
+                                            class="btn btn-primary btn-search"
+                                            (click)="onSearch()"></button>
                                     </div>
                                 </div>
                             </div>
@@ -107,22 +117,23 @@
                                 <span class="sr-only">Loading...</span>
                             </div>
                             <core-table #coreTable
-                                class="custom-table ui-table">
+                                class="custom-table ui-table"
+                                (reloadPage)="search()">
                                 <thead>
                                     <tr>
                                         <!-- Begin Table Column -->
                                         <!-- STT -->
                                         <th class="center">
-                                            <span style="width: 40px">STT</span>
+                                            <span style="width: 40px">{{l("No")}}</span>
                                         </th>
                                         <!-- Mã phòng -->
                                         <th style="width:30%"
-                                            sortField="deP_CODE">
+                                            sortField="o_SHAREHOLDER_ID">
                                             <span style="width: 150px">Mã cổ đông ngoài</span>
                                         </th>
                                         <!-- Tên phòng ban -->
                                         <th style="width:40%"
-                                            sortField="deP_NAME">
+                                            sortField="o_SHAREHOLDER_NAME">
                                             <span style="width: 150px">Tên cổ đông ngoài</span>
                                         </th>
                                         <!-- Mã đơn vị -->
@@ -132,7 +143,7 @@
                                         </th> -->
                                         <!-- Tên đơn vị -->
                                         <th style="width:30%"
-                                            sortField="brancH_CODE">
+                                            sortField="o_SHAREHOLDER_CODE">
                                             <span style="width: 150px">MST/CMND/CCCD/Hộ chiếu</span>
                                         </th>
                                         <!-- Dao Code -->
@@ -145,7 +156,7 @@
                                         </th> -->
 
                                         <!-- Khối -->
-                                        <th sortField=""
+                                        <th sortField="RECORD_STATUS_NAME"
                                             style="width:100%">
                                             <span style="width: 200px">Hoạt động</span>
                                         </th>
@@ -153,13 +164,43 @@
                                         <th sortField="AUTH_STATUS_NAME">
                                             <span style="width: 150px">Trạng thái duyệt</span>
                                         </th>
-                                        <th sortField="">
+                                        <th sortField="notes">
                                           <span style="width: 150px">Ghi chú</span>
                                       </th>
                                         <!-- End Table Column -->
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr *ngFor="let record of dataTable.records"
+                                        class="selectable"
+                                        (dblclick)="onDblclick(record)"
+                                        (click)="selectRow($event,record)">
+                                        <!-- Begin Table Value -->
+                                        <!-- STT -->
+                                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
+                                            + dataTable.records.indexOf(record)) + 1}}
+                                        </td>
+                                        <!-- Mã phòng -->
+                                        <td><span class="mo-header"></span>{{record.o_SHAREHOLDER_ID}}</td>
+                                        <!-- Tên phòng ban -->
+                                        <td><span class="mo-header"></span>{{record.o_SHAREHOLDER_NAME}}</td>
+                                        <!-- Mã đơn vị -->
+                                        <!-- <td><span class="mo-header"></span>{{record.brancH_CODE}}</td> -->
+                                        <!-- Tên đơn vị -->
+                                        <td><span class="mo-header"></span>{{record.o_SHAREHOLDER_CODE}}</td>
+                                        <!-- Dao Code -->
+                                        <!-- <td><span class="mo-header"></span>{{record.daO_CODE}}</td> -->
+                                        <!-- Dao Name -->
+                                        <!-- <td><span class="mo-header"></span>{{record.daO_NAME}}</td> -->
+
+                                        <!-- Khối -->
+                                        <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                        <!-- Mã phòng ban cha -->
+                                        <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                        <!-- Tên phòng ban cha -->
+                                        <td><span class="mo-header"></span>{{record.notes}}</td>
+                                        <!-- End Table Value -->
+                                    </tr>
                                 </tbody>
                             </core-table>
                         </div>
