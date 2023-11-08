@@ -208,6 +208,10 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
           return;
       }
       var currentUserName = this.appSession.user.userName;
+      if (currentUserName == this.inputModel.makeR_ID) {
+        this.showErrorMessage(this.l('ApproveFailed'));
+        return;
+    }
       this.message.confirm(
           this.l('ApproveWarningMessage', this.l(this.inputModel.o_SHAREHOLDER_NAME)),
           this.l('AreYouSure'),
