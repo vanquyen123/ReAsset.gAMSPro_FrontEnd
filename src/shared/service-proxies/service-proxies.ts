@@ -15046,6 +15046,416 @@ export class OrganizationUnitServiceProxy {
 }
 
 @Injectable()
+export class OutsideShareholderServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_OUTSIDE_SHAREHOLDER_Search(body: REA_OUTSIDE_SHAREHOLDER_ENTITY | undefined): Observable<PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_OUTSIDE_SHAREHOLDER_Search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_OUTSIDE_SHAREHOLDER_Search(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_OUTSIDE_SHAREHOLDER_Search(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_OUTSIDE_SHAREHOLDER_Search(response: HttpResponseBase): Observable<PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY.fromJS(resultData200) : new PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_OUTSIDE_SHAREHOLDER_Ins(body: REA_OUTSIDE_SHAREHOLDER_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_OUTSIDE_SHAREHOLDER_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_OUTSIDE_SHAREHOLDER_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_OUTSIDE_SHAREHOLDER_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_OUTSIDE_SHAREHOLDER_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_OUTSIDE_SHAREHOLDER_Upd(body: REA_OUTSIDE_SHAREHOLDER_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_OUTSIDE_SHAREHOLDER_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_OUTSIDE_SHAREHOLDER_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_OUTSIDE_SHAREHOLDER_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_OUTSIDE_SHAREHOLDER_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_OUTSIDE_SHAREHOLDER_Del(id: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_OUTSIDE_SHAREHOLDER_Del?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_OUTSIDE_SHAREHOLDER_Del(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_OUTSIDE_SHAREHOLDER_Del(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_OUTSIDE_SHAREHOLDER_Del(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_EMPLOYEE_ById(id: string | undefined): Observable<REA_OUTSIDE_SHAREHOLDER_ENTITY> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_EMPLOYEE_ById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_EMPLOYEE_ById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_EMPLOYEE_ById(<any>response_);
+                } catch (e) {
+                    return <Observable<REA_OUTSIDE_SHAREHOLDER_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<REA_OUTSIDE_SHAREHOLDER_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_EMPLOYEE_ById(response: HttpResponseBase): Observable<REA_OUTSIDE_SHAREHOLDER_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? REA_OUTSIDE_SHAREHOLDER_ENTITY.fromJS(resultData200) : new REA_OUTSIDE_SHAREHOLDER_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<REA_OUTSIDE_SHAREHOLDER_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_OUTSIDE_SHAREHOLDER_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_OUTSIDE_SHAREHOLDER_App?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_OUTSIDE_SHAREHOLDER_App(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_OUTSIDE_SHAREHOLDER_App(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_OUTSIDE_SHAREHOLDER_App(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    rEA_OUTSIDE_SHAREHOLDER_Get_Id(): Observable<{ [key: string] : any; }> {
+        let url_ = this.baseUrl + "/api/OutsideShareholder/REA_OUTSIDE_SHAREHOLDER_Get_Id";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_OUTSIDE_SHAREHOLDER_Get_Id(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_OUTSIDE_SHAREHOLDER_Get_Id(<any>response_);
+                } catch (e) {
+                    return <Observable<{ [key: string] : any; }>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<{ [key: string] : any; }>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_OUTSIDE_SHAREHOLDER_Get_Id(response: HttpResponseBase): Observable<{ [key: string] : any; }> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200) {
+                result200 = {} as any;
+                for (let key in resultData200) {
+                    if (resultData200.hasOwnProperty(key))
+                        result200![key] = resultData200[key];
+                }
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<{ [key: string] : any; }>(<any>null);
+    }
+}
+
+@Injectable()
 export class PaymentServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -40918,6 +41328,54 @@ export interface IPagedResultDtoOfOrganizationUnitUserListDto {
     items: OrganizationUnitUserListDto[] | undefined;
 }
 
+export class PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY implements IPagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY {
+    totalCount!: number;
+    items!: REA_OUTSIDE_SHAREHOLDER_ENTITY[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(REA_OUTSIDE_SHAREHOLDER_ENTITY.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY {
+    totalCount: number;
+    items: REA_OUTSIDE_SHAREHOLDER_ENTITY[] | undefined;
+}
+
 export class PagedResultDtoOfSubscriptionPaymentListDto implements IPagedResultDtoOfSubscriptionPaymentListDto {
     totalCount!: number;
     items!: SubscriptionPaymentListDto[] | undefined;
@@ -41437,6 +41895,114 @@ export interface IPayPalConfigurationDto {
     environment: string | undefined;
     demoUsername: string | undefined;
     demoPassword: string | undefined;
+}
+
+export class REA_OUTSIDE_SHAREHOLDER_ENTITY implements IREA_OUTSIDE_SHAREHOLDER_ENTITY {
+    o_SHAREHOLDER_ID!: string | undefined;
+    o_SHAREHOLDER_NAME!: string | undefined;
+    o_SHAREHOLDER_CODE!: string | undefined;
+    o_SHAREHOLDER_ADDRESS!: string | undefined;
+    o_SHAREHOLDER_EMAIL!: string | undefined;
+    o_SHAREHOLDER_PHONE!: string | undefined;
+    notes!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    makeR_ID!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    checkeR_ID!: string | undefined;
+    approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_OUTSIDE_SHAREHOLDER_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.o_SHAREHOLDER_ID = data["o_SHAREHOLDER_ID"];
+            this.o_SHAREHOLDER_NAME = data["o_SHAREHOLDER_NAME"];
+            this.o_SHAREHOLDER_CODE = data["o_SHAREHOLDER_CODE"];
+            this.o_SHAREHOLDER_ADDRESS = data["o_SHAREHOLDER_ADDRESS"];
+            this.o_SHAREHOLDER_EMAIL = data["o_SHAREHOLDER_EMAIL"];
+            this.o_SHAREHOLDER_PHONE = data["o_SHAREHOLDER_PHONE"];
+            this.notes = data["notes"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.makeR_ID = data["makeR_ID"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.checkeR_ID = data["checkeR_ID"];
+            this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_OUTSIDE_SHAREHOLDER_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_OUTSIDE_SHAREHOLDER_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["o_SHAREHOLDER_ID"] = this.o_SHAREHOLDER_ID;
+        data["o_SHAREHOLDER_NAME"] = this.o_SHAREHOLDER_NAME;
+        data["o_SHAREHOLDER_CODE"] = this.o_SHAREHOLDER_CODE;
+        data["o_SHAREHOLDER_ADDRESS"] = this.o_SHAREHOLDER_ADDRESS;
+        data["o_SHAREHOLDER_EMAIL"] = this.o_SHAREHOLDER_EMAIL;
+        data["o_SHAREHOLDER_PHONE"] = this.o_SHAREHOLDER_PHONE;
+        data["notes"] = this.notes;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["makeR_ID"] = this.makeR_ID;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["checkeR_ID"] = this.checkeR_ID;
+        data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_OUTSIDE_SHAREHOLDER_ENTITY {
+    o_SHAREHOLDER_ID: string | undefined;
+    o_SHAREHOLDER_NAME: string | undefined;
+    o_SHAREHOLDER_CODE: string | undefined;
+    o_SHAREHOLDER_ADDRESS: string | undefined;
+    o_SHAREHOLDER_EMAIL: string | undefined;
+    o_SHAREHOLDER_PHONE: string | undefined;
+    notes: string | undefined;
+    recorD_STATUS: string | undefined;
+    makeR_ID: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    checkeR_ID: string | undefined;
+    approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class RecentTenant implements IRecentTenant {
