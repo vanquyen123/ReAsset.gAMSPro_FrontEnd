@@ -9,7 +9,7 @@ import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts
 import { ListComponentBase } from "@app/ultilities/list-component-base";
 import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
-import { AsposeServiceProxy, BranchServiceProxy, CM_BRANCH_ENTITY, OutsideShareholderServiceProxy, PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY, REA_OUTSIDE_SHAREHOLDER_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
+import { AsposeServiceProxy, OutsideShareholderServiceProxy, PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY, REA_OUTSIDE_SHAREHOLDER_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
 import { finalize } from "rxjs/operators";
 
@@ -165,22 +165,12 @@ export class OutsideShareholderComponent extends ListComponentBase<REA_OUTSIDE_S
 
     }
 
-
-
     onResetSearch(): void {
         this.filterInput = new REA_OUTSIDE_SHAREHOLDER_ENTITY();
         this.changePage(0);
     }
 
-    onSelectActivity(branch: CM_BRANCH_ENTITY) {
+    onSelectRecord(record: REA_OUTSIDE_SHAREHOLDER_ENTITY) {
         this.appToolbar.search();
     }
-
-    onSelectRecord() {
-        this.appToolbar.search();
-    }
-
-    // onSelectKhoi(khoi: CM_DEPT_GROUP_ENTITY) {
-    //     this.appToolbar.search();
-    // }
 }
