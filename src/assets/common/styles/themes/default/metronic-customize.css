@@ -175,12 +175,12 @@ div.btn-group label.btn-secondary.active {
 /* my customize */
 
 div#m_aside_left {
-    background-image: linear-gradient(#C2122A, #C2122A);
+    background-image: linear-gradient(#006633, #006633);
     color: white;
 }
 
 .m-aside-menu .m-menu__nav {
-    background-image: linear-gradient(#C2122A, #C2122A);
+    background-image: linear-gradient(#006633, #006633);
     color: white;
 }
 
@@ -253,7 +253,7 @@ form.input-group.filter-menu button.btn.btn-primary {
 }
 
 .m-brand.m-brand--skin-light {
-    background-image: linear-gradient(#C2122A, #C2122A);
+    background-image: linear-gradient(#006633, #006633);
 }
 
 .m-brand.m-brand--skin-light .m-brand__tools .m-brand__toggler.m-brand__toggler--active span,
@@ -283,7 +283,7 @@ form.input-group.filter-menu button.btn.btn-primary {
 }
 
 .m-aside-left--minimize .m-menu__item.m-menu__item--active>.m-menu__link {
-    background: #C2122A!important;
+    background: #006633!important;
 }
 
 .m-aside-left--minimize .m-aside-menu.m-aside-menu--skin-light .m-menu__nav>.m-menu__item.m-menu__item--expanded>.m-menu__link>.m-menu__link-icon,
@@ -292,7 +292,7 @@ form.input-group.filter-menu button.btn.btn-primary {
 }
 
 .m-aside-menu.m-aside-menu--skin-light {
-    background-color: #C2122A;
+    background-color: #006633;
 }
 
 editable-table table tbody tr.selectable.selected td {
