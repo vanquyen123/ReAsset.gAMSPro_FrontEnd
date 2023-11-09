@@ -22,8 +22,26 @@ import { finalize } from "rxjs/operators";
 export class OutsideShareholderComponent extends ListComponentBase<REA_OUTSIDE_SHAREHOLDER_ENTITY> implements IUiAction<REA_OUTSIDE_SHAREHOLDER_ENTITY>, OnInit, AfterViewInit{
     filterInput: REA_OUTSIDE_SHAREHOLDER_ENTITY =new REA_OUTSIDE_SHAREHOLDER_ENTITY();
     outside_shareholders: REA_OUTSIDE_SHAREHOLDER_ENTITY[];
-    // pageResult: PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY[];
-    // branchs: CM_BRANCH_ENTITY[];
+    records = [
+        {
+            recorD_STATUS: '0',
+            recordName: "Không hoạt động"
+        },
+        {
+            recorD_STATUS: '1',
+            recordName: "Hoạt động"
+        }
+    ];
+    auths = [
+        {
+            autH_STATUS: 'U',
+            autH_STATUS_NAME: "Chờ duyệt"
+        },
+        {
+            autH_STATUS: 'A',
+            autH_STATUS_NAME: "Đã duyệt"
+        }
+    ]
 
     constructor(
         injector: Injector,
@@ -155,6 +173,10 @@ export class OutsideShareholderComponent extends ListComponentBase<REA_OUTSIDE_S
     }
 
     onSelectActivity(branch: CM_BRANCH_ENTITY) {
+        this.appToolbar.search();
+    }
+
+    onSelectRecord() {
         this.appToolbar.search();
     }
 

@@ -80,9 +80,15 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Hoạt động</label>
-                                        <all-code-select 
-                                            >
-                                        </all-code-select>
+                                        <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                            name="recorD_STATUS"
+                                            class="transparent"
+                                            [(ngModel)]="filterInput.recorD_STATUS"
+                                            [emptyText]="l('SelectAll')"
+                                            [(list)]="records"
+                                            [valueMember]="'recorD_STATUS'"
+                                            [displayMember]="'recordName'">
+                                        </select2-custom>
                                     </div>
                                 </div>
 
@@ -90,12 +96,15 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Trạng thái duyệt</label>
-                                        <all-code-select name="autH_STATUS"
+                                        <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                            name="autH_STATUS"
+                                            class="transparent"
                                             [(ngModel)]="filterInput.autH_STATUS"
                                             [emptyText]="l('SelectAll')"
-                                            [cdName]="'AUTH_STATUS_2'"
-                                            [cdType]="'AUTH_STATUS_2'">
-                                        </all-code-select>
+                                            [(list)]="auths"
+                                            [valueMember]="'autH_STATUS'"
+                                            [displayMember]="'autH_STATUS_NAME'">
+                                        </select2-custom>
                                     </div>
                                 </div>
                                 <!-- End Filter -->
