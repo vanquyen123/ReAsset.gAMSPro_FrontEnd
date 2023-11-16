@@ -46,8 +46,8 @@ export class AccountComponent extends AppComponentBase implements OnInit {
 
         // We need this small hack in order to catch application root view container ref for modals
         this.viewContainerRef = viewContainerRef;
-
-        this.logoLogin = this.remoteServiceBaseUrl + this.s('gAMSProCore.LogoLogin');
+        const timestamp = new Date().getTime()
+        this.logoLogin = this.remoteServiceBaseUrl + this.s('gAMSProCore.LogoLogin') + `?t=${timestamp}`;
 
 
         var css = `<style>

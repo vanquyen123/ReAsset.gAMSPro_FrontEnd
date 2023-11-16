@@ -20,7 +20,8 @@ export class DefaultBrandComponent extends AppComponentBase {
         @Inject(DOCUMENT) private document: Document
     ) {
         super(injector);
-        this.defaultLogo = this.remoteServiceBaseUrl + this.s('gAMSProCore.WebLogo');
+        const timestamp = new Date().getTime()
+        this.defaultLogo = this.remoteServiceBaseUrl + this.s('gAMSProCore.WebLogo') + `?t=${timestamp}`;
         // console.log(this);
     }
 

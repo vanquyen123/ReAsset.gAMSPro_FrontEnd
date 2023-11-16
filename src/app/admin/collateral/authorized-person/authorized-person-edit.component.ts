@@ -3,7 +3,7 @@ import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { EditPageState } from '@app/ultilities/enum/edit-page-state';
 import { AllCodes } from '@app/ultilities/enum/all-codes';
-import { BranchServiceProxy, CM_BRANCH_ENTITY, OutsideShareholderServiceProxy, REA_OUTSIDE_SHAREHOLDER_ENTITY, UltilityServiceProxy } from '@shared/service-proxies/service-proxies';
+import { AuthorizedPersonServiceProxy, BranchServiceProxy, CM_BRANCH_ENTITY, REA_AUTHORIZED_PERSON_ENTITY, UltilityServiceProxy, EmployeeServiceProxy, CM_EMPLOYEE_ENTITY } from '@shared/service-proxies/service-proxies';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
@@ -11,22 +11,22 @@ import { finalize } from 'rxjs/operators';
 
 @Component({
   // selector: 'app-outside-shareholder-edit',
-  templateUrl: './outside-shareholder-edit.component.html',
+  templateUrl: './authorized-person-edit.component.html',
   animations: [appModuleAnimation()],
   encapsulation: ViewEncapsulation.None,
 })
-export class OutsideShareholderEditComponent extends DefaultComponentBase implements OnInit, IUiAction<REA_OUTSIDE_SHAREHOLDER_ENTITY>, AfterViewInit {
+export class AuthorizedPersonEditComponent extends DefaultComponentBase implements OnInit, IUiAction<REA_AUTHORIZED_PERSON_ENTITY>, AfterViewInit {
 
   constructor(
     injector: Injector,
     private ultilityService: UltilityServiceProxy,
-    private outsideShareholderService: OutsideShareholderServiceProxy,
-    private branchService: BranchServiceProxy,
+    private authorizedPersonService: AuthorizedPersonServiceProxy,
+    private employeeServiceProxy: EmployeeServiceProxy,
     ) { 
     super(injector);
     this.editPageState = this.getRouteData('editPageState');
-    this.osh_ID = this.getRouteParam('osh');
-    this.inputModel.o_SHAREHOLDER_ID = this.osh_ID;
+    this.a_person_ID = this.getRouteParam('a_person');
+    this.inputModel.a_PERSON_ID = this.a_person_ID;
     this.initFilter();
     this.initCombobox();
     this.initIsApproveFunct();
@@ -38,11 +38,12 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
     AllCodes = AllCodes;
     editPageState: EditPageState;
 
-    inputModel: REA_OUTSIDE_SHAREHOLDER_ENTITY = new REA_OUTSIDE_SHAREHOLDER_ENTITY();
-    filterInput: REA_OUTSIDE_SHAREHOLDER_ENTITY;
+    inputModel: REA_AUTHORIZED_PERSON_ENTITY = new REA_AUTHORIZED_PERSON_ENTITY();
+    filterInput: REA_AUTHORIZED_PERSON_ENTITY;
     isApproveFunct: boolean;
-    osh_ID: string;
+    a_person_ID: string;
     checkIsActive = false;
+    employees: CM_EMPLOYEE_ENTITY[];
 
   get disableInput(): boolean {
     return this.editPageState == EditPageState.viewDetail;
@@ -54,19 +55,19 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
     switch (this.editPageState) {
       case EditPageState.add:
           this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
-          this.appToolbar.setRole('OutsideShareholder', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('AuthorizedPeople', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
           this.getNextId();
           break;
       case EditPageState.edit:
-          this.appToolbar.setRole('OutsideShareholder', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('AuthorizedPeople', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
-          this.getOutsideShareholder();
+          this.getAuthorizedPerson();
           break;
       case EditPageState.viewDetail:
-          this.appToolbar.setRole('OutsideShareholder', false, false, false, false, false, false, true, false);
+          this.appToolbar.setRole('AuthorizedPeople', false, false, false, false, false, false, true, false);
           this.appToolbar.setEnableForViewDetailPage();
-          this.getOutsideShareholder();
+          this.getAuthorizedPerson();
           break;
     }
     this.appToolbar.setUiAction(this);
@@ -84,25 +85,21 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
   }
 
   initCombobox() {
-      // this.branchService.cM_BRANCH_Search(this.getFillterForCombobox()).subscribe(response => {
-      //     this.branchs = response.items;
-      //     this.updateView();
-      // });
-      // this.deptGroupService.cM_DEPT_GROUP_Search(this.getFillterForCombobox()).subscribe(response => {
-      //     this.deptGroups = response.items;
-      //     this.updateView();
-      // });
+      this.employeeServiceProxy.cM_EMPLOYEE_Search(this.getFillterForCombobox()).subscribe(response=> {
+        this.employees = response.items;
+        this.updateView();
+    })
   }
 
   getNextId() {
-    this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Get_Id().subscribe(response=> {
-        this.inputModel.o_SHAREHOLDER_ID = response.outside_shareholder_next_id;
+    this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Get_Id().subscribe(response=> {
+        this.inputModel.a_PERSON_ID = response.A_PERSON_NEXT_ID;
         this.updateView();
     });
   }
 
-  getOutsideShareholder() {
-      this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_ById(this.inputModel.o_SHAREHOLDER_ID).subscribe(response => {
+  getAuthorizedPerson() {
+      this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_ById(this.inputModel.a_PERSON_ID).subscribe(response => {
           this.inputModel = response;
           if(response.recorD_STATUS === "1") {
             this.checkIsActive = true;
@@ -113,6 +110,13 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
           this.updateView();
       });
   }
+//   getEmployeeList() {
+//     this.employeeServiceProxy.cM_EMPLOYEE_Search(this.getFillterForCombobox()).subscribe(response=> {
+//         this.employees = response.items;
+//         this.updateView();
+//         console.log(this.employees)
+//     })
+//   }
 
   onCheckActive() {
     if(!this.checkIsActive) {
@@ -137,9 +141,8 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
       if (this.editPageState != EditPageState.viewDetail) {
           this.saving = true;
           this.inputModel.makeR_ID = this.appSession.user.userName;
-          console.log(this.inputModel.o_SHAREHOLDER_ID)
-          if (!this.osh_ID) {
-              this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
+          if (!this.a_person_ID) {
+              this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
                           this.showErrorMessage(response.errorDesc);
@@ -147,7 +150,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
                       else {
                           this.addNewSuccess();
                           if (!this.isApproveFunct) {
-                              this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_App(response.id, this.appSession.user.userName)
+                              this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_App(response.id, this.appSession.user.userName)
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
@@ -159,7 +162,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
                   });
           }
           else {
-              this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
+              this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
                           this.showErrorMessage(response.errorDesc);
@@ -167,7 +170,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
                       else {
                           this.updateSuccess();
                           if (!this.isApproveFunct) {
-                              this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_App(this.inputModel.o_SHAREHOLDER_ID, this.appSession.user.userName)
+                              this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_App(this.inputModel.a_PERSON_ID, this.appSession.user.userName)
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
@@ -191,20 +194,20 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
   }
 
   goBack() {
-      this.navigatePassParam('/app/admin/outside-shareholder', null, undefined);
+      this.navigatePassParam('/app/admin/authorized-people', null, undefined);
   }
 
   onAdd(): void {
   }
 
-  onUpdate(item: REA_OUTSIDE_SHAREHOLDER_ENTITY): void {
+  onUpdate(item: REA_AUTHORIZED_PERSON_ENTITY): void {
   }
 
-  onDelete(item: REA_OUTSIDE_SHAREHOLDER_ENTITY): void {
+  onDelete(item: REA_AUTHORIZED_PERSON_ENTITY): void {
   }
 
-  onApprove(item: REA_OUTSIDE_SHAREHOLDER_ENTITY): void {
-      if (!this.inputModel.o_SHAREHOLDER_ID) {
+  onApprove(item: REA_AUTHORIZED_PERSON_ENTITY): void {
+      if (!this.inputModel.a_PERSON_ID) {
           return;
       }
       var currentUserName = this.appSession.user.userName;
@@ -213,12 +216,12 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
         return;
     }
       this.message.confirm(
-          this.l('ApproveWarningMessage', this.l(this.inputModel.o_SHAREHOLDER_NAME)),
+          this.l('ApproveWarningMessage', this.l(this.inputModel.a_PERSON_NAME)),
           this.l('AreYouSure'),
           (isConfirmed) => {
               if (isConfirmed) {
                   this.saving = true;
-                  this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_App(this.inputModel.o_SHAREHOLDER_ID, currentUserName)
+                  this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_App(this.inputModel.a_PERSON_ID, currentUserName)
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
                           if (response.result != '0') {
@@ -233,15 +236,17 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
       );
   }
 
-  onSelectBranch(branch : CM_BRANCH_ENTITY){
+  onSelectEmployee(employee : CM_EMPLOYEE_ENTITY){
       // this.inputModel.brancH_ID = branch.brancH_ID;
       // this.inputModel.brancH_NAME = branch.brancH_NAME;
       // setTimeout(()=>{
       //     this.updateView();
       // })
+      this.inputModel.a_PERSON_NAME = employee.emP_NAME
+      console.log(this.inputModel.a_PERSON_NAME)
   }
 
-  onViewDetail(item: REA_OUTSIDE_SHAREHOLDER_ENTITY): void {
+  onViewDetail(item: REA_AUTHORIZED_PERSON_ENTITY): void {
   }
 
   onSave(): void {
@@ -254,4 +259,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
   onResetSearch(): void {
   }
 
+  subscriptionEndDateChange(e): void {
+    }
+  
 }
