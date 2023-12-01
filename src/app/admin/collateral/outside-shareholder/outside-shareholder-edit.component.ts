@@ -96,7 +96,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
 
   getNextId() {
     this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Get_Id().subscribe(response=> {
-        this.inputModel.o_SHAREHOLDER_ID = response.outside_shareholder_next_id;
+        this.inputModel.o_SHAREHOLDER_ID = response.O_SHAREHOLDER_NEXT_ID;
         this.updateView();
     });
   }
