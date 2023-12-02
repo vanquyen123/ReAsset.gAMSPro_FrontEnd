@@ -16,6 +16,8 @@ import { CreateOrEditUserModalComponent } from "../zero-base/users/create-or-edi
 import { EditUserPermissionsModalComponent } from "../zero-base/users/edit-user-permissions-modal.component";
 import { OutsideShareholderComponent } from "./outside-shareholder/outside-shareholder.component";
 import { OutsideShareholderEditComponent } from "./outside-shareholder/outside-shareholder-edit.component";
+import { AuthorizedPersonComponent } from './authorized-person/authorized-person.component';
+import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-person-edit.component";
 
 @NgModule({
     imports: [
@@ -26,7 +28,9 @@ import { OutsideShareholderEditComponent } from "./outside-shareholder/outside-s
     ],
     declarations: [
     OutsideShareholderComponent,
-    OutsideShareholderEditComponent
+    OutsideShareholderEditComponent,
+    AuthorizedPersonComponent,
+    AuthorizedPersonEditComponent,
     ],
     exports: [],
     providers: [],

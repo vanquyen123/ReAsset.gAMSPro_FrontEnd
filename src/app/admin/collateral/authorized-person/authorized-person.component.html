@@ -1,0 +1,208 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div id="page-list-area">
+      <div class="m-subheader">
+          <div class="row align-items-center">
+              <div class="mr-auto col-auto">
+                  <a
+                      [routerLink]="rootPage()"
+                      class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                  >
+                      <span>{{l("HomePage")}}</span>
+                  </a>
+                  <h3
+                      class="m-subheader__title m-subheader__title--separator"
+                  >
+                      <!-- Begin Title -->
+                      <span>Danh mục Người được ủy quyền</span>
+                      <!-- End Title -->
+                  </h3>
+              </div>
+              <div class="col text-right mt-3 mt-md-0">
+                  <div class="btn-group dropdown mr-2">
+                      <button class="btn btn-outline-success"
+                      *ngIf="appToolbar.buttonSearchEnable"
+                          (click)="exportExcel()">
+                          <i class="far fa-file-excel"></i>
+                          {{l("ExcelOperations")}}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="content"
+          class="m-content">
+          <div class="m-portlet m-portlet--mobile">
+              <div class="m-portlet__body">
+                  <form class="horizontal-form filter-form"
+                      autocomplete="off">
+                      <div class="m-form m-form--label-align-right">
+                          <div class="row align-items-center m--margin-bottom-30">
+                              <!-- Begin Filter -->
+                              <!-- Mã cổ đông ngoài -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Mã người ủy quyền</label>
+                                      <input 
+                                          [(ngModel)]="filterInput.a_PERSON_ID"
+                                          name="a_PERSON_IDFilter"
+                                          autoFocus
+                                          class="form-control m-input"
+                                          type="text">
+                                  </div>
+                              </div>
+                              <!-- Tên cổ đông ngoài -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Tên người ủy quyền</label>
+                                      <input 
+                                          [(ngModel)]="filterInput.a_PERSON_NAME"
+                                          name="a_PERSON_NAMEFilter"
+                                          autoFocus
+                                          class="form-control m-input"
+                                          type="text">
+                                  </div>
+                              </div>
+                              <!-- Tên phòng ban -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>CMND/CCCD</label>
+                                      <input 
+                                          [(ngModel)]="filterInput.a_PERSON_CODE"
+                                          name="a_PERSON_CODEFilter"
+                                          class="form-control m-input"
+                                          type="text">
+                                  </div>
+                              </div>
+                              <div class="col-md-12"></div>
+                              <!-- Khối -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Hoạt động</label>
+                                      <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                          name="recorD_STATUS"
+                                          class="transparent"
+                                          [(ngModel)]="filterInput.recorD_STATUS"
+                                          [emptyText]="l('SelectAll')"
+                                          [(list)]="records"
+                                          [valueMember]="'recorD_STATUS'"
+                                          [displayMember]="'recordName'">
+                                      </select2-custom>
+                                  </div>
+                              </div>
+
+                              <!-- Trạng thái duyệt -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Trạng thái duyệt</label>
+                                      <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                          name="autH_STATUS"
+                                          class="transparent"
+                                          [(ngModel)]="filterInput.autH_STATUS"
+                                          [emptyText]="l('SelectAll')"
+                                          [(list)]="auths"
+                                          [valueMember]="'autH_STATUS'"
+                                          [displayMember]="'autH_STATUS_NAME'">
+                                      </select2-custom>
+                                  </div>
+                              </div>
+                              <!-- End Filter -->
+                              <div style="display:none;"
+                                  class="col-md-12">
+                                  <div class="form-group">
+                                      <button *ngIf="appToolbar.buttonSearchEnable"
+                                          class="btn btn-primary btn-search"
+                                          (click)="onSearch()"></button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </form>
+                  <div class="row align-items-center">
+                      <div class="primeng-datatable-container">
+                          <div class="spinner-border m-5"
+                              role="status">
+                              <span class="sr-only">Loading...</span>
+                          </div>
+                          <core-table #coreTable
+                              class="custom-table ui-table"
+                              (reloadPage)="search()">
+                              <thead>
+                                  <tr>
+                                      <!-- Begin Table Column -->
+                                      <!-- STT -->
+                                      <th class="center">
+                                          <span style="width: 40px">{{l("No")}}</span>
+                                      </th>
+                                      <!-- Mã phòng -->
+                                      <th style="width:30%"
+                                          sortField="a_PERSON_ID">
+                                          <span style="width: 150px">Mã người ủy quyền</span>
+                                      </th>
+                                      <!-- Tên phòng ban -->
+                                      <th style="width:40%"
+                                          sortField="a_PERSON_NAME">
+                                          <span style="width: 150px">Tên người ủy quyền</span>
+                                      </th>
+                                      <th style="width:30%"
+                                          sortField="a_PERSON_BIRTH_DT">
+                                          <span style="width: 150px">Ngày sinh</span>
+                                      </th>
+                                      <th style="width:30%"
+                                          sortField="a_PERSON_CODE">
+                                          <span style="width: 150px">CMND/CCCD</span>
+                                      </th>
+
+                                      <!-- Khối -->
+                                      <th sortField="recorD_STATUS_NAME"
+                                          style="width:100%">
+                                          <span style="width: 200px">Hoạt động</span>
+                                      </th>
+                                      <!-- Trạng thái duyệt -->
+                                      <th sortField="autH_STATUS_NAME">
+                                          <span style="width: 150px">Trạng thái duyệt</span>
+                                      </th>
+                                      <th sortField="notes">
+                                        <span style="width: 150px">Ghi chú</span>
+                                    </th>
+                                      <!-- End Table Column -->
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let record of dataTable.records"
+                                      class="selectable"
+                                      (dblclick)="onDblclick(record)"
+                                      (click)="selectRow($event,record)">
+                                      <!-- Begin Table Value -->
+                                      <!-- STT -->
+                                      <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
+                                          + dataTable.records.indexOf(record)) + 1}}
+                                      </td>
+                                      <!-- Mã phòng -->
+                                      <td><span class="mo-header"></span>{{record.a_PERSON_ID}}</td>
+                                      <!-- Tên phòng ban -->
+                                      <td><span class="mo-header"></span>{{record.a_PERSON_NAME}}</td>
+                                      <!-- Mã đơn vị -->
+                                      <!-- <td><span class="mo-header"></span>{{record.brancH_CODE}}</td> -->
+                                      <!-- Tên đơn vị -->
+                                      <td><span class="mo-header"></span>{{record.a_PERSON_BIRTH_DT | date: format}}</td>
+
+                                      <!-- Khối -->
+                                      <td><span class="mo-header"></span>{{record.a_PERSON_CODE}}</td>
+                                      <!-- Mã phòng ban cha -->
+                                      <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                      <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                      <!-- Tên phòng ban cha -->
+                                      <td><span class="mo-header"></span>{{record.notes}}</td>
+                                      <!-- End Table Value -->
+                                  </tr>
+                              </tbody>
+                          </core-table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

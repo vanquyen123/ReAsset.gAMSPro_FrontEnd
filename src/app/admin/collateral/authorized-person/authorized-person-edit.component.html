@@ -1,0 +1,189 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                    <span>Danh mục người được ủy quyền</span>
+                </h3>
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                    <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                    <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                    <div class="modal-body row">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <!-- Mã phòng -->
+                                <div class="col-md-12">
+                                    <div class="form-group required">
+                                        <label>Mã người được ủy quyền</label>
+                                        <input required class="form-control" disabled type="text" #a_PERSON_ID="ngModel" name="a_PERSON_ID" maxleght="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.a_PERSON_ID">
+                                        <div class="error-message" *ngIf="a_PERSON_ID.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_ID?.errors.required">Mã người được ủy quyền
+                                                {{l("ValidationRequired")}}</span>
+                                            <span *ngIf="a_PERSON_ID?.errors.pattern">Mã người được ủy quyền
+                                                {{l("Invalidation")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tên phòng ban -->
+                                <div class="col-md-12">
+                                    <div class="form-group required">
+                                        <label>Tên người được ủy quyền</label>
+                                        <select2-custom (onChangeSelect2)="onSelectEmployee($event)"
+                                          class="transparent"
+                                          required
+                                          [disabled]="disableInput"
+                                          #a_PERSON_NAME="ngModel"
+                                          name="a_PERSON_NAME"
+                                          [(ngModel)]="inputModel.a_PERSON_NAME"
+                                          [(list)]="employees"
+                                          [valueMember]="'emP_NAME'"
+                                          [displayMember]="'emP_NAME'"
+                                          >
+                                      </select2-custom>
+                                        <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                        <div class="error-message" *ngIf="a_PERSON_NAME.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_NAME?.errors.required">Tên người được ủy quyền
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group required">
+                                        <label>Ngày, tháng, năm sinh</label>
+                                        <!-- <input 
+                                        type="text" 
+                                        #a_PERSON_BIRTH_DT 
+                                        name="a_PERSON_BIRTH_DT" 
+                                        class="form-control" 
+                                        bsDatepicker 
+                                        [(ngModel)]="inputModel.a_PERSON_BIRTH_DT" 
+                                        autocomplete="off"> -->
+                                    <input 
+                                    required 
+                                    class="form-control" 
+                                    [disabled]="disableInput"
+                                    type="date" 
+                                    #a_PERSON_BIRTH_DT="ngModel" 
+                                    name="a_PERSON_BIRTH_DT" 
+                                    [ngModel]="inputModel.a_PERSON_BIRTH_DT | date:'yyyy-MM-dd'"
+                                    (ngModelChange)="inputModel.a_PERSON_BIRTH_DT = $event"
+                                    max="2005-12-31"
+                                    >
+                                        <div class="error-message" *ngIf="a_PERSON_BIRTH_DT.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_BIRTH_DT?.errors.required">Ngày, tháng, năm sinh
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tên đơn vị -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>CMND/CCCD</label>
+                                        <input class="form-control" [disabled]="disableInput" type="text" #a_PERSON_CODE="ngModel" name="a_PERSON_CODE" [(ngModel)]="inputModel.a_PERSON_CODE" maxlength="20">
+                                        <div class="error-message" *ngIf="a_PERSON_CODE.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_CODE?.errors.required">CMND/CCCD
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Ngày cấp CMND/CCCD</label>
+                                        <!-- <input 
+                                        class="form-control" 
+                                        [disabled]="disableInput"
+                                        type="date" 
+                                        #a_PERSON_CODE_PROVIDED_DT="ngModel" 
+                                        name="a_PERSON_CODE_PROVIDED_DT" 
+                                        [(ngModel)]="inputModel.a_PERSON_CODE_PROVIDED_DT" 
+                                        max="2005-12-31"> -->
+                                        <input 
+                                        class="form-control" 
+                                        [disabled]="disableInput"
+                                        type="date" 
+                                        #a_PERSON_CODE_PROVIDED_DT="ngModel" 
+                                        name="a_PERSON_CODE_PROVIDED_DT" 
+                                        [ngModel]="inputModel.a_PERSON_CODE_PROVIDED_DT | date:'yyyy-MM-dd'"
+                                        (ngModelChange)="inputModel.a_PERSON_CODE_PROVIDED_DT = $event"
+                                        >
+                                        <div class="error-message" *ngIf="a_PERSON_CODE_PROVIDED_DT.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_CODE_PROVIDED_DT?.errors.required">Ngày cấp CMND/CCCD
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nhóm phòng ban -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Địa chỉ </label>
+                                        <input class="form-control" [disabled]="disableInput" type="text" #a_PERSON_ADDRESS="ngModel" name="a_PERSON_ADDRESS" [(ngModel)]="inputModel.a_PERSON_ADDRESS" maxlength="200">
+                                        <div class="error-message" *ngIf="a_PERSON_ADDRESS.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_ADDRESS?.errors.required">Địa chỉ
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Người thân người được ủy quyền </label>
+                                        <input class="form-control" [disabled]="disableInput" type="text" #a_PERSON_DEP_PEOPLE="ngModel" name="a_PERSON_DEP_PEOPLE" [(ngModel)]="inputModel.a_PERSON_DEP_PEOPLE" maxlength="200">
+                                        <div class="error-message" *ngIf="a_PERSON_DEP_PEOPLE.invalid && isShowError">
+                                            <span *ngIf="a_PERSON_DEP_PEOPLE?.errors.required">Người thân người được ủy quyền
+                                                {{l("ValidationRequired")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 my-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" [disabled]="disableInput" type="checkbox" #recorD_STATUS="ngModel" name="recorD_STATUS" [(ngModel)]="checkIsActive" (click)="onCheckActive()" style="width: 18px; height: 18px;">
+                                        <label class="form-check-label">{{l("IsActive")}}</label>
+                                    </div>
+                                </div>
+                                <!-- Ghi chú -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>{{l("Note")}}</label>
+                                        <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <branch-modal #branchModal [multiple]="false" (onSelect)="onSelectBranch($event)"></branch-modal> -->
