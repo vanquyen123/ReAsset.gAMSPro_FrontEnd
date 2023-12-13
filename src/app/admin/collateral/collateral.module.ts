@@ -18,6 +18,8 @@ import { OutsideShareholderComponent } from "./outside-shareholder/outside-share
 import { OutsideShareholderEditComponent } from "./outside-shareholder/outside-shareholder-edit.component";
 import { AuthorizedPersonComponent } from './authorized-person/authorized-person.component';
 import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-person-edit.component";
+import { OwnerComponent } from './owner/owner.component';
+import { OwnerEditComponent } from "./owner/owner-edit.component";
 
 @NgModule({
     imports: [
@@ -31,6 +33,8 @@ import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-pe
     OutsideShareholderEditComponent,
     AuthorizedPersonComponent,
     AuthorizedPersonEditComponent,
+    OwnerComponent,
+    OwnerEditComponent,
     ],
     exports: [],
     providers: [],
