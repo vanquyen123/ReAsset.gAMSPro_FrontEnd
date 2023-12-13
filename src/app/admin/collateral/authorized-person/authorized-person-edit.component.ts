@@ -243,7 +243,6 @@ export class AuthorizedPersonEditComponent extends DefaultComponentBase implemen
       //     this.updateView();
       // })
       this.inputModel.a_PERSON_NAME = employee.emP_NAME
-      console.log(this.inputModel.a_PERSON_NAME)
   }
 
   onViewDetail(item: REA_AUTHORIZED_PERSON_ENTITY): void {

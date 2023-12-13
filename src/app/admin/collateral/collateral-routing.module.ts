@@ -5,6 +5,8 @@ import { OutsideShareholderComponent } from "./outside-shareholder/outside-share
 import { OutsideShareholderEditComponent } from "./outside-shareholder/outside-shareholder-edit.component";
 import { AuthorizedPersonComponent } from "./authorized-person/authorized-person.component";
 import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-person-edit.component";
+import { OwnerComponent } from "./owner/owner.component";
+import { OwnerEditComponent } from "./owner/owner-edit.component";
 
 
 @NgModule({
@@ -23,6 +25,11 @@ import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-pe
                     {path: "authorized-people-add", component: AuthorizedPersonEditComponent, data: { permission: 'Pages.Administration.AuthorizedPeople.Create', editPageState: EditPageState.add }},
                     {path: "authorized-people-edit", component: AuthorizedPersonEditComponent, data: { permission: 'Pages.Administration.AuthorizedPeople.Edit', editPageState: EditPageState.edit }},
                     {path: "authorized-people-view", component: AuthorizedPersonEditComponent, data: { permission: 'Pages.Administration.AuthorizedPeople.View', editPageState: EditPageState.viewDetail }},
+                    //chu so huu
+                    {path: "owner", component: OwnerComponent, data: { permission: 'Pages.Administration.Owner' }},
+                    {path: "owner-add", component: OwnerEditComponent, data: { permission: 'Pages.Administration.Owner.Create', editPageState: EditPageState.add }},
+                    {path: "owner-edit", component: OwnerEditComponent, data: { permission: 'Pages.Administration.Owner.Edit', editPageState: EditPageState.edit }},
+                    {path: "owner-view", component: OwnerEditComponent, data: { permission: 'Pages.Administration.Owner.View', editPageState: EditPageState.viewDetail }},
                     
                 ],
             },
