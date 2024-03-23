@@ -1,0 +1,542 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Danh mục Hợp đồng thuê BĐS</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <h3>THÔNG TIN CHUNG</h3>
+                      </div>
+                      <div class="col-md-8">
+                        <h4>THÔNG TIN HỢP ĐỒNG</h4>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>Người tạo</label>
+                                <input disabled class="form-control" type="text" #makeR_ID="ngModel" name="makeR_ID" maxleght="15" [(ngModel)]="inputModel.makeR_ID">
+                                <div class="error-message" *ngIf="makeR_ID.invalid && isShowError">
+                                    <span *ngIf="makeR_ID?.errors.required">Người tạo
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="makeR_ID?.errors.pattern">Người tạo
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group required">
+                              <label>Ngày tạo</label>
+                              <input 
+                              required 
+                              disabled
+                              class="form-control" 
+                              type="date" 
+                              #creatE_DT="ngModel" 
+                              name="creatE_DT" 
+                              [ngModel]="inputModel.creatE_DT | date:'yyyy-MM-dd'"
+                              (ngModelChange)="inputModel.creatE_DT = $event"
+                              >
+                              <div class="error-message" *ngIf="creatE_DT.invalid && isShowError">
+                                <span *ngIf="creatE_DT?.errors.required">Ngày tạo
+                                  {{l("ValidationRequired")}}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>Số hợp đồng</label>
+                                <input required [disabled]="disableInput" class="form-control" type="text" #contracT_ID="ngModel" name="contracT_ID" maxleght="15" [(ngModel)]="inputModel.contracT_ID">
+                                <div class="error-message" *ngIf="contracT_ID.invalid && isShowError">
+                                    <span *ngIf="contracT_ID?.errors.required">Số hợp đồng
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="contracT_ID?.errors.pattern">Số hợp đồng
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group required">
+                              <label>Ngày ký hợp đồng</label>
+                              <input 
+                              required 
+                              class="form-control" 
+                              [disabled]="disableInput"
+                              type="date" 
+                              #contracT_SIGN_DT="ngModel" 
+                              name="contracT_SIGN_DT" 
+                              [ngModel]="inputModel.contracT_SIGN_DT | date:'yyyy-MM-dd'"
+                              (ngModelChange)="inputModel.contracT_SIGN_DT = $event"
+                              >
+                              <div class="error-message" *ngIf="contracT_SIGN_DT.invalid && isShowError">
+                                <span *ngIf="contracT_SIGN_DT?.errors.required">Ngày ký hợp đồng
+                                  {{l("ValidationRequired")}}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Nội dung hợp đồng</label>
+                                <textarea class="form-control" [disabled]="disableInput" type="text" #contracT_CONTENT="ngModel" name="contracT_CONTENT" [(ngModel)]="inputModel.contracT_CONTENT"></textarea>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>Đối tác thuê BĐS</label>
+                                <select2-custom (onChangeSelect2)="onSelect($event)"
+                                  class="transparent"
+                                  required
+                                  [disabled]="disableInput"
+                                  #contracT_PARTNER_ID="ngModel"
+                                  name="contracT_PARTNER_ID"
+                                  [(ngModel)]="inputModel.contracT_PARTNER_ID"
+                                  [(list)]="partners"
+                                  [valueMember]="'value'"
+                                  [displayMember]="'name'"
+                                  >
+                                </select2-custom>
+                                <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                <div class="error-message" *ngIf="contracT_PARTNER_ID.invalid && isShowError">
+                                    <span *ngIf="contracT_PARTNER_ID?.errors.required">Đối tác thuê BĐS
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group required">
+                                <label>Tổng giá trị hợp đồng</label>
+                                <input required disabled class="form-control" type="text" #totaL_REVENUE="ngModel" name="totaL_REVENUE" maxleght="15" [(ngModel)]="inputModel.totaL_REVENUE">
+                                <div class="error-message" *ngIf="totaL_REVENUE.invalid && isShowError">
+                                    <span *ngIf="totaL_REVENUE?.errors.required">Tổng giá trị hợp đồng
+                                        {{l("ValidationRequired")}}</span>
+                                    <span *ngIf="totaL_REVENUE?.errors.pattern">Tổng giá trị hợp đồng
+                                        {{l("Invalidation")}}</span>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Ghi chú</label>
+                                <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>PHỤ LỤC HỢP ĐỒNG</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewAnnex()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="annexEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #annexEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="annexEditTable.checkAll($event.target.checked)" [checked]="annexEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+
+                                    <th sortField="anneX_NAME"><span style="width: 150px">Tên phụ lục</span></th>
+                                    <th sortField="anneX_SIGN_DT" style="width:50%"><span style="width: 150px">Ngày ký phụ lục</span></th>
+                                    <th sortField="anneX_TERM" style="width:50%" ><span style="width: 150px">Thời hạn (tháng)</span></th>
+                                    <th sortField="anneX_TERMINATE_DT"><span style="width: 150px">Ngày hết hạn</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of annexEditTable.dataInPage" #editRow ng-form [hidden]="item.page != annexEditTable.currentPage">
+
+                                    <td>
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="anneX_NAME{{item.no}}" class="form-control m-input" [(ngModel)]="item.anneX_NAME">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input 
+                                      class="transparent form-control m-input"
+                                      [disabled]="disableInput"
+                                      type="date" 
+                                      #anneX_SIGN_DT="ngModel" 
+                                      name="anneX_SIGN_DT" 
+                                      [ngModel]="item.anneX_SIGN_DT | date:'yyyy-MM-dd'"
+                                      (ngModelChange)="item.anneX_SIGN_DT = $event"
+                                      >
+                                    </td>
+                                    <td>
+                                        <span class="mo-header"></span>
+                                        <input [disabled]="disableInput" name="anneX_TERM{{item.no}}" class="form-control m-input" [(ngModel)]="item.anneX_TERM">
+                                    </td>
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <input 
+                                        class="transparent form-control m-input"
+                                        [disabled]="disableInput"
+                                        type="date" 
+                                        #anneX_SIGN_DT="ngModel" 
+                                        name="anneX_TERMINATE_DT" 
+                                        [ngModel]="item.anneX_TERMINATE_DT | date:'yyyy-MM-dd'"
+                                        (ngModelChange)="item.anneX_TERMINATE_DT = $event"
+                                        >
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>THÔNG TIN BĐS CHO THUÊ</h4>
+                    </div>
+                    <div class="action-button col-md-12">
+                      <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewItem()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                      <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="itemEditTable.removeAllCheckedItem()"><i
+                              class="pi pi-times"></i>{{l("Delete")}}</button>
+                    </div>
+                    <div class="primeng-datatable-container col-md-12">
+                      <editable-table #itemEditTable class="custom-table ui-table">
+                          <thead>
+                              <tr>
+
+                                  <th>
+                                      <span style="width: 40px">
+                                          <checkbox-control [disabled]="disableInput" (onchange)="itemEditTable.checkAll($event.target.checked)" [checked]="itemEditTable.isCheckAll"></checkbox-control>
+                                      </span>
+                                  </th>
+                                  <th><span style="width: 40px">{{l("No")}}</span></th>
+
+                                  <th sortField="contracT_ITEM_TYPE"><span style="width: 150px">Loại</span></th>
+                                  <th sortField="contracT_ITEM_INVESTED_PROP_ID" style="width:50%"><span style="width: 150px">Mã BĐS</span></th>
+                                  <th style="width:50%" ><span style="width: 150px">Tên BĐS</span></th>
+                                  <th><span style="width: 150px">Địa điểm</span></th>
+                                  <th sortField="contracT_ITEM_RENTAL_AREA"><span style="width: 150px">Diện tích cho thuê</span></th>
+                                  <th sortField="contracT_ITEM_TERM"><span style="width: 150px">Thời hạn cho thuê</span></th>
+                                  <th sortField="contracT_ITEM_EFFECT_DT"><span style="width: 150px">Ngày cho thuê</span></th>
+                                  <th sortField="contracT_ITEM_TERMINATE_DT"><span style="width: 150px">Ngày hết hạn cho thuê</span></th>
+                                  <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+
+                              </tr>
+
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let item of itemEditTable.dataInPage" #editRow ng-form [hidden]="item.page != itemEditTable.currentPage">
+
+                                  <td>
+                                      <span class="mo-header"></span>
+                                      <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                  </td>
+
+                                  <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <select2-custom (onChangeSelect2)="onSelectItemType($event)"
+                                      class="transparent m-input"
+                                      [disabled]="disableInput"
+                                      #contracT_ITEM_TYPE="ngModel"
+                                      name="contracT_ITEM_TYPE"
+                                      [(ngModel)]="item.contracT_ITEM_TYPE"
+                                      [(list)]="itemTypes"
+                                      [valueMember]="'cdval'"
+                                      [displayMember]="'content'"
+                                      >
+                                    </select2-custom> 
+                                      <!-- <select [disabled]="disableInput" name="contracT_ITEM_TYPE{{item.no}}" class="form-control m-input" [(ngModel)]="item.contracT_ITEM_TYPE">
+                                        <option *ngFor="let type of itemTypes" [value]="type.cdval" >{{ type.content }}</option>
+                                      </select> -->
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="contracT_ITEM_INVESTED_PROP_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.contracT_ITEM_INVESTED_PROP_ID">
+                                  </td>
+
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="contracT_ITEM_INVESTED_PROP_Name{{item.no}}" class="form-control m-input">
+                                  </td>
+
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="contracT_ITEM_INVESTED_PROP_Location{{item.no}}" class="form-control m-input">
+                                  </td>
+
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="contracT_ITEM_RENTAL_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.contracT_ITEM_RENTAL_AREA" >
+                                  </td>
+
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="contracT_ITEM_TERM{{item.no}}" class="form-control m-input" [(ngModel)]="item.contracT_ITEM_TERM">
+                                  </td>
+
+                                  <td class="center">
+                                    <span class="mo-header"></span>
+                                    <input 
+                                    class="transparent form-control m-input"
+                                    [disabled]="disableInput"
+                                    type="date" 
+                                    #contracT_ITEM_EFFECT_DT="ngModel" 
+                                    name="contracT_ITEM_EFFECT_DT" 
+                                    [ngModel]="item.contracT_ITEM_EFFECT_DT | date:'yyyy-MM-dd'"
+                                    (ngModelChange)="item.contracT_ITEM_EFFECT_DT = $event"
+                                    >
+                                  </td>
+
+                                  <td class="center">
+                                    <span class="mo-header"></span>
+                                    <input 
+                                    class="transparent form-control m-input"
+                                    [disabled]="disableInput"
+                                    type="date" 
+                                    #contracT_ITEM_TERMINATE_DT="ngModel" 
+                                    name="contracT_ITEM_TERMINATE_DT" 
+                                    [ngModel]="item.contracT_ITEM_TERMINATE_DT | date:'yyyy-MM-dd'"
+                                    (ngModelChange)="item.contracT_ITEM_TERMINATE_DT = $event"
+                                    >
+                                  </td>
+                                  
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </editable-table>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>GIÁ CHO THUÊ</h4>
+                    </div>
+                    <div class="action-button col-md-12">
+                      <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewPrice()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                      <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="priceEditTable.removeAllCheckedItem()"><i
+                              class="pi pi-times"></i>{{l("Delete")}}</button>
+                    </div>
+                    <!-- Price table -->
+                    <div class="primeng-datatable-container col-md-12">
+                        <editable-table #priceEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="priceEditTable.checkAll($event.target.checked)" [checked]="priceEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+
+                                    <th sortField="rentaL_PRICE_TYPE"><span style="width: 150px">Loại</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tên BĐS</span></th>
+                                    <th sortField="rentAl_PRICE_EFFECT_DT" style="width:50%" ><span style="width: 150px">Từ ngày</span></th>
+                                    <th sortField="rentaL_PRICE_MONTH_NUMBER"><span style="width: 150px">Số tháng</span></th>
+                                    <th sortField="rentaL_PRICE_EXPIRE_DT"><span style="width: 150px">Đến ngày</span></th>
+                                    <th sortField="rentaL_PRICE_UNIT_PRICE_VND"><span style="width: 150px">Đơn giá cho thuê/m2</span></th>
+                                    <th sortField="rentaL_PRICE_UNIT_PRICE_USD"><span style="width: 150px">Đơn giá cho thuê (ngoại tệ)</span></th>
+                                    <th sortField="rentaL_PRICE_REVENUE_PER_MOUNTH"><span style="width: 150px">Doanh thu/tháng</span></th>
+                                    <th sortField="rentaL_PRICE_TOTAL_REVENUE"><span style="width: 150px">Doanh thu</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of priceEditTable.dataInPage" #editRow ng-form [hidden]="item.page != priceEditTable.currentPage">
+
+                                    <td>
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <select2-custom (onChangeSelect2)="onSelectItemType($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #rentaL_PRICE_TYPE="ngModel"
+                                        name="rentaL_PRICE_TYPE"
+                                        [(ngModel)]="item.rentaL_PRICE_TYPE"
+                                        [(list)]="rentalPriceTypes"
+                                        [valueMember]="'cdval'"
+                                        [displayMember]="'content'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="contracT_ITEM_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.contracT_ITEM_ID">
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <input 
+                                      class="transparent form-control m-input"
+                                      [disabled]="disableInput"
+                                      type="date" 
+                                      #rentAl_PRICE_EFFECT_DT="ngModel" 
+                                      name="rentAl_PRICE_EFFECT_DT{{item.no}}" 
+                                      [ngModel]="item.rentAl_PRICE_EFFECT_DT | date:'yyyy-MM-dd'"
+                                      (ngModelChange)="item.rentAl_PRICE_EFFECT_DT = $event"
+                                      >
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="rentaL_PRICE_MONTH_NUMBER{{item.no}}" class="form-control m-input" [(ngModel)]="item.rentaL_PRICE_MONTH_NUMBER">
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <input 
+                                      class="transparent form-control m-input"
+                                      [disabled]="disableInput"
+                                      type="date" 
+                                      #rentaL_PRICE_EXPIRE_DT="ngModel" 
+                                      name="rentaL_PRICE_EXPIRE_DT{{item.no}}" 
+                                      [ngModel]="item.rentaL_PRICE_EXPIRE_DT | date:'yyyy-MM-dd'"
+                                      (ngModelChange)="item.rentaL_PRICE_EXPIRE_DT = $event"
+                                      >
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="rentaL_PRICE_UNIT_PRICE_VND{{item.no}}" class="form-control m-input" [(ngModel)]="item.rentaL_PRICE_UNIT_PRICE_VND">
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="rentaL_PRICE_UNIT_PRICE_USD{{item.no}}" class="form-control m-input" [(ngModel)]="item.rentaL_PRICE_UNIT_PRICE_USD">
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="rentaL_PRICE_REVENUE_PER_MOUNTH{{item.no}}" class="form-control m-input" [(ngModel)]="item.rentaL_PRICE_REVENUE_PER_MOUNTH">
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="rentaL_PRICE_TOTAL_REVENUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.rentaL_PRICE_TOTAL_REVENUE">
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                    </div>
+
+                    <div class="col-md-8 mt-3">
+                      <h4>TÌNH TRẠNG HỢP ĐỒNG</h4>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                              <label>Tình trạng hợp đồng</label>
+                              <select2-custom (onChangeSelect2)="onSelect($event)"
+                                class="transparent"
+                                [disabled]="disableInput"
+                                #contracT_STATUS="ngModel"
+                                name="contracT_STATUS"
+                                [(ngModel)]="inputModel.contracT_STATUS"
+                                [(list)]="contractStatus"
+                                [valueMember]="'cdval'"
+                                [displayMember]="'content'"
+                                >
+                              </select2-custom>
+                              <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                              <div class="error-message" *ngIf="contracT_PARTNER_ID.invalid && isShowError">
+                                  <span *ngIf="contracT_PARTNER_ID?.errors.required">Đối tác thuê BĐS
+                                      {{l("ValidationRequired")}}</span>
+                              </div>
+                          </div>
+                        </div>
+    
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label>Ngày chấm dứt hợp đồng</label>
+                            <input 
+                            class="form-control" 
+                            [disabled]="disableInput"
+                            type="date" 
+                            #contracT_TERMINATE_DT="ngModel" 
+                            name="contracT_TERMINATE_DT" 
+                            [ngModel]="inputModel.contracT_TERMINATE_DT | date:'yyyy-MM-dd'"
+                            (ngModelChange)="inputModel.contracT_TERMINATE_DT = $event"
+                            >
+                            <div class="error-message" *ngIf="contracT_TERMINATE_DT.invalid && isShowError">
+                              <span *ngIf="contracT_TERMINATE_DT?.errors.required">Ngày chấm dứt hợp đồng
+                                {{l("ValidationRequired")}}</span>
+                            </div>
+                          </div>
+                        </div>
+    
+                        <div class="col-md-12">
+                          <div class="form-group">
+                              <label>Lý do chấm dứt hợp đồng</label>
+                              <textarea class="form-control" [disabled]="disableInput" type="text" #contracT_TERMINATE_REASON="ngModel" name="contracT_TERMINATE_REASON" [(ngModel)]="inputModel.contracT_TERMINATE_REASON"></textarea>
+                          </div>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- <branch-modal #branchModal [multiple]="false" (onSelect)="onSelectBranch($event)"></branch-modal> -->

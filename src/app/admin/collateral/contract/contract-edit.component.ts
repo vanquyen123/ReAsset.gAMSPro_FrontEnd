@@ -2,77 +2,97 @@ import { AfterViewInit, Component, ElementRef, Injector, OnInit, ViewChild, View
 import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { EditPageState } from '@app/ultilities/enum/edit-page-state';
-import { AllCodes } from '@app/ultilities/enum/all-codes';
-import { BranchServiceProxy, CM_ALLCODE_ENTITY, CM_BRANCH_ENTITY, OwnerServiceProxy, REA_OWNER_ENTITY, UltilityServiceProxy, AllCodeServiceProxy } from '@shared/service-proxies/service-proxies';
+import { ReaAllCode } from '@app/ultilities/enum/all-codes';
+import { AllCodeServiceProxy, BranchServiceProxy, CM_BRANCH_ENTITY, CONTRACT_ANNEX_ENTITY, CONTRACT_ITEM_ENTITY, CONTRACT_ITEM_RENTAL_PRICE_ENTITY, ContractServiceProxy, REA_ALLCODE_ENTITY, REA_CONTRACT_ENTITY, SessionServiceProxy, UltilityServiceProxy } from '@shared/service-proxies/service-proxies';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
 import { finalize } from 'rxjs/operators';
+import { EditableTableComponent } from '@app/admin/core/controls/editable-table/editable-table.component';
+import * as moment from 'moment';
 
 @Component({
-  templateUrl: './owner-edit.component.html',
+  // selector: 'app-outside-shareholder-edit',
+  templateUrl: './contract-edit.component.html',
   animations: [appModuleAnimation()],
   encapsulation: ViewEncapsulation.None,
 })
-export class OwnerEditComponent extends DefaultComponentBase implements OnInit, IUiAction<REA_OWNER_ENTITY>, AfterViewInit {
+export class ContractEditComponent extends DefaultComponentBase implements OnInit, IUiAction<REA_CONTRACT_ENTITY>, AfterViewInit {
 
   constructor(
     injector: Injector,
     private ultilityService: UltilityServiceProxy,
-    private ownerService: OwnerServiceProxy,
+    private contractService: ContractServiceProxy,
     private branchService: BranchServiceProxy,
-    private allCodeService: AllCodeServiceProxy,
+    private sessionService: SessionServiceProxy,
+    private allcodeService: AllCodeServiceProxy
     ) { 
     super(injector);
     this.editPageState = this.getRouteData('editPageState');
-    this.owner_ID = this.getRouteParam('owner');
-    this.inputModel.owneR_ID = this.owner_ID;
+    this.contract_ID = this.getRouteParam('contract');
+    this.inputModel.contracT_ID = this.contract_ID;
     this.initFilter();
     this.initCombobox();
     this.initIsApproveFunct();
   }
   
   @ViewChild('editForm') editForm: ElementRef;
+  @ViewChild('annexEditTable') annexEditTable: EditableTableComponent<CONTRACT_ANNEX_ENTITY>;
+  @ViewChild('itemEditTable') itemEditTable: EditableTableComponent<CONTRACT_ITEM_ENTITY>;
+  @ViewChild('priceEditTable') priceEditTable: EditableTableComponent<CONTRACT_ITEM_RENTAL_PRICE_ENTITY>;
 
     EditPageState = EditPageState;
-    AllCodes = AllCodes;
+    ReaAllCode = ReaAllCode;
     editPageState: EditPageState;
 
-    inputModel: REA_OWNER_ENTITY = new REA_OWNER_ENTITY();
-    filterInput: REA_OWNER_ENTITY;
+    inputModel: REA_CONTRACT_ENTITY = new REA_CONTRACT_ENTITY();
+    filterInput: REA_CONTRACT_ENTITY;
     isApproveFunct: boolean;
-    owner_ID: string;
+    contract_ID: string;
     checkIsActive = false;
-    ownerTypes: CM_ALLCODE_ENTITY[];
+    partners = [
+        {
+            name: "Partner 1",
+            value: "partner 1"
+        },
+        {
+            name: "Partner 2",
+            value: "partner 2"
+        }
+    ];
+    itemTypes;
+    rentalPriceTypes;
+    contractStatus;
+    rentalPrices: CONTRACT_ITEM_RENTAL_PRICE_ENTITY[] = [];
 
   get disableInput(): boolean {
     return this.editPageState == EditPageState.viewDetail;
   }
   isShowError = false;
-  branchs: CM_BRANCH_ENTITY[];
 
   ngOnInit() {
-    this.allCodeService.rEA_ALLCODE_GetByCDNAME("REA_OWNER_TYPE", "").subscribe(response=> {
-        console.log(response)
-        this.ownerTypes = response;
-        this.updateView();
-    })
+    this.getAllTypes();
     switch (this.editPageState) {
       case EditPageState.add:
           this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
-          this.appToolbar.setRole('Owner', false, false, true, false, false, false, false, false);
+          this.inputModel.contracT_ANNEXES = [];
+          this.annexEditTable.setList(this.inputModel.contracT_ANNEXES);
+          this.inputModel.contracT_ITEMS = [];
+          this.itemEditTable.setList(this.inputModel.contracT_ITEMS)
+          this.priceEditTable.setList(this.rentalPrices)
+          this.appToolbar.setRole('Contract', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
-          this.getNextId();
+          this.getInitInformation();
           break;
       case EditPageState.edit:
-          this.appToolbar.setRole('Owner', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('Contract', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
-          this.getOwner();
+          this.getContract();
           break;
       case EditPageState.viewDetail:
-          this.appToolbar.setRole('Owner', false, false, false, false, false, false, true, false);
+          this.appToolbar.setRole('Contract', false, false, false, false, false, false, true, false);
           this.appToolbar.setEnableForViewDetailPage();
-          this.getOwner();
+          this.getContract();
           break;
     }
     this.appToolbar.setUiAction(this);
@@ -100,15 +120,76 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
       // });
   }
 
-  getNextId() {
-    this.ownerService.rEA_OWNER_Get_Id().subscribe(response=> {
-        this.inputModel.owneR_ID = response.OWNER_NEXT_ID;
-        this.updateView();
-    });
-  }
+  addNewAnnex() {
+    var item = new CONTRACT_ANNEX_ENTITY();
+    item.iS_NEW = true;
+    item.iS_CHANGED = false;
+    this.annexEditTable.pushItem(item);
+    this.updateView();
+    }
 
-  getOwner() {
-      this.ownerService.rEA_OWNER_ById(this.inputModel.owneR_ID).subscribe(response => {
+  addNewItem() {
+    var item = new CONTRACT_ITEM_ENTITY();
+    item.contracT_ITEM_RENTAL_AREA = 0;
+    item.iS_NEW = true;
+    item.iS_CHANGED = false
+    this.itemEditTable.pushItem(item);
+    // var price = new CONTRACT_ITEM_RENTAL_PRICE_ENTITY();
+    // price.rentaL_PRICE_UNIT_PRICE_VND = 0;
+    // price.rentaL_PRICE_UNIT_PRICE_USD = 0;
+    // price.rentaL_PRICE_MONTH_NUMBER = 0;
+    // price.rentaL_PRICE_REVENUE_PER_MOUNTH = 0;
+    // price.rentaL_PRICE_TOTAL_REVENUE = 0;
+    // price.iS_NEW = true;
+    // price.iS_CHANGED = false
+    // this.priceEditTable.pushItem(price);
+    this.updateView();
+    }
+
+  addNewPrice() {
+    var price = new CONTRACT_ITEM_RENTAL_PRICE_ENTITY();
+    price.rentaL_PRICE_UNIT_PRICE_VND = 0;
+    price.rentaL_PRICE_UNIT_PRICE_USD = 0;
+    price.rentaL_PRICE_MONTH_NUMBER = 0;
+    price.rentaL_PRICE_REVENUE_PER_MOUNTH = 0;
+    price.rentaL_PRICE_TOTAL_REVENUE = 0;
+    price.iS_NEW = true;
+    price.iS_CHANGED = false
+    this.priceEditTable.pushItem(price);
+    this.updateView();
+  }
+//   removeItemAndPrice() {
+//     this.itemEditTable.removeAllCheckedItem();
+//     this.priceEditTable.removeAllCheckedItem();
+//   }
+  
+//   checkAllItemAndPrice(isCheckAll) {
+//     this.itemEditTable.checkAll(isCheckAll);
+//     this.priceEditTable.checkAll(isCheckAll);
+//   }
+
+//   checkItemAndPrice(item, isChecked) {
+//     this.itemEditTable.tableState.allData[item.no-1].isChecked = isChecked;
+//     this.priceEditTable.tableState.allData[item.no-1].isChecked = isChecked;
+//     var itemId = "#item-" + item.no;
+//     var priceId = "#price-" + item.no;
+//     $(itemId).prop('checked', isChecked)
+//     $(priceId).prop('checked', isChecked)
+//   }
+
+  getInitInformation() {
+    this.sessionService.getCurrentLoginInformations().subscribe(response=>{
+        this.inputModel.makeR_ID = response.user.userName;
+        this.updateView()
+    })
+    
+    this.inputModel.creatE_DT = moment();
+    this.inputModel.totaL_REVENUE = 0;
+    this.updateView();
+  }
+  
+  getContract() {
+      this.contractService.rEA_CONTRACT_ById(this.inputModel.contracT_ID).subscribe(response => {
           this.inputModel = response;
           if(response.recorD_STATUS === "1") {
             this.checkIsActive = true;
@@ -118,6 +199,23 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
           }
           this.updateView();
       });
+  }
+
+  getAllTypes() {
+    this.allcodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.CONTRACT_ITEM_TYPE, "")
+    .subscribe(response =>{
+        this.itemTypes = response
+    })
+
+    this.allcodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.RENTAL_PRICE_TYPE, "")
+    .subscribe(response =>{
+        this.rentalPriceTypes = response
+    })
+
+    this.allcodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.CONTRACT_STATUS, "")
+    .subscribe(response =>{
+        this.contractStatus = response
+    })
   }
 
   onCheckActive() {
@@ -134,6 +232,7 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
           this.showErrorMessage(this.l('PageLoadUndone'));
           return;
       }
+      console.log((this.editForm as any).form)
       if ((this.editForm as any).form.invalid) {
           this.isShowError = true;
           this.showErrorMessage(this.l('FormInvalid'));
@@ -143,8 +242,8 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
       if (this.editPageState != EditPageState.viewDetail) {
           this.saving = true;
           this.inputModel.makeR_ID = this.appSession.user.userName;
-          if (!this.owner_ID) {
-              this.ownerService.rEA_OWNER_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
+          if (!this.contract_ID) {
+              this.contractService.rEA_CONTRACT_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
                           this.showErrorMessage(response.errorDesc);
@@ -152,7 +251,7 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
                       else {
                           this.addNewSuccess();
                           if (!this.isApproveFunct) {
-                              this.ownerService.rEA_OWNER_App(response.id, this.appSession.user.userName)
+                              this.contractService.rEA_CONTRACT_App(response.id, this.appSession.user.userName)
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
@@ -164,7 +263,7 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
                   });
           }
           else {
-              this.ownerService.rEA_OWNER_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
+              this.contractService.rEA_CONTRACT_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
                           this.showErrorMessage(response.errorDesc);
@@ -172,7 +271,7 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
                       else {
                           this.updateSuccess();
                           if (!this.isApproveFunct) {
-                              this.ownerService.rEA_OWNER_App(this.inputModel.owneR_ID, this.appSession.user.userName)
+                              this.contractService.rEA_CONTRACT_App(this.inputModel.contracT_ID, this.appSession.user.userName)
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
@@ -196,20 +295,20 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
   }
 
   goBack() {
-      this.navigatePassParam('/app/admin/owner', null, undefined);
+      this.navigatePassParam('/app/admin/contract', null, undefined);
   }
 
   onAdd(): void {
   }
 
-  onUpdate(item: REA_OWNER_ENTITY): void {
+  onUpdate(item: REA_CONTRACT_ENTITY): void {
   }
 
-  onDelete(item: REA_OWNER_ENTITY): void {
+  onDelete(item: REA_CONTRACT_ENTITY): void {
   }
 
-  onApprove(item: REA_OWNER_ENTITY): void {
-      if (!this.inputModel.owneR_ID) {
+  onApprove(item: REA_CONTRACT_ENTITY): void {
+      if (!this.inputModel.contracT_ID) {
           return;
       }
       var currentUserName = this.appSession.user.userName;
@@ -218,12 +317,12 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
         return;
     }
       this.message.confirm(
-          this.l('ApproveWarningMessage', this.l(this.inputModel.owneR_NAME)),
+          this.l('ApproveWarningMessage', this.l(this.inputModel.contracT_ID)),
           this.l('AreYouSure'),
           (isConfirmed) => {
               if (isConfirmed) {
                   this.saving = true;
-                  this.ownerService.rEA_OWNER_App(this.inputModel.owneR_ID, currentUserName)
+                  this.contractService.rEA_CONTRACT_App(this.inputModel.contracT_ID, currentUserName)
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
                           if (response.result != '0') {
@@ -238,11 +337,15 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
       );
   }
 
-  onSelectOwnerType(ownerType : CM_ALLCODE_ENTITY){
-    // this.inputModel.owneR_TYPE_NAME = ownerType.content;
+  onSelect(value: string){
+      // this.inputModel.brancH_ID = branch.brancH_ID;
+      // this.inputModel.brancH_NAME = branch.brancH_NAME;
+      // setTimeout(()=>{
+      //     this.updateView();
+      // })
   }
 
-  onViewDetail(item: REA_OWNER_ENTITY): void {
+  onViewDetail(item: REA_CONTRACT_ENTITY): void {
   }
 
   onSave(): void {
@@ -253,6 +356,10 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
   }
 
   onResetSearch(): void {
+  }
+
+  onSelectItemType(itemType: REA_ALLCODE_ENTITY){
+    // this.inputModel.owneR_TYPE_NAME = ownerType.content;
   }
 
 }
