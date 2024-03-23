@@ -88,9 +88,11 @@
                                     <div class="form-group">
                                         <label>Email </label>
                                         <input class="form-control" [disabled]="disableInput" type="email" #o_SHAREHOLDER_EMAIL="ngModel" name="o_SHAREHOLDER_EMAIL" [(ngModel)]="inputModel.o_SHAREHOLDER_EMAIL" maxlength="200">
-                                        <div class="error-message" *ngIf="o_SHAREHOLDER_EMAIL.invalid && isShowError">
+                                        <div class="error-message" *ngIf="o_SHAREHOLDER_EMAIL && o_SHAREHOLDER_EMAIL.invalid && isShowError">
                                             <span *ngIf="o_SHAREHOLDER_EMAIL?.errors.required">Email
                                                 {{l("ValidationRequired")}}</span>
+                                            <span *ngIf="o_SHAREHOLDER_EMAIL?.errors.pattern">Email
+                                                {{l("Invalidation")}}</span>
                                         </div>
                                     </div>
                                 </div>

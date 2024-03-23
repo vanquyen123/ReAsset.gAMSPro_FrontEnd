@@ -12,7 +12,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class DefaultBrandComponent extends AppComponentBase {
 
-    @Input() defaultLogo = '/assets/logo/web_logo.png';
+    @Input() defaultLogo = '/assets/logo/NEW_web_logo.png';
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
 
     constructor(

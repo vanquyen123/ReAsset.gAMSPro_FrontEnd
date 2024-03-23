@@ -7,7 +7,8 @@ import { AuthorizedPersonComponent } from "./authorized-person/authorized-person
 import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-person-edit.component";
 import { OwnerComponent } from "./owner/owner.component";
 import { OwnerEditComponent } from "./owner/owner-edit.component";
-
+import { ContractComponent } from "./contract/contract.component";
+import { ContractEditComponent } from "./contract/contract-edit.component";
 
 @NgModule({
     imports: [
@@ -30,6 +31,11 @@ import { OwnerEditComponent } from "./owner/owner-edit.component";
                     {path: "owner-add", component: OwnerEditComponent, data: { permission: 'Pages.Administration.Owner.Create', editPageState: EditPageState.add }},
                     {path: "owner-edit", component: OwnerEditComponent, data: { permission: 'Pages.Administration.Owner.Edit', editPageState: EditPageState.edit }},
                     {path: "owner-view", component: OwnerEditComponent, data: { permission: 'Pages.Administration.Owner.View', editPageState: EditPageState.viewDetail }},
+                    //contract
+                    {path: "contract", component: ContractComponent},
+                    {path: "contract-add", component: ContractEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "contract-edit", component: ContractEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "contract-view", component: ContractEditComponent, data: { editPageState: EditPageState.viewDetail }},
                     
                 ],
             },

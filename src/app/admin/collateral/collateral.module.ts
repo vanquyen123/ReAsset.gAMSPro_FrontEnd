@@ -20,6 +20,8 @@ import { AuthorizedPersonComponent } from './authorized-person/authorized-person
 import { AuthorizedPersonEditComponent } from "./authorized-person/authorized-person-edit.component";
 import { OwnerComponent } from './owner/owner.component';
 import { OwnerEditComponent } from "./owner/owner-edit.component";
+import { ContractComponent } from './contract/contract.component';
+import { ContractEditComponent } from "./contract/contract-edit.component";
 
 @NgModule({
     imports: [
@@ -35,6 +37,8 @@ import { OwnerEditComponent } from "./owner/owner-edit.component";
     AuthorizedPersonEditComponent,
     OwnerComponent,
     OwnerEditComponent,
+    ContractComponent,
+    ContractEditComponent,
     ],
     exports: [],
     providers: [],

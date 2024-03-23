@@ -26,7 +26,7 @@ export class TopBarComponent extends ThemesLayoutBaseComponent implements OnInit
     tenancyName = '';
     userName = '';
     profilePicture = AppConsts.appBaseUrl + '/assets/common/images/default-profile-picture.png';
-    defaultLogo =  '/assets/logo/web_logo.png';
+    defaultLogo =  '/assets/logo/NEW_web_logo.png';
     recentlyLinkedUsers: LinkedUserDto[];
     unreadChatMessageCount = 0;
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
