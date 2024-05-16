@@ -1,0 +1,1340 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Danh mục thế chấp</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <h3>THÔNG TIN CHUNG</h3>
+                            </div>
+                            
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Người tạo</label>
+                                  <input disabled class="form-control" type="text" #makeR_ID="ngModel" name="makeR_ID" maxlength="15" [(ngModel)]="inputModel.makeR_ID">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Ngày tạo</label>
+                                <date-control
+                                [disabled] = "true"
+                                #creatE_DT="ngModel"
+                                name="creatE_DT"
+                                [(ngModel)]="inputModel.creatE_DT"
+                                autoFocus>
+                                </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-12">
+                              <h4>THÔNG TIN THẾ CHẤP</h4>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Loại</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #mortgagE_TYPE="ngModel"
+                                    name="mortgagE_TYPE"
+                                    [(ngModel)]="inputModel.mortgagE_TYPE"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                  <div class="error-message" *ngIf="mortgagE_TYPE.invalid && isShowError">
+                                      <span *ngIf="mortgagE_TYPE?.errors.required">Đối tác thuê BĐS
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-8"></div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Mã Tp/Khoản vay</label>
+                                  <input required disabled class="form-control" type="text" #mortgagE_ID="ngModel" name="mortgagE_ID" maxlength="15" [(ngModel)]="inputModel.id">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Tên Tp/Khoản vay</label>
+                                  <input required [disabled]="disableInput" class="form-control" type="text" #mortgagE_NAME="ngModel" name="mortgagE_NAME" maxlength="15" [(ngModel)]="inputModel.mortgagE_NAME">
+                                  <div class="error-message" *ngIf="mortgagE_NAME.invalid && isShowError">
+                                      <span *ngIf="mortgagE_NAME?.errors.required">Tên Tp/Khoản vay
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_NAME?.errors.pattern">Tên Tp/Khoản vay
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Kì hạn (tháng)</label>
+                                  <input required [disabled]="disableInput" class="form-control" type="text" #mortgagE_TERM="ngModel" name="mortgagE_TERM" maxlength="15" [(ngModel)]="inputModel.mortgagE_TERM">
+                                  <div class="error-message" *ngIf="mortgagE_TERM.invalid && isShowError">
+                                      <span *ngIf="mortgagE_TERM?.errors.required">Kì hạn
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_TERM?.errors.pattern">Kì hạn
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                <label>Ngày vay</label>
+                                <date-control
+                                [disabled]="disableInput"
+                                required
+                                #mortgagE_SIGN_DT="ngModel"
+                                name="mortgagE_SIGN_DT"
+                                [(ngModel)]="inputModel.mortgagE_SIGN_DT"
+                                autoFocus>
+                                </date-control>
+                                <div class="error-message" *ngIf="mortgagE_SIGN_DT.invalid && isShowError">
+                                  <span *ngIf="mortgagE_SIGN_DT?.errors.required">Ngày vay
+                                    {{l("ValidationRequired")}}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                <label>Ngày đáo hạn</label>
+                                <date-control
+                                [disabled]="disableInput"
+                                required
+                                #mortgagE_DUE_DATE="ngModel"
+                                name="mortgagE_DUE_DATE"
+                                [(ngModel)]="inputModel.mortgagE_DUE_DATE"
+                                autoFocus>
+                                </date-control>
+                                <div class="error-message" *ngIf="mortgagE_DUE_DATE.invalid && isShowError">
+                                  <span *ngIf="mortgagE_DUE_DATE?.errors.required">Ngày đáo hạn
+                                    {{l("ValidationRequired")}}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Lãi suất</label>
+                                  <input required [disabled]="disableInput" class="form-control" type="text" #mortgagE_INTEREST_RATE="ngModel" name="mortgagE_INTEREST_RATE" maxlength="15" [(ngModel)]="inputModel.mortgagE_INTEREST_RATE">
+                                  <div class="error-message" *ngIf="mortgagE_INTEREST_RATE.invalid && isShowError">
+                                      <span *ngIf="mortgagE_INTEREST_RATE?.errors.required">Lãi suất
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_INTEREST_RATE?.errors.pattern">Lãi suất
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Đại lý</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #mortgagE_PUBLISHER_ID="ngModel"
+                                    name="mortgagE_PUBLISHER_ID"
+                                    [(ngModel)]="inputModel.mortgagE_PUBLISHER_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                  <div class="error-message" *ngIf="mortgagE_PUBLISHER_ID.invalid && isShowError">
+                                      <span *ngIf="mortgagE_PUBLISHER_ID?.errors.required">Đại lý
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Trái chủ/Bên cho vay</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #mortgagE_OWNER_ID="ngModel"
+                                    name="mortgagE_OWNER_ID"
+                                    [(ngModel)]="inputModel.mortgagE_OWNER_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                  <div class="error-message" *ngIf="mortgagE_OWNER_ID.invalid && isShowError">
+                                      <span *ngIf="mortgagE_OWNER_ID?.errors.required">Trái chủ/Bên cho vay
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Giá trị phát hành/Số tiền cho vay</label>
+                                  <input required [disabled]="disableInput" class="form-control" type="text" #mortgagE_ISSUE_VALUE="ngModel" name="mortgagE_ISSUE_VALUE" maxlength="15" [(ngModel)]="inputModel.mortgagE_ISSUE_VALUE">
+                                  <div class="error-message" *ngIf="mortgagE_ISSUE_VALUE.invalid && isShowError">
+                                      <span *ngIf="mortgagE_ISSUE_VALUE?.errors.required">Giá trị phát hành/Số tiền cho vay
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_ISSUE_VALUE?.errors.pattern">Giá trị phát hành/Số tiền cho vay
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Dư nợ</label>
+                                  <input disabled class="form-control" type="text" #remaiN_DEBT="ngModel" name="remaiN_DEBT" maxlength="15" [(ngModel)]="inputModel.remaiN_DEBT">
+                                  <div class="error-message" *ngIf="remaiN_DEBT.invalid && isShowError">
+                                      <span *ngIf="remaiN_DEBT?.errors.required">Dư nợ
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="remaiN_DEBT?.errors.pattern">Dư nợ
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Loại tổ chức phát hành</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #legaL_ENTITY_TYPE="ngModel"
+                                    name="legaL_ENTITY_TYPE"
+                                    [(ngModel)]="inputModel.legaL_ENTITY_TYPE"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                  <div class="error-message" *ngIf="legaL_ENTITY_TYPE.invalid && isShowError">
+                                      <span *ngIf="legaL_ENTITY_TYPE?.errors.required">Loại tổ chức phát hành
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Tổ chức phát hành</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #legaL_ENTITY_REF_ID="ngModel"
+                                    name="legaL_ENTITY_REF_ID"
+                                    [(ngModel)]="inputModel.legaL_ENTITY_REF_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                  <div class="error-message" *ngIf="legaL_ENTITY_REF_ID.invalid && isShowError">
+                                      <span *ngIf="legaL_ENTITY_REF_ID?.errors.required">Tổ chức phát hành
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tỉ lệ đảm bảo - Yêu cầu</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #mortgagE_COVERAGE_RATIO="ngModel" name="mortgagE_COVERAGE_RATIO" maxlength="15" [(ngModel)]="inputModel.mortgagE_COVERAGE_RATIO">
+                                  <div class="error-message" *ngIf="mortgagE_COVERAGE_RATIO.invalid && isShowError">
+                                      <span *ngIf="mortgagE_COVERAGE_RATIO?.errors.required">Tỉ lệ đảm bảo - Yêu cầu
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_COVERAGE_RATIO?.errors.pattern">Tỉ lệ đảm bảo - Yêu cầu
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tỉ lệ đảm bảo - Ban đầu</label>
+                                  <input disabled class="form-control" type="text" #mortgagE_INITIAL_COVERAGE_RATIO="ngModel" name="mortgagE_INITIAL_COVERAGE_RATIO" maxlength="15" [(ngModel)]="inputModel.mortgagE_INITIAL_COVERAGE_RATIO">
+                                  <div class="error-message" *ngIf="mortgagE_INITIAL_COVERAGE_RATIO.invalid && isShowError">
+                                      <span *ngIf="mortgagE_INITIAL_COVERAGE_RATIO?.errors.required">Tỉ lệ đảm bảo - Ban đầu
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_INITIAL_COVERAGE_RATIO?.errors.pattern">Tỉ lệ đảm bảo - Ban đầu
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tỉ lệ đảm bảo - Hiện tại</label>
+                                  <input disabled class="form-control" type="text" #mortgagE_CURRENT_COVERAGE_RATIO="ngModel" name="mortgagE_CURRENT_COVERAGE_RATIO" maxlength="15" [(ngModel)]="inputModel.mortgagE_CURRENT_COVERAGE_RATIO">
+                                  <div class="error-message" *ngIf="mortgagE_CURRENT_COVERAGE_RATIO.invalid && isShowError">
+                                      <span *ngIf="mortgagE_CURRENT_COVERAGE_RATIO?.errors.required">Tỉ lệ đảm bảo - Hiện tại
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_CURRENT_COVERAGE_RATIO?.errors.pattern">Tỉ lệ đảm bảo - Hiện tại
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tổng số lượng tài sản đang thế chấp</label>
+                                  <input disabled class="form-control" type="text" #numbeR_OF_MORTGAGE_PROPERTIES="ngModel" name="numbeR_OF_MORTGAGE_PROPERTIES" maxlength="15" [(ngModel)]="inputModel.numbeR_OF_MORTGAGE_PROPERTIES">
+                                  <div class="error-message" *ngIf="numbeR_OF_MORTGAGE_PROPERTIES.invalid && isShowError">
+                                      <span *ngIf="numbeR_OF_MORTGAGE_PROPERTIES?.errors.required">Tổng số lượng tài sản đang thế chấp
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="numbeR_OF_MORTGAGE_PROPERTIES?.errors.pattern">Tổng số lượng tài sản đang thế chấp
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Điều kiện rút/đổi/bổ sung</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #mortgagE_CHANGE_CONDITION="ngModel" name="mortgagE_CHANGE_CONDITION" maxlength="15" [(ngModel)]="inputModel.mortgagE_CHANGE_CONDITION">
+                                  <div class="error-message" *ngIf="mortgagE_CHANGE_CONDITION.invalid && isShowError">
+                                      <span *ngIf="mortgagE_CHANGE_CONDITION?.errors.required">Điều kiện rút/đổi/bổ sung
+                                          {{l("ValidationRequired")}}</span>
+                                      <span *ngIf="mortgagE_CHANGE_CONDITION?.errors.pattern">Điều kiện rút/đổi/bổ sung
+                                          {{l("Invalidation")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Trạng thái thế chấp</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #mortgagE_STATUS="ngModel"
+                                    name="mortgagE_STATUS"
+                                    [(ngModel)]="inputModel.mortgagE_STATUS"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                  <div class="error-message" *ngIf="mortgagE_STATUS.invalid && isShowError">
+                                      <span *ngIf="mortgagE_STATUS?.errors.required">Trạng thái thế chấp
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+
+                            <!-- <div class="col-md-12">
+                              <div class="form-group">
+                                  <label>Ghi chú</label>
+                                  <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                              </div>
+                            </div> -->
+                          </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH DỰ ÁN THẾ CHẤP</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewProject()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="projectEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #projectEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="projectEditTable.checkAll($event.target.checked)" [checked]="projectEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã dự án</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tên dự án</span></th>
+                                    <th style="width:50%" ><span style="width: 150px">Quy mô</span></th>
+                                    <th><span style="width: 150px">Địa điểm</span></th>
+                                    <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị định giá vay</span></th>
+                                    <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Đơn vị định giá</span></th>
+                                    <th sortField="valuatioN_DT"><span style="width: 150px">Ngày định giá</span></th>
+                                    <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Tình trạng thế chấp</span></th>
+                                    <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Chia sẻ thế chấp</span></th>
+                                    <th sortField="mortgagE_STATUS"><span style="width: 150px">Trạng thái</span></th>
+                                    <th sortField="creatE_DT"><span style="width: 150px">Ngày tạo</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Người tạo</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày cập nhật cuối</span></th>
+                                    <th sortField="modifieR_ID"><span style="width: 150px">Người cập nhật cuối</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of projectEditTable.dataInPage" #editRow ng-form [hidden]="item.page != projectEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="valuatioN_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.valuation.valuatioN_VALUE">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #valuatioN_PARTY_ID="ngModel"
+                                        name="valuatioN_PARTY_ID"
+                                        [(ngModel)]="item.valuation.valuatioN_PARTY_ID"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="valuatioN_DT{{item.no}}"
+                                      [(ngModel)]="item.valuation.valuatioN_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortagE_ITEM_IS_SHARED="ngModel"
+                                        name="mortagE_ITEM_IS_SHARED"
+                                        [(ngModel)]="item.mortagE_ITEM_IS_SHARED"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+  
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.mortagE_ITEM_IS_SHARED = $event.target.checked" [checked]="item['mortagE_ITEM_IS_SHARED']"></checkbox-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortgagE_STATUS="ngModel"
+                                        name="mortgagE_STATUS"
+                                        [(ngModel)]="item.mortgagE_STATUS"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="creatE_DT{{item.no}}"
+                                      [(ngModel)]="item.creatE_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="makeR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.makeR_ID" >
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="modifY_DT{{item.no}}"
+                                      [(ngModel)]="item.modifY_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="modifieR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.modifieR_ID">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH KHU ĐẤT THẾ CHẤP</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewLand()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="landEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #landEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="landEditTable.checkAll($event.target.checked)" [checked]="landEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã khu đất</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tên khu đất</span></th>
+                                    <th style="width:50%" ><span style="width: 150px">Quy mô</span></th>
+                                    <th><span style="width: 150px">Địa điểm</span></th>
+                                    <th><span style="width: 150px">Tên dự án</span></th>
+                                    <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị định giá vay</span></th>
+                                    <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Đơn vị định giá</span></th>
+                                    <th sortField="valuatioN_DT"><span style="width: 150px">Ngày định giá</span></th>
+                                    <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Tình trạng thế chấp</span></th>
+                                    <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Chia sẻ thế chấp</span></th>
+                                    <th sortField="mortgagE_STATUS"><span style="width: 150px">Trạng thái</span></th>
+                                    <th sortField="creatE_DT"><span style="width: 150px">Ngày tạo</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Người tạo</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày cập nhật cuối</span></th>
+                                    <th sortField="modifieR_ID"><span style="width: 150px">Người cập nhật cuối</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of landEditTable.dataInPage" #editRow ng-form [hidden]="item.page != landEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="valuatioN_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.valuation.valuatioN_VALUE">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #valuatioN_PARTY_ID="ngModel"
+                                        name="valuatioN_PARTY_ID"
+                                        [(ngModel)]="item.valuation.valuatioN_PARTY_ID"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="valuatioN_DT{{item.no}}"
+                                      [(ngModel)]="item.valuation.valuatioN_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortagE_ITEM_IS_SHARED="ngModel"
+                                        name="mortagE_ITEM_IS_SHARED"
+                                        [(ngModel)]="item.mortagE_ITEM_IS_SHARED"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+  
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.mortagE_ITEM_IS_SHARED = $event.target.checked" [checked]="item['mortagE_ITEM_IS_SHARED']"></checkbox-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortgagE_STATUS="ngModel"
+                                        name="mortgagE_STATUS"
+                                        [(ngModel)]="item.mortgagE_STATUS"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="creatE_DT{{item.no}}"
+                                      [(ngModel)]="item.creatE_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="makeR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.makeR_ID" >
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="modifY_DT{{item.no}}"
+                                      [(ngModel)]="item.modifY_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="modifieR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.modifieR_ID">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH SỔ THẾ CHẤP</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewSodo()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="sodoEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #sodoEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="sodoEditTable.checkAll($event.target.checked)" [checked]="sodoEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th sortField="propertY_ID"><span style="width: 150px">Số phát hành</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Loại sổ</span></th>
+                                    <th style="width:50%" ><span style="width: 150px">Dự án</span></th>
+                                    <th><span style="width: 150px">Địa điểm</span></th>
+                                    <th><span style="width: 150px">Danh sách thửa đất thuộc</span></th>
+                                    <th><span style="width: 150px">Diện tích thửa</span></th>
+                                    <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị định giá vay</span></th>
+                                    <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Đơn vị định giá</span></th>
+                                    <th sortField="valuatioN_DT"><span style="width: 150px">Ngày định giá</span></th>
+                                    <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Tình trạng thế chấp</span></th>
+                                    <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Chia sẻ thế chấp</span></th>
+                                    <th sortField="mortgagE_STATUS"><span style="width: 150px">Trạng thái</span></th>
+                                    <th sortField="creatE_DT"><span style="width: 150px">Ngày tạo</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Người tạo</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày cập nhật cuối</span></th>
+                                    <th sortField="modifieR_ID"><span style="width: 150px">Người cập nhật cuối</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of sodoEditTable.dataInPage" #editRow ng-form [hidden]="item.page != sodoEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="valuatioN_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.valuation.valuatioN_VALUE">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #valuatioN_PARTY_ID="ngModel"
+                                        name="valuatioN_PARTY_ID"
+                                        [(ngModel)]="item.valuation.valuatioN_PARTY_ID"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="valuatioN_DT{{item.no}}"
+                                      [(ngModel)]="item.valuation.valuatioN_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortagE_ITEM_IS_SHARED="ngModel"
+                                        name="mortagE_ITEM_IS_SHARED"
+                                        [(ngModel)]="item.mortagE_ITEM_IS_SHARED"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+  
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.mortagE_ITEM_IS_SHARED = $event.target.checked" [checked]="item['mortagE_ITEM_IS_SHARED']"></checkbox-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortgagE_STATUS="ngModel"
+                                        name="mortgagE_STATUS"
+                                        [(ngModel)]="item.mortgagE_STATUS"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="creatE_DT{{item.no}}"
+                                      [(ngModel)]="item.creatE_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="makeR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.makeR_ID" >
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="modifY_DT{{item.no}}"
+                                      [(ngModel)]="item.modifY_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="modifieR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.modifieR_ID">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH TSCĐ/TSDA THẾ CHẤP</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewAsset()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="assetEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #assetEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="assetEditTable.checkAll($event.target.checked)" [checked]="assetEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã tài sản</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tên tài sản</span></th>
+                                    <th style="width:50%" ><span style="width: 150px">Đơn vị chịu chi phí</span></th>
+                                    <th><span style="width: 150px">Số lượng/ Quy mô</span></th>
+                                    <th><span style="width: 150px">Địa điểm</span></th>
+                                    <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị định giá vay</span></th>
+                                    <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Đơn vị định giá</span></th>
+                                    <th sortField="valuatioN_DT"><span style="width: 150px">Ngày định giá</span></th>
+                                    <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Tình trạng thế chấp</span></th>
+                                    <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Chia sẻ thế chấp</span></th>
+                                    <th sortField="mortgagE_STATUS"><span style="width: 150px">Trạng thái</span></th>
+                                    <th sortField="creatE_DT"><span style="width: 150px">Ngày tạo</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Người tạo</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày cập nhật cuối</span></th>
+                                    <th sortField="modifieR_ID"><span style="width: 150px">Người cập nhật cuối</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of assetEditTable.dataInPage" #editRow ng-form [hidden]="item.page != assetEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="valuatioN_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.valuation.valuatioN_VALUE">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #valuatioN_PARTY_ID="ngModel"
+                                        name="valuatioN_PARTY_ID"
+                                        [(ngModel)]="item.valuation.valuatioN_PARTY_ID"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="valuatioN_DT{{item.no}}"
+                                      [(ngModel)]="item.valuation.valuatioN_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortagE_ITEM_IS_SHARED="ngModel"
+                                        name="mortagE_ITEM_IS_SHARED"
+                                        [(ngModel)]="item.mortagE_ITEM_IS_SHARED"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+  
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.mortagE_ITEM_IS_SHARED = $event.target.checked" [checked]="item['mortagE_ITEM_IS_SHARED']"></checkbox-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortgagE_STATUS="ngModel"
+                                        name="mortgagE_STATUS"
+                                        [(ngModel)]="item.mortgagE_STATUS"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="creatE_DT{{item.no}}"
+                                      [(ngModel)]="item.creatE_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="makeR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.makeR_ID" >
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="modifY_DT{{item.no}}"
+                                      [(ngModel)]="item.modifY_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="modifieR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.modifieR_ID">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH CỔ PHẦN THẾ CHẤP</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewShare()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="shareEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #shareEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="shareEditTable.checkAll($event.target.checked)" [checked]="shareEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th><span style="width: 150px">Công ty</span></th>
+                                    <th><span style="width: 150px">Cổ đông</span></th>
+                                    <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Chia sẻ thế chấp</span></th>
+                                    <th sortField="mortgagE_SHARE_REF_ID" ><span style="width: 150px">Gói thế chấp được chia sẻ</span></th>
+                                    <th sortField="mortgagE_SHARE_QUANTITY"><span style="width: 150px">Số lượng CP thế chấp</span></th>
+                                    <th sortField="mortgagE_SHARE_TOTAL_VALUATION_VALUE"><span style="width: 150px">Giá trị mệnh giá CP thế chấp</span></th>
+                                    <th sortField="valuatioN_BEFORE_VALUE"><span style="width: 150px">Định giá vay/cổ phần</span></th>
+                                    <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị định giá vay</span></th>
+                                    <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Đơn vị định giá</span></th>
+                                    <th sortField="valuatioN_DT"><span style="width: 150px">Ngày định giá</span></th>
+                                    <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Tình trạng thế chấp</span></th>
+                                    <th sortField="mortgagE_STATUS"><span style="width: 150px">Trạng thái</span></th>
+                                    <th sortField="creatE_DT"><span style="width: 150px">Ngày tạo</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Người tạo</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày cập nhật cuối</span></th>
+                                    <th sortField="modifieR_ID"><span style="width: 150px">Người cập nhật cuối</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of shareEditTable.dataInPage" #editRow ng-form [hidden]="item.page != shareEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.mortgagE_SHARE_IS_SHARED = $event.target.checked" [checked]="item['mortgagE_SHARE_IS_SHARED']"></checkbox-control>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortgagE_SHARE_REF_ID="ngModel"
+                                        name="mortgagE_SHARE_REF_ID"
+                                        [(ngModel)]="item.mortgagE_SHARE_REF_ID"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="mortgagE_SHARE_QUANTITY{{item.no}}" class="form-control m-input" [(ngModel)]="item.mortgagE_SHARE_QUANTITY">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="mortgagE_SHARE_TOTAL_VALUATION_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.mortgagE_SHARE_TOTAL_VALUATION_VALUE">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="valuatioN_BEFORE_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.valuation.valuatioN_BEFORE_VALUE">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="valuatioN_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.valuation.valuatioN_VALUE">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #valuatioN_PARTY_ID="ngModel"
+                                        name="valuatioN_PARTY_ID"
+                                        [(ngModel)]="item.valuation.valuatioN_PARTY_ID"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="valuatioN_DT{{item.no}}"
+                                      [(ngModel)]="item.valuation.valuatioN_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortagE_ITEM_IS_SHARED="ngModel"
+                                        name="mortagE_ITEM_IS_SHARED"
+                                        [(ngModel)]="item.mortagE_ITEM_IS_SHARED"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <select2-custom (onChangeSelect2)="onSelect($event)"
+                                        class="transparent m-input"
+                                        [disabled]="disableInput"
+                                        #mortgagE_STATUS="ngModel"
+                                        name="mortgagE_STATUS"
+                                        [(ngModel)]="item.mortgagE_STATUS"
+                                        [(list)]="tempList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'"
+                                        >
+                                      </select2-custom> 
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="creatE_DT{{item.no}}"
+                                      [(ngModel)]="item.creatE_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="makeR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.makeR_ID" >
+                                    </td>
+
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="true"
+                                      name="modifY_DT{{item.no}}"
+                                      [(ngModel)]="item.modifY_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="modifieR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.modifieR_ID">
+                                    </td>
+  
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>LỊCH SỬ GIẢI CHẤP</h4>
+                      </div>
+                      <div class="action-button col-md-12">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewReleaseHistory()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="releaseHistoryEditTable.removeAllCheckedItem()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #releaseHistoryEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="releaseHistoryEditTable.checkAll($event.target.checked)" [checked]="releaseHistoryEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th sortField="mortgagE_RELEASE_DATE"><span style="width: 150px">Ngày giải chấp</span></th>
+                                    <th sortField="mortgagE_RELEASE_VALUE"><span style="width: 150px">Giá trị giải chấp/giải ngân</span></th>
+                                    <th sortField="remaiN_DEBT"><span style="width: 150px">Dư nợ còn lại</span></th>
+                                    <th sortField="updatE_DT"><span style="width: 150px">Ngày cập nhật</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Người cập nhật</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of releaseHistoryEditTable.dataInPage" #editRow ng-form [hidden]="item.page != releaseHistoryEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="mortgagE_RELEASE_DATE{{item.no}}"
+                                      [(ngModel)]="item.mortgagE_RELEASE_DATE"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="mortgagE_RELEASE_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.mortgagE_RELEASE_VALUE">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="remaiN_DEBT{{item.no}}" class="form-control m-input" [(ngModel)]="item.remaiN_DEBT">
+                                    </td>
+                                    <td class="center">
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="updatE_DT{{item.no}}"
+                                      [(ngModel)]="item.updatE_DT"
+                                      autoFocus>
+                                      </date-control>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="makeR_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.makeR_ID">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>                      
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>

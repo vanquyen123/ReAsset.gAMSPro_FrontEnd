@@ -10,16 +10,42 @@
 <div [@routerTransition]>
     <div class="m-subheader">
         <div class="row align-items-center">
-
+            <div class="mr-auto col-auto">
+                <a
+                    [routerLink]="rootPage()"
+                    class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                >
+                    <span>{{l("HomePage")}}</span>
+                </a>
+            </div>
         </div>
     </div>
 
     <div id="content" class="m-content">
-        <div class="dashboard-page row mt-2 ml-2" style="margin-left: 0;">
-           <!--<img src="../../../../assets/logo/BackGround_HDB.png" />-->
-            
-           
+        <!--<img src="../../../../assets/logo/BackGround_HDB.png" />-->
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <div class="dashboard-page row mt-2 ml-2" style="margin-left: 0;">
+                    <div class="col-md-6">
+                        <project-sodo-chart [projectData]="projectData" [sodoData]="sodoData"></project-sodo-chart>
+                    </div>
+                    <div class="col-md-6">
+                        <expired-contract-chart [contractData]="expiredContractData"></expired-contract-chart>
+                    </div>
+                    <div class="col-md-6 mt-5">
+                        <expired-mortgage-chart [mortgageData]="expiredMortgageData"></expired-mortgage-chart>
+                    </div>
+                    <div class="col-md-6 mt-5">
+                        <mortgage-progress-chart [mortgageData]="mortgageProgressData"></mortgage-progress-chart>
+                    </div>
+                    <div class="col-md-6 mt-5">
+                        <project-type-chart [projectTypeData]="projectTypeData"></project-type-chart>
+                    </div>
+                    <div class="col-md-6 mt-5">
+                        <top10-project></top10-project>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
 </div>

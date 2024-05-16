@@ -39,7 +39,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group required">
                                         <label>Mã người được ủy quyền</label>
-                                        <input required class="form-control" disabled type="text" #a_PERSON_ID="ngModel" name="a_PERSON_ID" maxleght="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.a_PERSON_ID">
+                                        <input required class="form-control" disabled type="text" #a_PERSON_ID="ngModel" name="a_PERSON_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.a_PERSON_ID">
                                         <div class="error-message" *ngIf="a_PERSON_ID.invalid && isShowError">
                                             <span *ngIf="a_PERSON_ID?.errors.required">Mã người được ủy quyền
                                                 {{l("ValidationRequired")}}</span>
@@ -75,25 +75,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group required">
                                         <label>Ngày, tháng, năm sinh</label>
-                                        <!-- <input 
-                                        type="text" 
-                                        #a_PERSON_BIRTH_DT 
-                                        name="a_PERSON_BIRTH_DT" 
-                                        class="form-control" 
-                                        bsDatepicker 
-                                        [(ngModel)]="inputModel.a_PERSON_BIRTH_DT" 
-                                        autocomplete="off"> -->
-                                    <input 
-                                    required 
-                                    class="form-control" 
-                                    [disabled]="disableInput"
-                                    type="date" 
-                                    #a_PERSON_BIRTH_DT="ngModel" 
-                                    name="a_PERSON_BIRTH_DT" 
-                                    [ngModel]="inputModel.a_PERSON_BIRTH_DT | date:'yyyy-MM-dd'"
-                                    (ngModelChange)="inputModel.a_PERSON_BIRTH_DT = $event"
-                                    max="2005-12-31"
-                                    >
+                                        <date-control 
+                                        #a_PERSON_BIRTH_DT="ngModel"
+                                        name="a_PERSON_BIRTH_DT"
+                                        [(ngModel)]="inputModel.a_PERSON_BIRTH_DT"
+                                        autoFocus>
+                                        </date-control>
                                         <div class="error-message" *ngIf="a_PERSON_BIRTH_DT.invalid && isShowError">
                                             <span *ngIf="a_PERSON_BIRTH_DT?.errors.required">Ngày, tháng, năm sinh
                                                 {{l("ValidationRequired")}}</span>
@@ -116,23 +103,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Ngày cấp CMND/CCCD</label>
-                                        <!-- <input 
-                                        class="form-control" 
-                                        [disabled]="disableInput"
-                                        type="date" 
-                                        #a_PERSON_CODE_PROVIDED_DT="ngModel" 
-                                        name="a_PERSON_CODE_PROVIDED_DT" 
-                                        [(ngModel)]="inputModel.a_PERSON_CODE_PROVIDED_DT" 
-                                        max="2005-12-31"> -->
-                                        <input 
-                                        class="form-control" 
-                                        [disabled]="disableInput"
-                                        type="date" 
-                                        #a_PERSON_CODE_PROVIDED_DT="ngModel" 
-                                        name="a_PERSON_CODE_PROVIDED_DT" 
-                                        [ngModel]="inputModel.a_PERSON_CODE_PROVIDED_DT | date:'yyyy-MM-dd'"
-                                        (ngModelChange)="inputModel.a_PERSON_CODE_PROVIDED_DT = $event"
-                                        >
+                                        <date-control 
+                                        #a_PERSON_CODE_PROVIDED_DT="ngModel"
+                                        name="a_PERSON_CODE_PROVIDED_DT"
+                                        [(ngModel)]="inputModel.a_PERSON_CODE_PROVIDED_DT"
+                                        autoFocus>
+                                        </date-control>
                                         <div class="error-message" *ngIf="a_PERSON_CODE_PROVIDED_DT.invalid && isShowError">
                                             <span *ngIf="a_PERSON_CODE_PROVIDED_DT?.errors.required">Ngày cấp CMND/CCCD
                                                 {{l("ValidationRequired")}}</span>

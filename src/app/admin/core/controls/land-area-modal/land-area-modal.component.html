@@ -1,0 +1,121 @@
+<popup-frame [title]="branchTitle" (onSearchEvent)="buttonSearch()" (onSelectEvent)="accept()" #popupFrame>
+    <div class="horizontal-form filter-form" autocomplete="off">
+        <div class="m-form m-form--label-align-right">
+            <div class="row align-items-center m--margin-bottom-30">
+                <!-- Begin Filter -->
+                <!-- <h5 class="popup-title col-md-12">{{l("SearchContains")}}</h5> -->
+
+                <!-- <div class="col-md-4">
+                    <div class="form-group">
+                        <label>{{l("Branch")}}</label>
+                        <select2-custom name="brancH_ID" [(ngModel)]="filterInput.brancH_LOGIN" [(list)]="lstBranch" [emptyText]="l('SelectAll')" [valueMember]="'brancH_ID'" [displayMember]="'brancH_CODE|brancH_NAME'">
+                        </select2-custom>
+                    </div>
+                </div> -->
+                <!-- <div class="col-md-4">
+                    <div class="form-group m-form__group align-items-center">
+                        <div class="form-group">
+                            <label>{{l("BranchName")}}</label>
+                            <input [(ngModel)]="filterInput.brancH_NAME" [ngModelOptions]="{standalone: true}" class="form-control m-input" type="text">
+                        </div>
+                    </div>
+                </div> -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Dự án</label>
+                        <select2-custom [(list)]="tempList" [emptyText]="l('SelectAll')" [valueMember]="'value'" [displayMember]="'value'">
+                        </select2-custom>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Chủ đầu tư</label>
+                        <select2-custom [(list)]="tempList" [emptyText]="l('SelectAll')" [valueMember]="'value'" [displayMember]="'value'">
+                        </select2-custom>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group m-form__group align-items-center">
+                        <div class="form-group">
+                            <label>Mã dự án</label>
+                            <input class="form-control m-input" type="text">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group m-form__group align-items-center">
+                        <div class="form-group">
+                            <label>Tên dự án</label>
+                            <input class="form-control m-input" type="text">
+                        </div>
+                    </div>
+                </div>
+                
+                
+
+                <!-- <div style="padding-left:0px;" class="col-md-12">
+                    <h5 class="popup-title">{{l("Branch_Title")}}</h5>
+                </div> -->
+
+                <!-- End Filter -->
+                <button hidden (click)="search()"></button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row align-items-center">
+        <div isLoading="dataTable.isLoading" class="primeng-datatable-container">
+            <h5 class="popup-title col-md-12">{{l("Branch_Title")}}</h5>
+
+            <core-table #coreTable class="custom-table ui-table" (reloadPage)="search()">
+                <thead>
+                    <tr>
+                        <!-- Begin Table Column -->
+                        <th class="center" *ngIf="multiple">
+                            <checkbox-control #checkAllElement (change)="onCheckAll(checkAllElement.inputRef.nativeElement)" [checked]="checkAll">
+                            </checkbox-control>
+                        </th>
+                        <th class="center">
+                            <span style="width: 40px">{{l("No")}}</span>
+                        </th>
+                        <th style="width:25%" sortField="BRANCH_CODE">
+                            <span style="width: 150px">Mã khu đất</span>
+                        </th>
+                        <th style="width:25%" sortField="BRANCH_NAME">
+                            <span style="width: 150px">Tên khu đất</span>
+                        </th>
+                        <th style="width:25%" sortField="ADDR">
+                            <span style="width: 150px">Dự án</span>
+                        </th>
+                        <th style="width:25%" sortField="ADDR">
+                            <span style="width: 150px">Địa điểm</span>
+                        </th>
+                        <th style="width:25%" sortField="ADDR">
+                            <span style="width: 150px">{{l("Note")}}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let record of dataTable.records" class="selectable" (click)="selectRow($event,record)" (dblclick)="onDoubleClick(record)">
+                        <!-- Begin Table Value -->
+                        <td class="center" *ngIf="multiple">
+                            <span class="mo-header"></span>
+                            <checkbox-control (onchange)="setChecked($event.target.checked, record)" [checked]="record['isChecked']"></checkbox-control>
+                        </td>
+                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount + dataTable.records.indexOf(record)) + 1}}
+                        </td>
+                        <td><span class="mo-header"></span></td>
+                        <td><span class="mo-header"></span></td>
+                        <td><span class="mo-header"></span></td>
+                        <td><span class="mo-header"></span></td>
+                        <td><span class="mo-header"></span></td>
+                        <!-- <td [hidden]="!showColPotential"><span class="mo-header"></span>{{record.iS_POTENTIAL}}</td>
+                        <td [hidden]="!showColAuthStatus"><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td> -->
+                        <!-- End Table Value -->
+                    </tr>
+                </tbody>
+            </core-table>
+        </div>
+    </div>
+</popup-frame>

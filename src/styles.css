@@ -579,9 +579,9 @@ button.swal2-cancel {
     height: 37px;
 }
 
-#content>div>div>div.row.align-items-center {
+/* #content>div>div>div.row.align-items-center {
     display: ruby;
-}
+} */
 
 .sticky-top-ie {
     position: fixed;

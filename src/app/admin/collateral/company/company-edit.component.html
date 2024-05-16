@@ -1,0 +1,234 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div class="m-subheader">
+        <div class="row align-items-center">
+            <div class="mr-auto col-auto">
+                <!-- Begin Title -->
+                <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                    <span>{{l("HomePage")}}</span>
+                </a>
+                <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                    <span>Danh mục Công ty</span>
+                </h3>
+                <span [ngSwitch]="editPageState" class="m-section__sub">
+                    <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                    <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                    <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+                </span>
+                <!-- End Title -->
+            </div>
+            <div class="col text-right mt-3 mt-md-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="m-content">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__body">
+                <!-- Begin Form -->
+                <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                    <div class="modal-body row">
+                        <div class="col-md-12 align-right">
+                            <div class="form-group">
+                                <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 mt-3">
+                                <h4>THÔNG TIN CÔNG TY</h4>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Mã công ty</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_IDFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tên công ty</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_NAMEFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Loại hình công ty</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_TYPE"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Mệnh giá</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_PAR_VALUE_PER_SHAREFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tên vùng miền</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="o_SHAREHOLDER_IDFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tên tỉnh/ thành</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="o_SHAREHOLDER_IDFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Địa chỉ</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_ADDRESSFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Số điện thoại</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_TELFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Mã số thuế</label>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            name="companY_TAX_NOFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <!-- Ghi chú -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{l("Note")}}</label>
+                                        <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <h4>DANH SÁCH CỔ PHẦN</h4>
+                          </div>
+                          <div class="action-button col-md-12">
+                            <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewAsset()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                            <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="shareEditTable.removeAllCheckedItem()"><i
+                                    class="pi pi-times"></i>{{l("Delete")}}</button>
+                          </div>
+                          <div class="primeng-datatable-container col-md-12">
+                            <editable-table #shareEditTable class="custom-table ui-table">
+                                <thead>
+                                    <tr>
+      
+                                        <th>
+                                            <span style="width: 40px">
+                                                <checkbox-control [disabled]="disableInput" (onchange)="shareEditTable.checkAll($event.target.checked)" [checked]="shareEditTable.isCheckAll"></checkbox-control>
+                                            </span>
+                                        </th>
+                                        <th><span style="width: 40px">{{l("No")}}</span></th>
+      
+                                        <th sortField="propertY_ID"><span style="width: 150px">Mã cổ đông</span></th>
+                                        <th style="width:50%"><span style="width: 150px">Tên cổ đông</span></th>
+                                        <th style="width:50%" ><span style="width: 150px">Loại cổ đông</span></th>
+                                        <th><span style="width: 150px">Số cổ phần</span></th>
+                                        <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị vốn góp</span></th>
+                                        <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Hoạt động</span></th>
+                                        <th sortField="valuatioN_DT"><span style="width: 150px">{{l("ApproveStatus")}}</span></th>
+                                        <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Ghi chú</span></th>
+                                        <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Thao tác</span></th>
+                                        
+                                    </tr>
+      
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of shareEditTable.dataInPage" #editRow ng-form [hidden]="item.page != shareEditTable.currentPage">
+      
+                                        <td class="center">
+                                            <span class="mo-header"></span>
+                                            <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                        </td>
+      
+                                        <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="" class="form-control m-input">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </editable-table>
+                          </div>
+                    </div>
+                </form>
+                <!-- Begin Form -->
+            </div>
+        </div>
+    </div>
+</div>

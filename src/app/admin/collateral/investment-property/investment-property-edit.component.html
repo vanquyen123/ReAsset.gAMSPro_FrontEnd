@@ -1,0 +1,505 @@
+<div [@routerTransition]>
+  <appToolbar_re #appToolbar></appToolbar_re>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Danh sách bất động sản đầu tư</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+                      <div class="col-md-12" *ngIf="inputModel.autH_STATUS == 'R' && (editPageState == 'Edit' || editPageState == 'ViewDetail')">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>NỘI DUNG TRẢ VỀ</h4>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Người trả về</label>
+                                    <input disabled class="form-control" name="checkeR_NAME" type="text" [(ngModel)]="inputModel.checkeR_NAME">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Lý do trả về</label>
+                                    <textarea disabled class="form-control" name="rejecT_REASON" type="text" [(ngModel)]="inputModel.rejecT_REASON"></textarea>
+                                </div>
+                              </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" *ngIf="inputModel.autH_STATUS == 'C' && (editPageState == 'Edit' || editPageState == 'ViewDetail')">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>NỘI DUNG HỦY</h4>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Người hủy</label>
+                                    <input disabled class="form-control" name="checkeR_NAME" type="text" [(ngModel)]="inputModel.checkeR_NAME">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Lý do hủy</label>
+                                    <textarea disabled class="form-control" name="rejecT_REASON" type="text" [(ngModel)]="inputModel.rejecT_REASON"></textarea>
+                                </div>
+                              </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <h3>THÔNG TIN CHUNG</h3>
+                            </div>
+                            
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Người tạo</label>
+                                  <input disabled class="form-control" type="text" #makeR_NAME="ngModel" name="makeR_NAME" [(ngModel)]="inputModel.makeR_NAME">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Ngày tạo</label>
+                                <date-control
+                                [disabled] = "true"
+                                #creatE_DT="ngModel"
+                                name="creatE_DT"
+                                [(ngModel)]="inputModel.creatE_DT"
+                                autoFocus>
+                                </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-12">
+                              <h4>THÔNG TIN BĐS ĐẦU TƯ</h4>
+                            </div>
+
+                            <!-- <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Mã BĐS đầu tư</label>
+                                  <input disabled class="form-control" type="text" #invesT_PROP_ID="ngModel" name="invesT_PROP_ID" [(ngModel)]="inputModel.invesT_PROP_ID">
+                              </div>
+                            </div> -->
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Mã BĐS đầu tư</label>
+                                  <div class="input-group">
+                                      <input [readOnly]="true" class="form-control" name="invesT_PROP_ID" #invesT_PROP_ID="ngModel" [(ngModel)]="inputModel.id" />
+                                      <button type="button" class="btn btn-primary" (click)="reaModal.show()">...</button>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Địa điểm</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #invesT_PROP_LOCATION="ngModel" name="invesT_PROP_LOCATION" [(ngModel)]="inputModel.invesT_PROP_LOCATION">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Tên BĐS</label>
+                                  <input required [disabled]="disableInput" class="form-control" type="text" #invesT_PROP_NAME="ngModel" name="invesT_PROP_NAME" [(ngModel)]="inputModel.invesT_PROP_NAME">
+                                  <div class="error-message" *ngIf="invesT_PROP_NAME.invalid && isShowError">
+                                      <span *ngIf="invesT_PROP_NAME?.errors.required">Tên BĐS
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4" hidden>
+                              <div class="form-group required">
+                                  <label>ID tài sản</label>
+                                  <input disabled class="form-control" type="text" name="property_ID" #property_ID="ngModel" [(ngModel)]="inputModel.propertY_INFORMATION.id">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Loại tài sản</label>
+                                  <input disabled class="form-control" type="text" name="propertY_TYPE_NAME" [(ngModel)]="inputModel.propertY_INFORMATION.propertY_TYPE_NAME">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Nhóm tài sản cấp 1</label>
+                                  <input disabled class="form-control" type="text" name="propertY_FIRST_LEVEL_NAME" [(ngModel)]="inputModel.propertY_INFORMATION.propertY_FIRST_LEVEL_NAME">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Nhóm tài sản cấp 2</label>
+                                  <input disabled class="form-control" type="text" name="propertY_SECOND_LEVEL_NAME" [(ngModel)]="inputModel.propertY_INFORMATION.propertY_SECOND_LEVEL_NAME">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Thông tin mô tả</label>
+                                  <input disabled class="form-control" type="text" name="propertY_DESCRIPTION" [(ngModel)]="inputModel.propertY_INFORMATION.propertY_DESCRIPTION">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Nguyên giá tài sản</label>
+                                  <input disabled class="form-control" type="text" name="originaL_PRICE" [(ngModel)]="inputModel.propertY_INFORMATION.originaL_PRICE">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Công ty quản lý</label>
+                                  <input disabled class="form-control" type="text" name="managemenT_COMPANY_NAME" [(ngModel)]="inputModel.propertY_INFORMATION.managemenT_COMPANY_NAME">
+                                  <div class="error-message" *ngIf="property_ID.invalid && isShowError">
+                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-8">
+                              <div class="form-group">
+                                  <label>{{l("Note")}}</label>
+                                  <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                              </div>
+                            </div>
+                            <div class="col-md-12">
+                              <h4>THÔNG TIN CHI TIẾT</h4>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Dự án</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #projecT_ID="ngModel"
+                                    name="projecT_ID"
+                                    [(ngModel)]="inputModel.projecT_ID"
+                                    [(list)]="projectList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Diện tích khuôn viên</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #invesT_PROP_CAMPUS_AREA="ngModel" name="invesT_PROP_CAMPUS_AREA" [(ngModel)]="inputModel.invesT_PROP_CAMPUS_AREA">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Diện tích sàn xây dựng</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #invesT_PROP_BUILD_AREA="ngModel" name="invesT_PROP_BUILD_AREA" [(ngModel)]="inputModel.invesT_PROP_BUILD_AREA">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Diện tích sàn kinh doanh</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #invesT_PROP_BUSINESS_AREA="ngModel" name="invesT_PROP_BUSINESS_AREA" [(ngModel)]="inputModel.invesT_PROP_BUSINESS_AREA">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Đơn vị vận hành/ thuê khai thác</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #retaL_PARTNER_ID="ngModel"
+                                    name="retaL_PARTNER_ID"
+                                    [(ngModel)]="inputModel.rentaL_PARTNER_ID"
+                                    [(list)]="partnerList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Hiện trạng BĐS</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #invesT_PROP_STATUS="ngModel"
+                                    name="invesT_PROP_STATUS"
+                                    [(ngModel)]="inputModel.invesT_PROP_STATUS"
+                                    [(list)]="propertyStatus"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Thời gian dự kiến hoàn thành</label>
+                                  <date-control
+                                  [disabled] = "disableInput"
+                                  #invesT_PROP_PREDICT_COMPLETE_DT="ngModel"
+                                  name="invesT_PROP_PREDICT_COMPLETE_DT"
+                                  [(ngModel)]="inputModel.invesT_PROP_PREDICT_COMPLETE_DT"
+                                  autoFocus>
+                                  </date-control>
+                                  <!-- <input [disabled]="disableInput" class="form-control" type="text" #lanD_AREA_NAME="ngModel" name="lanD_AREA_NAME" [(ngModel)]="inputModel.lanD_AREA_NAME"> -->
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tình trạng pháp lý</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #invesT_PROP_LEGAL_STATUS="ngModel"
+                                    name="invesT_PROP_LEGAL_STATUS"
+                                    [(ngModel)]="inputModel.invesT_PROP_LEGAL_STATUS"
+                                    [(list)]="legalStatus"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Thời gian dự kiến có sổ</label>
+                                  <date-control
+                                  [disabled] = "disableInput"
+                                  #invesT_PROP_SODO_PROVIDE_DT="ngModel"
+                                  name="invesT_PROP_SODO_PROVIDE_DT"
+                                  [(ngModel)]="inputModel.invesT_PROP_SODO_PROVIDE_DT"
+                                  autoFocus>
+                                  </date-control>
+                                  <!-- <input [disabled]="disableInput" class="form-control" type="text" #invesT_PROP_SODO_PROVIDE_DT="ngModel" name="invesT_PROP_SODO_PROVIDE_DT" [(ngModel)]="inputModel.invesT_PROP_SODO_PROVIDE_DT"> -->
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tình trạng cấp GCN</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #invesT_PROP_GCN_STATUS="ngModel"
+                                    name="invesT_PROP_GCN_STATUS"
+                                    [(ngModel)]="inputModel.invesT_PROP_GCN_STATUS"
+                                    [(list)]="GCNStatus"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-md-12 mt-3" [hidden]="editPageState == 'Add'">
+                        <h4>QUẢN LÝ TẦNG THUỘC BĐS</h4>
+                      </div>
+                      <div class="action-button col-md-12" [hidden]="editPageState == 'Add'">
+                        <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewFloor()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                        <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeFloor()"><i
+                                class="pi pi-times"></i>{{l("Delete")}}</button>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12" [hidden]="editPageState == 'Add'">
+                        <editable-table #useRegistrationEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+  
+                                    <th>
+                                        <span style="width: 40px">
+                                            <checkbox-control [disabled]="disableInput" (onchange)="checkAllFloor($event.target.checked)" [checked]="useRegistrationEditTable.isCheckAll"></checkbox-control>
+                                        </span>
+                                    </th>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                    <th sortField="propertY_ID"><span style="width: 150px">Tầng</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Diện tích</span></th>
+                                    <th sortField="valuatioN_DT"><span style="width: 150px">{{l("Note")}}</span></th>
+                                    
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of useRegistrationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != useRegistrationEditTable.currentPage">
+  
+                                    <td class="center">
+                                        <span class="mo-header"></span>
+                                        <checkbox-control [disabled]="disableInput" (onchange)="checkedFloor(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
+                                    </td>
+  
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="flooR_DESCRIPTION{{item.no}}" class="form-control m-input" [(ngModel)]="item.flooR_DESCRIPTION">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="flooR_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.flooR_AREA">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+                      <div class="col-md-12 mt-3" *ngIf="contractEditTable">
+                        <h4>HỢP ĐỒNG THUÊ CỦA BĐS</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12" *ngIf="contractEditTable">
+                        <editable-table #contractEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã hợp đồng</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Ngày ký hợp đồng</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Giá trị hợp đồng</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Thời gian thuê</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Diện tích</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tầng</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Đơn giá thuê</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of contractEditTable.dataInPage" #editRow ng-form [hidden]="item.page != contractEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <a href="/app/admin/contract-view;contract={{ item.contracT_ID }}">
+                                        <span class="mo-header"></span>{{ item.contracT_ID }}
+                                      </a>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.contracT_ITEM_EFFECT_DT ? (item.contracT_ITEM_EFFECT_DT | momentFormat:'L') : '-'}}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.contracT_ITEM_RENTAL_PRICE.rentaL_PRICE_TOTAL_REVENUE }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.contracT_ITEM_RENTAL_AREA }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.contracT_ITEM_RENTAL_PRICE.rentaL_PRICE_UNIT_PRICE_VND }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+                      <div class="col-md-12 mt-3" *ngIf="mortgageEditTable">
+                        <h4>TÌNH TRẠNG THẾ CHẤP</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12" *ngIf="mortgageEditTable">
+                        <editable-table #mortgageEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã TP/ Khoản vay</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tên TP/ Khoản vay</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Kỳ hạn</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Ngày vay</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Ngày đáo hạn</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Đơn vị định giá</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Ngày định giá</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Tình trạng thế chấp</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Chia sẻ thế chấp</span></th>
+                                    <th style="width:50%"><span style="width: 150px">Trạng thái</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of mortgageEditTable.dataInPage" #editRow ng-form [hidden]="item.page != mortgageEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <a href="/app/admin/mortgage-view;mortgage={{ item.id }}">
+                                        <span class="mo-header"></span>{{ item.id }}
+                                      </a>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.mortgagE_NAME }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.mortgagE_TERM }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.mortgagE_DUE_DATE ? (item.mortgagE_DUE_DATE | momentFormat:'L') : '-'}}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.valuatioN_PARTY_NAME }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.valuatioN_DT ? (item.valuatioN_DT | momentFormat:'L') : '-'}}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_STATUS_NAME }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_IS_SHARED ? 'Có chia sẻ' : 'Không chia sẻ' }}
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>{{ item.mortgagE_STATUS_NAME }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>
+
+<rea-modal #reaModal [multiple]="false" (onSelect)="onSelectRea($event)"></rea-modal>

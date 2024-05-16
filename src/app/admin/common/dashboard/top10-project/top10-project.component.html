@@ -1,0 +1,15 @@
+<div class="card w-100">
+    <div class="card-header">
+        <p class="font-weight-bold h6 m-0">
+            Top 10 dự án có định giá cao nhất
+        </p>
+    </div>
+    <div class="list-group">
+        <ng-template ngFor let-project [ngForOf]="projectList" let-i="index">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between" (click)="onViewDetail(project.projecT_ID)" style="cursor: pointer;">
+                <p class="m-0">{{ project.projecT_NAME }}</p>
+                <p class="font-weight-light m-0">{{ project.projecT_VALUATION.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}) }}</p>
+            </button>
+        </ng-template>
+    </div>
+</div>

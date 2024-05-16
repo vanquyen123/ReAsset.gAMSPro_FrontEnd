@@ -1,0 +1,252 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div id="page-list-area">
+      <div class="m-subheader">
+          <div class="row align-items-center">
+              <div class="mr-auto col-auto">
+                  <a
+                      [routerLink]="rootPage()"
+                      class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                  >
+                      <span>{{l("HomePage")}}</span>
+                  </a>
+                  <h3
+                      class="m-subheader__title m-subheader__title--separator"
+                  >
+                      <!-- Begin Title -->
+                      <span>Danh mục Công ty thành viên</span>
+                      <!-- End Title -->
+                  </h3>
+              </div>
+              <div class="col text-right mt-3 mt-md-0">
+                  <div class="btn-group dropdown mr-2">
+                      <button class="btn btn-outline-success"
+                      *ngIf="appToolbar.buttonSearchEnable"
+                          (click)="exportExcel()">
+                          <i class="far fa-file-excel"></i>
+                          {{l("ExcelOperations")}}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="content"
+          class="m-content">
+          <div class="m-portlet m-portlet--mobile">
+              <div class="m-portlet__body">
+                  <form class="horizontal-form filter-form"
+                      autocomplete="off">
+                      <div class="m-form m-form--label-align-right">
+                          <div class="row align-items-center m--margin-bottom-30">
+                              <!-- Begin Filter -->
+                              <div class="col-md-12 mt-3">
+                                <h4>THÔNG TIN CÔNG TY</h4>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Mã công ty</label>
+                                    <input 
+                                        disabled
+                                        name="companY_IDFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Tên công ty</label>
+                                    <input 
+                                        disabled
+                                        name="companY_NAMEFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Loại hình công ty</label>
+                                    <input 
+                                        disabled
+                                        name="companY_TYPE"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Mệnh giá</label>
+                                    <input 
+                                        disabled
+                                        name="companY_PAR_VALUE_PER_SHAREFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Tên vùng miền</label>
+                                    <input 
+                                        disabled
+                                        name="o_SHAREHOLDER_IDFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Tên tỉnh/ thành</label>
+                                    <input 
+                                        disabled
+                                        name="o_SHAREHOLDER_IDFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Địa chỉ</label>
+                                    <input 
+                                        disabled
+                                        name="companY_ADDRESSFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Số điện thoại</label>
+                                    <input 
+                                        disabled
+                                        name="companY_TELFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Mã số thuế</label>
+                                    <input 
+                                        disabled
+                                        name="companY_TAX_NOFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Ghi chú</label>
+                                    <input 
+                                        disabled
+                                        name="notesFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                              </div>
+                              
+                              <!-- End Filter -->
+                              <div style="display:none;"
+                                  class="col-md-12">
+                                  <div class="form-group">
+                                      <button *ngIf="appToolbar.buttonSearchEnable"
+                                          class="btn btn-primary btn-search"
+                                          (click)="onSearch()"></button>
+                                  </div>
+                              </div>
+                              <div class="col-md-12 mt-3">
+                                <h4>DANH SÁCH CỔ PHẦN</h4>
+                              </div>
+                          </div>
+                      </div>
+                  </form>
+                  <div class="row align-items-center">
+                    <div class="action-button col-md-12">
+                      <button type="button" class="btn btn-primary" (click)="addNewAsset()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                      <button type="button" class="btn btn-danger" (click)="shareEditTable.removeAllCheckedItem()"><i
+                              class="pi pi-times"></i>{{l("Delete")}}</button>
+                    </div>
+                    <div class="primeng-datatable-container">
+                      <editable-table #shareEditTable class="custom-table ui-table">
+                          <thead>
+                              <tr>
+  
+                                  <th>
+                                      <span style="width: 40px">
+                                          <checkbox-control (onchange)="shareEditTable.checkAll($event.target.checked)" [checked]="shareEditTable.isCheckAll"></checkbox-control>
+                                      </span>
+                                  </th>
+                                  <th><span style="width: 40px">{{l("No")}}</span></th>
+  
+                                  <th sortField="propertY_ID"><span style="width: 150px">Mã cổ đông</span></th>
+                                  <th style="width:50%"><span style="width: 150px">Tên cổ đông</span></th>
+                                  <th style="width:50%" ><span style="width: 150px">Loại cổ đông</span></th>
+                                  <th><span style="width: 150px">Số cổ phần</span></th>
+                                  <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị vốn góp</span></th>
+                                  <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Hoạt động</span></th>
+                                  <th sortField="valuatioN_DT"><span style="width: 150px">{{l("ApproveStatus")}}</span></th>
+                                  <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Ghi chú</span></th>
+                                  <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Thao tác</span></th>
+                              </tr>
+  
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let item of shareEditTable.dataInPage" #editRow ng-form [hidden]="item.page != shareEditTable.currentPage">
+  
+                                  <td class="center">
+                                      <span class="mo-header"></span>
+                                      <checkbox-control (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                  </td>
+  
+                                  <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input disabled name="" class="form-control m-input">
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </editable-table>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

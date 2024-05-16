@@ -39,7 +39,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group required">
                                         <label>Mã cổ đông ngoài</label>
-                                        <input required class="form-control" disabled type="text" #o_SHAREHOLDER_ID="ngModel" name="o_SHAREHOLDER_ID" maxleght="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.o_SHAREHOLDER_ID">
+                                        <input required class="form-control" disabled type="text" #o_SHAREHOLDER_ID="ngModel" name="o_SHAREHOLDER_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.o_SHAREHOLDER_ID">
                                         <div class="error-message" *ngIf="o_SHAREHOLDER_ID.invalid && isShowError">
                                             <span *ngIf="o_SHAREHOLDER_ID?.errors.required">Mã cổ đông ngoài
                                                 {{l("ValidationRequired")}}</span>
@@ -115,40 +115,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Dao Code -->
-                                <!-- <div class="col-md-10">
-                                    <div class="form-group">
-                                        <label>{{l("DaoCode")}} </label>
-                                        <input class="form-control" [disabled]="disableInput" type="text" #daO_CODE="ngModel" name="daO_CODE" [(ngModel)]="inputModel.daO_CODE">
-                                    </div>
-                                </div> -->
-
-                                <!-- Dao Name -->
-                                <!-- <div class="col-md-10">
-                                    <div class="form-group">
-                                        <label>{{l("DaoName")}} </label>
-                                        <input class="form-control" [disabled]="disableInput" type="text" #daO_NAME="ngModel" name="daO_NAME" [(ngModel)]="inputModel.daO_NAME">
-                                    </div>
-                                </div> -->
-
-                                <!-- Hoạt động -->
-                                <!-- <div class="col-md-10">
-                                    <div class="form-group outter-vertical-center">
-                                        <div class="form-group inner-vertical-center">
-                                            <label class="m-checkbox" for="recorD_STATUS">{{l("IsActive")}}
-                                                <input type="checkbox"
-                                                    [disabled]="disableInput"
-                                                    id="recorD_STATUS"
-                                                    #recorD_STATUS
-                                                    name="recorD_STATUS"
-                                                    [checked]="inputModel.recorD_STATUS == '1'"
-                                                    (change)="inputModel.recorD_STATUS = recorD_STATUS.checked? '1' : '0'">
-                                                <span></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> -->
                                 <!-- Ghi chú -->
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -165,5 +131,3 @@
         </div>
     </div>
 </div>
-
-<!-- <branch-modal #branchModal [multiple]="false" (onSelect)="onSelectBranch($event)"></branch-modal> -->

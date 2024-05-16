@@ -1,0 +1,820 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Tra cứu tài sản</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Mã tài sản</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Loại tài sàn</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Nhóm tài sản cấp 1</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Nhóm tài sản cấp 2</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Tên tài sản</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Thông tin mô tả</label>
+                                            <textarea class="form-control" disabled type="text" name="notes"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Ngày mua tài sản</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Số Ticket đề xuất mua</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Nhà cung cấp</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Công ty quản lý</label>
+                                            <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Hình ảnh gần nhất</label>
+                                            <!-- <img 
+                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDy_lbXuskybPPp6GG4mkHRubVzB8Zfon7AyHSW3D9Gw&s" 
+                                            style="max-width: 100%; height: 130px; cursor: pointer" 
+                                            (click)="show($event)"> -->
+                                            <div 
+                                            style="width: 100%; 
+                                            height: 130px;
+                                            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDy_lbXuskybPPp6GG4mkHRubVzB8Zfon7AyHSW3D9Gw&s'); 
+                                            background-size: cover;
+                                            cursor: pointer"
+                                            (click)="show($event)"
+                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDy_lbXuskybPPp6GG4mkHRubVzB8Zfon7AyHSW3D9Gw&s"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-2">
+                                        <div class="form-group">
+                                            <label>Hình ảnh đính kèm ban đầu</label>
+                                            <div 
+                                            style="width: 100%; 
+                                            height: 130px;
+                                            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwOPRHQEDdB_cC2a52Izn5Gd6aKLQzGIr3mj_-BXK0ig&s'); 
+                                            background-size: cover;
+                                            cursor: pointer"
+                                            (click)="show($event)"
+                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwOPRHQEDdB_cC2a52Izn5Gd6aKLQzGIr3mj_-BXK0ig&s"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Số serial</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Tên trên nhãn</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Thương hiệu</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Kích thước/ Diện tích</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Màu sắc</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Năm sản xuất</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Biển số</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Loại khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Tỷ lệ khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Số tháng khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Số tháng đã khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Nguyên giá</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Giá trị khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Giá trị còn lại</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Giá trị khấu hao còn lại</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Số tiền đã khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Trạng thái tài sản</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Trạng thái khấu hao</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Trạng thái sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Trạng thái dán nhãn</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Trạng thái sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Kho</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Vị trí kho</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Công ty sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Khối sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Phòng ban sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Nhân viên sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Vị trí sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Hình thức sử dụng</label>
+                                      <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-8">
+                                  <div class="form-group">
+                                      <label>{{l("Note")}}</label>
+                                      <textarea class="form-control" disabled type="text" name="notes"></textarea>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                            <h4 class="col-md-12">THÔNG TIN TÀI SẢN CHA</h4>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Mã tài sản cha</label>
+                                    <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tên tài sản cha</label>
+                                    <input class="form-control" disabled type="text" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}">
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH TÀI SẢN CON</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #childAssetEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã tài sản con</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Tên tài sản con</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Thông tin tài sản</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of childAssetEditTable.dataInPage" #editRow ng-form [hidden]="item.page != childAssetEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                        <span class="mo-header"></span>
+                                        <input disabled name="" class="form-control m-input">
+                                      </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>TICKET LIÊN QUAN</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #ticketEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Màn hình/Chức năng</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Số ticket</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Loại Ticket</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Người đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ngày đề xuất</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of ticketEditTable.dataInPage" #editRow ng-form [hidden]="item.page != ticketEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+                      
+                      <div class="col-md-12 mt-3">
+                        <h4>THÔNG TIN KHẤU HAO</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #depreciationEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Ngày khấu hao</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Công ty chịu chi phí</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Số tiền khấu hao</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Nội dung </span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of depreciationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != depreciationEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>QUÁ TRÌNH SỬ DỤNG</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #useProcessEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Chức năng</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Mã phiếu</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày thực hiện</span></th>
+                                    <th sortField="notes"><span style="width: 150px">File đính kèm</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Kho nhận</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Vị trí kho nhận</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Công ty sử dụng</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Khối sử dụng</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Phòng ban sử dụng</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Nhân viên sử dụng</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Vị trí tài sản</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Hình thức sử dụng</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Mức độ an toàn thông tin</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of useProcessEditTable.dataInPage" #editRow ng-form [hidden]="item.page != useProcessEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>THÔNG TIN BẢO HÀNH VÀ LỊCH BẢO HÀNH</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #guaranteeEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Thời gian bảo hành</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Ngày bảo hành</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Ngày hết hạn</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Đơn vị bảo hành</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Địa điểm bảo hành</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Nội dung bảo hành</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of guaranteeEditTable.dataInPage" #editRow ng-form [hidden]="item.page != guaranteeEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>ĐỀ XUẤT SỬA CHỮA</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #repairRequestEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã phiếu sửa chữa</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Ngày đề xuất</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Công ty đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Người đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Chi phí dự kiến</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ngày sửa chữa dự kiến</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Đơn vị sửa chữa dự kiến</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Lý do sửa chữa</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Nội dung sửa chữa</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of repairRequestEditTable.dataInPage" #editRow ng-form [hidden]="item.page != repairRequestEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>THÔNG TIN CHI TIẾT SỬA CHỮA THỰC TẾ</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #actualRepairEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã phiếu sửa chữa</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Ngày đề xuất</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Công ty đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Người đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ngày sửa chữa thực tế</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Chi phí thực tế</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Đơn vị sửa chữa thực tế</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Lý do sửa chữa</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Hình thức sửa chữa</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Nội dung sửa chữa thực tế</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of actualRepairEditTable.dataInPage" #editRow ng-form [hidden]="item.page != actualRepairEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>THÔNG TIN THANH LÝ</h4>
+                      </div>
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #liquidationEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="propertY_ID"><span style="width: 150px">Mã phiếu thanh lý</span></th>
+                                    <th sortField="makeR_ID"><span style="width: 150px">Ngày thanh lý</span></th>
+                                    <th sortField="modifY_DT"><span style="width: 150px">Hình thức thanh lý</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Đơn vị mua tài sản thanh lý</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Loại thanh lý</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Mã tài sản con thực hiện thanh lý</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Số tiền thanh lý</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Giá trị còn lại sau thanh lý</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                                </tr>
+  
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of liquidationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != liquidationEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                      </div>
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>
+
+<div bsModal #popupFrameModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupFrameModal" aria-hidden="true" [config]="{backdrop: 'static' }">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <span>Modal header</span>
+                </h4>
+                <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body d-flex justify-content-center">
+                <img
+                    src="{{ imgSrc }}"
+                    style="max-width:100%;"
+                    class="modal-hover-opacity mx-auto"
+                /> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" (click)="close();"><i
+                    class="fa fa-ban" aria-hidden="true"></i>
+                <span>Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>

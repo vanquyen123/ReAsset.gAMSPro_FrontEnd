@@ -43,7 +43,7 @@
                           <div class="col-md-6">
                             <div class="form-group required">
                                 <label>Người tạo</label>
-                                <input disabled class="form-control" type="text" #makeR_ID="ngModel" name="makeR_ID" maxleght="15" [(ngModel)]="inputModel.makeR_ID">
+                                <input disabled class="form-control" type="text" #makeR_ID="ngModel" name="makeR_ID" maxlength="15" [(ngModel)]="inputModel.makeR_ID">
                                 <div class="error-message" *ngIf="makeR_ID.invalid && isShowError">
                                     <span *ngIf="makeR_ID?.errors.required">Người tạo
                                         {{l("ValidationRequired")}}</span>
@@ -55,27 +55,20 @@
                           <div class="col-md-6">
                             <div class="form-group required">
                               <label>Ngày tạo</label>
-                              <input 
-                              required 
-                              disabled
-                              class="form-control" 
-                              type="date" 
-                              #creatE_DT="ngModel" 
-                              name="creatE_DT" 
-                              [ngModel]="inputModel.creatE_DT | date:'yyyy-MM-dd'"
-                              (ngModelChange)="inputModel.creatE_DT = $event"
-                              >
-                              <div class="error-message" *ngIf="creatE_DT.invalid && isShowError">
-                                <span *ngIf="creatE_DT?.errors.required">Ngày tạo
-                                  {{l("ValidationRequired")}}</span>
-                              </div>
+                              <date-control
+                                [disabled] = "true"
+                                #creatE_DT="ngModel"
+                                name="creatE_DT"
+                                [(ngModel)]="inputModel.creatE_DT"
+                                autoFocus>
+                                </date-control>
                             </div>
                           </div>
 
                           <div class="col-md-6">
                             <div class="form-group required">
                                 <label>Số hợp đồng</label>
-                                <input required [disabled]="disableInput" class="form-control" type="text" #contracT_ID="ngModel" name="contracT_ID" maxleght="15" [(ngModel)]="inputModel.contracT_ID">
+                                <input required [disabled]="disableInput" class="form-control" type="text" #contracT_ID="ngModel" name="contracT_ID" maxlength="15" [(ngModel)]="inputModel.id">
                                 <div class="error-message" *ngIf="contracT_ID.invalid && isShowError">
                                     <span *ngIf="contracT_ID?.errors.required">Số hợp đồng
                                         {{l("ValidationRequired")}}</span>
@@ -87,16 +80,14 @@
                           <div class="col-md-6">
                             <div class="form-group required">
                               <label>Ngày ký hợp đồng</label>
-                              <input 
-                              required 
-                              class="form-control" 
-                              [disabled]="disableInput"
-                              type="date" 
-                              #contracT_SIGN_DT="ngModel" 
-                              name="contracT_SIGN_DT" 
-                              [ngModel]="inputModel.contracT_SIGN_DT | date:'yyyy-MM-dd'"
-                              (ngModelChange)="inputModel.contracT_SIGN_DT = $event"
-                              >
+                              <date-control
+                                [disabled]="disableInput"
+                                required
+                                #contracT_SIGN_DT="ngModel"
+                                name="contracT_SIGN_DT"
+                                [(ngModel)]="inputModel.contracT_SIGN_DT"
+                                autoFocus>
+                              </date-control>
                               <div class="error-message" *ngIf="contracT_SIGN_DT.invalid && isShowError">
                                 <span *ngIf="contracT_SIGN_DT?.errors.required">Ngày ký hợp đồng
                                   {{l("ValidationRequired")}}</span>
@@ -137,7 +128,7 @@
                           <div class="col-md-6">
                             <div class="form-group required">
                                 <label>Tổng giá trị hợp đồng</label>
-                                <input required disabled class="form-control" type="text" #totaL_REVENUE="ngModel" name="totaL_REVENUE" maxleght="15" [(ngModel)]="inputModel.totaL_REVENUE">
+                                <input required disabled class="form-control" type="text" #totaL_REVENUE="ngModel" name="totaL_REVENUE" maxlength="15" [(ngModel)]="inputModel.totaL_REVENUE">
                                 <div class="error-message" *ngIf="totaL_REVENUE.invalid && isShowError">
                                     <span *ngIf="totaL_REVENUE?.errors.required">Tổng giá trị hợp đồng
                                         {{l("ValidationRequired")}}</span>
@@ -201,33 +192,27 @@
                                       <span class="mo-header"></span>
                                       <input [disabled]="disableInput" name="anneX_NAME{{item.no}}" class="form-control m-input" [(ngModel)]="item.anneX_NAME">
                                     </td>
-                                    <td>
+                                    <td class="center">
                                       <span class="mo-header"></span>
-                                      <input 
-                                      class="transparent form-control m-input"
+                                      <date-control 
                                       [disabled]="disableInput"
-                                      type="date" 
-                                      #anneX_SIGN_DT="ngModel" 
-                                      name="anneX_SIGN_DT" 
-                                      [ngModel]="item.anneX_SIGN_DT | date:'yyyy-MM-dd'"
-                                      (ngModelChange)="item.anneX_SIGN_DT = $event"
-                                      >
+                                      name="anneX_SIGN_DT{{item.no}}"
+                                      [(ngModel)]="item.anneX_SIGN_DT"
+                                      autoFocus>
+                                      </date-control>
                                     </td>
                                     <td>
                                         <span class="mo-header"></span>
                                         <input [disabled]="disableInput" name="anneX_TERM{{item.no}}" class="form-control m-input" [(ngModel)]="item.anneX_TERM">
                                     </td>
                                     <td class="center">
-                                        <span class="mo-header"></span>
-                                        <input 
-                                        class="transparent form-control m-input"
-                                        [disabled]="disableInput"
-                                        type="date" 
-                                        #anneX_SIGN_DT="ngModel" 
-                                        name="anneX_TERMINATE_DT" 
-                                        [ngModel]="item.anneX_TERMINATE_DT | date:'yyyy-MM-dd'"
-                                        (ngModelChange)="item.anneX_TERMINATE_DT = $event"
-                                        >
+                                      <span class="mo-header"></span>
+                                      <date-control 
+                                      [disabled]="disableInput"
+                                      name="anneX_TERMINATE_DT{{item.no}}"
+                                      [(ngModel)]="item.anneX_TERMINATE_DT"
+                                      autoFocus>
+                                      </date-control>
                                     </td>
                                     <td>
                                       <span class="mo-header"></span>
@@ -298,9 +283,16 @@
                                         <option *ngFor="let type of itemTypes" [value]="type.cdval" >{{ type.content }}</option>
                                       </select> -->
                                   </td>
-                                  <td>
+                                  <!-- <td>
                                     <span class="mo-header"></span>
                                     <input [disabled]="disableInput" name="contracT_ITEM_INVESTED_PROP_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.contracT_ITEM_INVESTED_PROP_ID">
+                                  </td> -->
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <div class="input-group">
+                                      <input [readOnly]="true" class="form-control m-input" name="contracT_ITEM_INVESTED_PROP_ID{{item.no}}" [(ngModel)]="item.contracT_ITEM_INVESTED_PROP_ID" />
+                                      <button [disabled]="disableInput" type="button" class="btn btn-primary" style="padding: 0 5px;" (click)="reaModal.show()">...</button>
+                                    </div>
                                   </td>
 
                                   <td>
@@ -325,28 +317,22 @@
 
                                   <td class="center">
                                     <span class="mo-header"></span>
-                                    <input 
-                                    class="transparent form-control m-input"
+                                    <date-control 
                                     [disabled]="disableInput"
-                                    type="date" 
-                                    #contracT_ITEM_EFFECT_DT="ngModel" 
-                                    name="contracT_ITEM_EFFECT_DT" 
-                                    [ngModel]="item.contracT_ITEM_EFFECT_DT | date:'yyyy-MM-dd'"
-                                    (ngModelChange)="item.contracT_ITEM_EFFECT_DT = $event"
-                                    >
+                                    name="contracT_ITEM_EFFECT_DT{{item.no}}"
+                                    [(ngModel)]="item.contracT_ITEM_EFFECT_DT"
+                                    autoFocus>
+                                    </date-control>
                                   </td>
 
                                   <td class="center">
                                     <span class="mo-header"></span>
-                                    <input 
-                                    class="transparent form-control m-input"
+                                    <date-control 
                                     [disabled]="disableInput"
-                                    type="date" 
-                                    #contracT_ITEM_TERMINATE_DT="ngModel" 
-                                    name="contracT_ITEM_TERMINATE_DT" 
-                                    [ngModel]="item.contracT_ITEM_TERMINATE_DT | date:'yyyy-MM-dd'"
-                                    (ngModelChange)="item.contracT_ITEM_TERMINATE_DT = $event"
-                                    >
+                                    name="contracT_ITEM_TERMINATE_DT{{item.no}}"
+                                    [(ngModel)]="item.contracT_ITEM_TERMINATE_DT"
+                                    autoFocus>
+                                    </date-control>
                                   </td>
                                   
                                   <td>
@@ -421,15 +407,12 @@
 
                                     <td class="center">
                                       <span class="mo-header"></span>
-                                      <input 
-                                      class="transparent form-control m-input"
+                                      <date-control 
                                       [disabled]="disableInput"
-                                      type="date" 
-                                      #rentAl_PRICE_EFFECT_DT="ngModel" 
-                                      name="rentAl_PRICE_EFFECT_DT{{item.no}}" 
-                                      [ngModel]="item.rentAl_PRICE_EFFECT_DT | date:'yyyy-MM-dd'"
-                                      (ngModelChange)="item.rentAl_PRICE_EFFECT_DT = $event"
-                                      >
+                                      name="rentAl_PRICE_EFFECT_DT{{item.no}}"
+                                      [(ngModel)]="item.rentAl_PRICE_EFFECT_DT"
+                                      autoFocus>
+                                      </date-control>
                                     </td>
 
                                     <td>
@@ -439,15 +422,12 @@
 
                                     <td class="center">
                                       <span class="mo-header"></span>
-                                      <input 
-                                      class="transparent form-control m-input"
+                                      <date-control 
                                       [disabled]="disableInput"
-                                      type="date" 
-                                      #rentaL_PRICE_EXPIRE_DT="ngModel" 
-                                      name="rentaL_PRICE_EXPIRE_DT{{item.no}}" 
-                                      [ngModel]="item.rentaL_PRICE_EXPIRE_DT | date:'yyyy-MM-dd'"
-                                      (ngModelChange)="item.rentaL_PRICE_EXPIRE_DT = $event"
-                                      >
+                                      name="rentaL_PRICE_EXPIRE_DT{{item.no}}"
+                                      [(ngModel)]="item.rentaL_PRICE_EXPIRE_DT"
+                                      autoFocus>
+                                      </date-control>
                                     </td>
 
                                     <td>
@@ -507,19 +487,13 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Ngày chấm dứt hợp đồng</label>
-                            <input 
-                            class="form-control" 
-                            [disabled]="disableInput"
-                            type="date" 
-                            #contracT_TERMINATE_DT="ngModel" 
-                            name="contracT_TERMINATE_DT" 
-                            [ngModel]="inputModel.contracT_TERMINATE_DT | date:'yyyy-MM-dd'"
-                            (ngModelChange)="inputModel.contracT_TERMINATE_DT = $event"
-                            >
-                            <div class="error-message" *ngIf="contracT_TERMINATE_DT.invalid && isShowError">
-                              <span *ngIf="contracT_TERMINATE_DT?.errors.required">Ngày chấm dứt hợp đồng
-                                {{l("ValidationRequired")}}</span>
-                            </div>
+                            <date-control
+                            required
+                            #contracT_TERMINATE_DT="ngModel"
+                            name="contracT_TERMINATE_DT"
+                            [(ngModel)]="inputModel.contracT_TERMINATE_DT"
+                            autoFocus>
+                            </date-control>
                           </div>
                         </div>
     
@@ -539,4 +513,4 @@
   </div>
 </div>
 
-<!-- <branch-modal #branchModal [multiple]="false" (onSelect)="onSelectBranch($event)"></branch-modal> -->
+<rea-modal #reaModal [multiple]="false" (onSelect)="onSelect($event)"></rea-modal>

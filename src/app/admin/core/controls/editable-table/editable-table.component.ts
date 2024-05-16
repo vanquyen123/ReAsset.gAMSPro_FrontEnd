@@ -450,14 +450,14 @@ export class EditableTableComponent<T extends Object> implements AfterViewInit, 
         let pageSize = Math.min(this.tableState.defaultRecordsCountPerPage, this.tableState.allData.length);
         let page = this.tableState.currentPage;
 
-        for (var i = page; i < page + pageSize; i++) {
-            if (this.tableState.allData[i]) {
-                let toJson = this.tableState.allData[i]['toJSON']
-                this.tableState.allData[i] = { ...this.tableState.allData[i] };
-                this.tableState.allData[i]['toJSON'] = toJson;
-            }
+        // for (var i = page; i < page + pageSize; i++) {
+        //     if (this.tableState.allData[i]) {
+        //         let toJson = this.tableState.allData[i]['toJSON']
+        //         this.tableState.allData[i] = { ...this.tableState.allData[i] };
+        //         this.tableState.allData[i]['toJSON'] = toJson;
+        //     }
 
-        }
+        // }
 
     }
 

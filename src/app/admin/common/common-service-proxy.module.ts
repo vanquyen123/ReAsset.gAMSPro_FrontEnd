@@ -38,6 +38,8 @@ import { AccentsCharService } from '../core/ultils/accents-char.service';
         ApiServiceProxies.DashboardServiceProxy,
         //luatndv
         ApiServiceProxies.AreaServiceProxy,
+
+        ApiServiceProxies.PropertyInformationServiceProxy,
         PreviewTemplateService,
         AccentsCharService,
        { provide: HTTP_INTERCEPTORS, useClass: AbpHttpInterceptor, multi: true }

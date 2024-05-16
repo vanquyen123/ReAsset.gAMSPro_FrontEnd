@@ -10,6 +10,10 @@
     <i class="pi pi-times error-text"></i>
     <span>{{l('Reject')}}</span>
 </div>
+<div *ngIf="authStatus==AuthStatusConsts.Revoke" class="auth-status-input-page">
+    <i class="pi pi-times error-text"></i>
+    <span>Bị hủy</span>
+</div>
 
 
 

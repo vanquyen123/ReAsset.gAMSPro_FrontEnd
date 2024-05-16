@@ -1,5 +1,5 @@
 import { ToolbarComponent } from "../toolbar/toolbar.component";
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { IUiActionRejectExt } from "@app/ultilities/ui-action-re";
 import { ActionRole } from "@app/ultilities/enum/action-role";
 
@@ -33,27 +33,42 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
     buttonFinishCheckVisible: boolean;
     buttonFinishCheckEnable:boolean;
     buttonFinishCheckHidden: boolean;
+    //collateral
+    buttonRevokeEnable: boolean;
+    buttonRevokeVisible: boolean;
+    buttonRevokeHidden: boolean;
+    @ViewChild("rejectModal") rejectModal;
+    @ViewChild("revokeModal") revokeModal;
 
-    setRole(funct: string, add: boolean, edit: boolean, update: boolean, del: boolean, view: boolean, search: boolean, approve: boolean, resetSearch: boolean, reject?: boolean,access?: boolean
+    setRole(funct: string, add: boolean, edit: boolean, update: boolean, del: boolean, view: boolean, search: boolean, approve: boolean, resetSearch: boolean, reject?: boolean, revoke?: boolean, forecast?: boolean, access?: boolean
         ,approveKSS?:boolean,AccessStorekeepers?:boolean,ApproveDeputy?:boolean,ApproveKhoi?:boolean,FinishCheck?:boolean) {
-        super.setRole(funct, add, edit, update, del, view, search, approve, resetSearch);
+        super.setRole(funct, add, edit, update, del, view, search, approve, resetSearch, forecast);
 
+        // if (reject) {
+        //     this.setButtonRejectVisible(reject &&this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
+        //     this.setButtonRejecHidden(reject &&!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
+        // }
+        // else
+        // {
+        //     this.setButtonRejecHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
+        // }
         if (reject) {
-            this.setButtonRejectVisible(reject &&this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
-            this.setButtonRejecHidden(reject &&!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
+            this.setButtonRejectVisible(true);
+            this.setButtonRejecHidden(false);
         }
         else
         {
-            this.setButtonRejecHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
+            this.setButtonRejecHidden(false);
         }
-        if (access) {
-            this.setButtonAccessVisible(access && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
-            this.setButtonaAccessHidden(access && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
-        }
-        else
-        {
-            this.setButtonaAccessHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
-        }
+        // if (access) {
+        //     this.setButtonAccessVisible(access && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
+        //     this.setButtonaAccessHidden(access && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
+        // }
+        // else
+        // {
+        //     this.setButtonaAccessHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
+        // }
+        this.setButtonaAccessHidden(true)
         if (approveKSS) {
             this.setButtonApproveKSSVisible(approveKSS && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
             this.setButtonApproveKSSHidden(approveKSS && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
@@ -94,6 +109,14 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
         {
             this.setButtonFinishCheckHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
         }
+        if (revoke) {
+            this.setButtonRevokeVisible(true);
+            this.setButtonRevokeHidden(false);
+        }
+        else
+        {
+            this.setButtonRevokeHidden(false);
+        }
     }
     get uiActionRejectExt(): IUiActionRejectExt<any> {
         return this.uiAction as IUiActionRejectExt<any>;
@@ -116,6 +139,7 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
         this.setButtonApproveKSSEnable(false);
         this.setButtonApproveKhoiEnable(false);
         this.setButtonFinishCheckEnable(false)
+        this.setButtonRevokeEnable(false)
     }
 
     public setEnableForViewDetailPage(): void {
@@ -128,6 +152,7 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
         this.setButtonApproveKSSEnable(true);
         this.setButtonApproveKhoiEnable(true);
         this.setButtonFinishCheckEnable(true);
+        this.setButtonRevokeEnable(true)
     }
     // reject
     setButtonRejectEnable(enable: boolean): void {
@@ -140,8 +165,11 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
         this.buttonRejectVisible = visible;
     }
     reject(): void {
+        this.rejectModal.show();
+    }
+    rejectAction(rejectReason: string): void {
         if (this.uiActionRejectExt) {
-            this.uiActionRejectExt.onReject(this.selectedItem);
+            this.uiActionRejectExt.onReject(rejectReason);
         }
     }
     setButtonRejecHidden(hidden: boolean): void {
@@ -255,5 +283,31 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
     }
     setButtonFinishCheckHidden(hidden: boolean): void {
         this.buttonFinishCheckHidden = hidden;
+    }
+
+    // reject
+    setButtonRevokeEnable(enable: boolean): void {
+        if (!this.buttonRejectVisible) {
+           enable = false;
+        }
+        this.buttonRevokeEnable = enable;
+    }
+    setButtonRevokeVisible(visible: boolean): void {
+        this.buttonRevokeVisible = visible;
+    }
+    revoke(): void {
+        this.revokeModal.show();
+        // if (this.uiActionRejectExt) {
+        //     this.uiActionRejectExt.onRevoke(revokeReason);
+        // }
+    }
+    revokeAction(revokeReason): void {
+        if (this.uiActionRejectExt) {
+            this.uiActionRejectExt.onRevoke(revokeReason);
+        }
+    }
+    setButtonRevokeHidden(hidden: boolean): void {
+        
+        this.buttonRevokeHidden = hidden;
     }
 }

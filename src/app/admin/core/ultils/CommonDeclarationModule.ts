@@ -150,6 +150,19 @@ import { DetailOfFaComponent } from '@app/admin/common/dashboard/chart_04/detail
 import { MoneyInputCustomComponent } from '../controls/money-input-custom/money-input-custom.component';
 import { AuthStatus2InputPageComponent } from '../controls/auth-status-2-input-page/auth-status-2-input-page.component';
 import { IsBlockInputPageComponent } from '../controls/is-block-input-page/is-block-input-page.component';
+import { ReaModalComponent } from '../controls/rea-modal/rea-modal.component';
+import { ProjectModalComponent } from '../controls/project-modal/project-modal.component';
+import { LandAreaModalComponent } from '../controls/land-area-modal/land-area-modal.component';
+import { SodoModalComponent } from '../controls/sodo-modal/sodo-modal.component';
+import { AssetModalComponent } from '../controls/asset-modal/asset-modal.component';
+import { RevokeModalComponent } from '../controls/revoke-modals/revoke-modal.component';
+import { ProjectSodoChart } from '@app/admin/common/dashboard/project-sodo-chart/project-sodo-chart.component';
+import { ExpiredContractChart } from '@app/admin/common/dashboard/expired-contract-chart/expired-contract-chart.component';
+import { ExpiredMortgageChart } from '@app/admin/common/dashboard/expired-mortgage-chart/expired-mortgage-chart.component';
+import { MortgageProgressChart } from '@app/admin/common/dashboard/mortgage-progress-chart/mortgage-progress-chart.component';
+import { ProjectTypeChart } from '@app/admin/common/dashboard/project-type-chart/project-type-chart.component';
+import { Top10Project } from '@app/admin/common/dashboard/top10-project/top10-project.component';
+import { FileSelectorComponent } from '../controls/file-selector/file-selector.component';
 
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
@@ -228,7 +241,23 @@ export const commonDeclarationDeclarations = [
     NBVOfFaInPlanComponent,
     NBVByCostCenterComponent,
     DetailOfFaComponent,
-    IsBlockInputPageComponent
+    IsBlockInputPageComponent,
+
+    // collateral
+    ReaModalComponent,
+    ProjectModalComponent,
+    LandAreaModalComponent,
+    SodoModalComponent,
+    AssetModalComponent,
+    RevokeModalComponent,
+    FileSelectorComponent,
+    // dashboard chart
+    ProjectSodoChart,
+    ExpiredContractChart,
+    ExpiredMortgageChart,
+    MortgageProgressChart,
+    ProjectTypeChart,
+    Top10Project,
 ];
 
 @NgModule({

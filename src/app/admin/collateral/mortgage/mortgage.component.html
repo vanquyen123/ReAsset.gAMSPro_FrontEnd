@@ -1,0 +1,387 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div id="page-list-area">
+      <div class="m-subheader">
+          <div class="row align-items-center">
+              <div class="mr-auto col-auto">
+                  <a
+                      [routerLink]="rootPage()"
+                      class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                  >
+                      <span>{{l("HomePage")}}</span>
+                  </a>
+                  <h3
+                      class="m-subheader__title m-subheader__title--separator"
+                  >
+                      <!-- Begin Title -->
+                      <span>Danh sách trái phiếu/khoản vay</span>
+                      <!-- End Title -->
+                  </h3>
+              </div>
+              <div class="col text-right mt-3 mt-md-0">
+                  <div class="btn-group dropdown mr-2">
+                      <button class="btn btn-outline-success"
+                      *ngIf="appToolbar.buttonSearchEnable"
+                          (click)="exportExcel()">
+                          <i class="far fa-file-excel"></i>
+                          {{l("ExcelOperations")}}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="content"
+          class="m-content">
+          <div class="m-portlet m-portlet--mobile">
+              <div class="m-portlet__body">
+                  <form class="horizontal-form filter-form"
+                      autocomplete="off">
+                      <div class="m-form m-form--label-align-right">
+                          <div class="row align-items-center m--margin-bottom-30">
+                              <!-- Begin Filter -->
+                              <!-- Mã cổ đông ngoài -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Mã trái phiếu/ khoản vay</label>
+                                    <input 
+                                        [(ngModel)]="filterInput.id"
+                                        name="mortgagE_IDFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tên trái phiếu/ khoản vay</label>
+                                    <input 
+                                        [(ngModel)]="filterInput.mortgagE_NAME"
+                                        name="mortgagE_NAMEFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Loại</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="mortgagE_TYPE"
+                                      class="transparent"
+                                      [(ngModel)]="filterInput.mortgagE_TYPE"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Loại tổ chức phát hành</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="legaL_ENTITY_TYPE"
+                                      class="transparent"
+                                      [(ngModel)]="filterInput.legaL_ENTITY_TYPE"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tổ chức phát hành</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="legaL_ENTITY_REF_ID"
+                                      class="transparent"
+                                      [(ngModel)]="filterInput.legaL_ENTITY_REF_ID"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Trái chủ/Bên cho vay</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="mortgagE_OWNER_ID"
+                                      class="transparent"
+                                      [(ngModel)]="filterInput.mortgagE_OWNER_ID"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Đại lý</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="mortgagE_PUBLISHER_ID"
+                                      class="transparent"
+                                      [(ngModel)]="filterInput.mortgagE_PUBLISHER_ID"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Ngày đáo hạn từ</label>
+                                  <date-control 
+                                  #mortgagE_DUE_DATE_FROM="ngModel"
+                                  name="mortgagE_DUE_DATE_FROM"
+                                  [(ngModel)]="filterInput.mortgagE_DUE_DATE_FROM"
+                                  autoFocus>
+                                  </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Ngày đáo hạn đến</label>
+                                  <date-control 
+                                  #mortgagE_DUE_DATE_FROM="ngModel"
+                                  name="mortgagE_DUE_DATE_FROM"
+                                  [(ngModel)]="filterInput.mortgagE_DUE_DATE_FROM"
+                                  autoFocus>
+                                  </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Dự án</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="propertY_ID"
+                                      class="transparent"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Khu đất</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="propertY_ID"
+                                      class="transparent"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Sổ đỏ</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="invested_prop"
+                                      class="transparent"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Mã tài sản</label>
+                                  <input 
+                                      name=""
+                                      autoFocus
+                                      class="form-control m-input"
+                                      type="text">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tên tài sản</label>
+                                  <input 
+                                      name=""
+                                      autoFocus
+                                      class="form-control m-input"
+                                      type="text">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Trang thái thế chấp</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="invested_prop"
+                                      class="transparent"
+                                      [(ngModel)]="filterInput.mortgagE_STATUS"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="auths"
+                                      [valueMember]="'autH_STATUS'"
+                                      [displayMember]="'autH_STATUS_NAME'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                              <!-- Trạng thái duyệt -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>{{l("ApproveStatus")}}</label>
+                                      <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                          name="autH_STATUS"
+                                          class="transparent"
+                                          [(ngModel)]="filterInput.autH_STATUS"
+                                          [emptyText]="l('SelectAll')"
+                                          [(list)]="auths"
+                                          [valueMember]="'autH_STATUS'"
+                                          [displayMember]="'autH_STATUS_NAME'">
+                                      </select2-custom>
+                                  </div>
+                              </div>
+                              <!-- End Filter -->
+                              <div style="display:none;"
+                                  class="col-md-12">
+                                  <div class="form-group">
+                                      <button *ngIf="appToolbar.buttonSearchEnable"
+                                          class="btn btn-primary btn-search"
+                                          (click)="onSearch()"></button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </form>
+                  <div class="row align-items-center">
+                      <div class="primeng-datatable-container">
+                          <div class="spinner-border m-5"
+                              role="status">
+                              <span class="sr-only">Loading...</span>
+                          </div>
+                          <core-table #coreTable
+                              class="custom-table ui-table"
+                              (reloadPage)="search()">
+                              <thead>
+                                  <tr>
+                                      <!-- Begin Table Column -->
+                                      <!-- STT -->
+                                      <th class="center">
+                                          <span style="width: 40px">{{l("No")}}</span>
+                                      </th>
+                                      <!-- Mã phòng -->
+                                      <th style="width:30%"
+                                          sortField="mortgagE_TYPE_NAME">
+                                          <span style="width: 150px">Loại</span>
+                                      </th>
+                                      <!-- Tên phòng ban -->
+                                      <th style="width:40%"
+                                          sortField="id">
+                                          <span style="width: 150px">Mã TP/Khoản vay</span>
+                                      </th>
+                                      <th style="width:30%"
+                                          sortField="contracT_PARTNER_ID">
+                                          <span style="width: 150px">Tổ chức phát hành</span>
+                                      </th>
+                                      <th sortField="mortgagE_NAME"
+                                          style="width:100%">
+                                          <span style="width: 200px">Tên TP/Khoản vay</span>
+                                      </th>
+                                      <th sortField="mortgagE_ISSUE_VALUE"
+                                          style="width:100%">
+                                          <span style="width: 200px">Giá trị phát hành</span>
+                                      </th>
+                                      <th sortField=""
+                                          style="width:100%">
+                                          <span style="width: 200px">Trái chủ/ Bên cho vay</span>
+                                      </th>
+                                      <th sortField=""
+                                          style="width:100%">
+                                          <span style="width: 200px">Đại lý</span>
+                                      </th>
+                                      <th sortField="mortgagE_SIGN_DT"
+                                          style="width:100%">
+                                          <span style="width: 200px">Ngày phát hành</span>
+                                      </th>
+                                      <th sortField="mortgagE_INTEREST_RATE"
+                                          style="width:100%">
+                                          <span style="width: 200px">Lãi suất</span>
+                                      </th>
+                                      <th sortField="remaiN_DEBT"
+                                          style="width:100%">
+                                          <span style="width: 200px">Dư nợ</span>
+                                      </th>
+                                      <!-- Trạng thái duyệt -->
+                                      <th sortField="mortgagE_DUE_DATE">
+                                          <span style="width: 150px">Ngày đáo hạn</span>
+                                      </th>
+                                      <th sortField="creatE_DT">
+                                        <span style="width: 150px">Ngày tạo</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Người tạo</span>
+                                      </th>
+                                      <th sortField="approvE_DT">
+                                        <span style="width: 150px">Ngày duyệt</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Người duyệt</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Ngày chỉnh sửa cuối</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Người chỉnh sửa cuối</span>
+                                      </th>
+                                      <th sortField="autH_STATUS">
+                                        <span style="width: 150px">{{l("ApproveStatus")}}</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Ghi chú</span>
+                                      </th>
+                                      <!-- End Table Column -->
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let record of dataTable.records"
+                                      class="selectable"
+                                      (dblclick)="onDblclick(record)"
+                                      (click)="selectRow($event,record)">
+                                      <!-- Begin Table Value -->
+                                      <!-- STT -->
+                                      <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
+                                          + dataTable.records.indexOf(record)) + 1}}
+                                      </td>
+                                      <!-- Mã phòng -->
+                                      <td><span class="mo-header"></span>{{record.mortgagE_TYPE_NAME}}</td>
+                                      <td><span class="mo-header"></span>{{record.id}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.mortgagE_NAME}}</td>
+                                      <td><span class="mo-header"></span>{{record.mortgagE_ISSUE_VALUE}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{ record.mortgagE_SIGN_DT ? (record.mortgagE_SIGN_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span>{{record.mortgagE_INTEREST_RATE}}</td>
+                                      <td><span class="mo-header"></span>{{record.remaiN_DEBT}}</td>
+                                      <td><span class="mo-header"></span>{{record.mortgagE_DUE_DATE}}</td>
+                                      <td><span class="mo-header"></span>{{ record.creatE_DT ? (record.creatE_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{ record.approvE_DT ? (record.approvE_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <!-- End Table Value -->
+                                  </tr>
+                              </tbody>
+                          </core-table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

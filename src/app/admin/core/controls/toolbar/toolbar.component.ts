@@ -22,6 +22,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
     buttonApproveEnable: boolean;
     buttonSearchEnable: boolean;
     buttonResetSearchEnable: boolean;
+    buttonForecastEnable: boolean;
 
     buttonAddVisible: boolean;
     buttonUpdateVisible: boolean;
@@ -31,6 +32,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
     buttonApproveVisible: boolean;
     buttonSearchVisible: boolean;
     buttonResetSearchVisible: boolean;
+    buttonForecastVisible: boolean;
 
     buttonAddHidden: boolean;
     buttonUpdateHidden: boolean;
@@ -40,6 +42,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
     buttonApproveHidden: boolean;
     buttonSearchHidden: boolean;
     buttonResetSearchHidden: boolean;
+    buttonForecastHidden: boolean;
 
     selectedItem: any;
 
@@ -67,6 +70,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         this.setButtonSearchVisible(true);
         this.setButtonResetSearchVisible(false);
         this.setButtonSaveVisible(true);
+        this.setButtonForecastVisible(false)
         this.enable = true;
 
         this.editLabel = this.l("Edit");
@@ -94,6 +98,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         this.setButtonSearchEnable(true);
         this.setButtonResetSearchEnable(true);
         this.setButtonResetSearchVisible(true);
+        this.setButtonForecastEnable(true)
         this.selectedItem = null;
         this.isList = true;
     }
@@ -107,6 +112,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         this.setButtonApproveEnable(false);
         this.setButtonSearchEnable(false);
         this.setButtonResetSearchEnable(false);
+        this.setButtonForecastEnable(false)
         this.isEdit = true;
     }
 
@@ -119,6 +125,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         this.setButtonApproveEnable(true);
         this.setButtonSearchEnable(false);
         this.setButtonResetSearchEnable(false);
+        this.setButtonForecastEnable(false)
         this.isEdit = true;
     }
 
@@ -135,7 +142,7 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         }
     }
 
-    setVisible(add: boolean = false, edit: boolean = false, update: boolean = false, del: boolean = false, view: boolean = false, search: boolean = false, approve: boolean = false, resetSearch: boolean = false) {
+    setVisible(add: boolean = false, edit: boolean = false, update: boolean = false, del: boolean = false, view: boolean = false, search: boolean = false, approve: boolean = false, resetSearch: boolean = false, forecast: boolean = false) {
         this.isList = true;
         this.isEdit = true;
         this.buttonAddHidden = !add;
@@ -146,19 +153,29 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         this.buttonApproveHidden = !approve;
         this.buttonSearchHidden = !search;
         this.buttonResetSearchHidden = !resetSearch;
+        this.buttonForecastHidden = !forecast
     }
 
-    setRole(funct: string, add: boolean, edit: boolean, update: boolean, del: boolean, view: boolean, search: boolean, approve: boolean, resetSearch: boolean) {
+    setRole(funct: string, add: boolean, edit: boolean, update: boolean, del: boolean, view: boolean, search: boolean, approve: boolean, resetSearch: boolean, forecast?: boolean) {
         this.funct = funct;
         this.setButtonAddVisible(add && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Create));
         this.setButtonUpdateVisible(edit && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Edit));
-        this.setButtonSaveVisible(update && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Update));
-        this.setButtonDeleteVisible(del && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Delete));
+        // this.setButtonSaveVisible(update && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Update));
+        this.setButtonSaveVisible(update);
+        // this.setButtonDeleteVisible(del && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Delete));
+        this.setButtonDeleteVisible(del);
         this.setButtonViewDetailVisible(view && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.View));
         this.setButtonSearchVisible(search && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Search));
         this.setButtonResetSearchVisible(true);
         // this.setButtonResetSearchVisible(resetSearch && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ResetSearch));
-        this.setButtonApproveVisible(approve && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Approve));
+        // this.setButtonApproveVisible(approve && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Approve));
+        this.setButtonApproveVisible(approve);
+        if(forecast) {
+            this.setButtonForecastVisible(forecast);
+        }
+        else {
+            this.buttonForecastHidden = true
+        }
     }
 
     setButtonAddEnable(enable: boolean): void {
@@ -217,6 +234,13 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         this.buttonResetSearchEnable = enable;
     }
 
+    setButtonForecastEnable(enable: boolean): void {
+        if (!this.buttonForecastVisible) {
+            enable = false;
+        }
+        this.buttonForecastEnable = enable;
+    }
+
     setButtonAddVisible(visible: boolean): void {
         this.buttonAddVisible = visible;
     }
@@ -247,6 +271,10 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
 
     setButtonResetSearchVisible(visible: boolean): void {
         this.buttonResetSearchVisible = visible;
+    }
+
+    setButtonForecastVisible(visible: boolean): void {
+        this.buttonForecastVisible = visible;
     }
 
     hasAction(action) {
@@ -300,5 +328,9 @@ export class ToolbarComponent extends AppComponentBase implements OnInit {
         if (this.uiAction) {
             this.uiAction.onResetSearch();
         }
+    }
+
+    forecast(): void {
+        this.navigatePassParam('/app/admin/forecast', null, undefined);
     }
 }

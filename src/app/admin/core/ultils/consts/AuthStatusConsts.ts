@@ -10,4 +10,5 @@ export enum AuthStatusConsts{
     AccessStorekeepersKhoi = 'W',
     ApproveImportWareF = "F",
     FinishCheck = "N",
+    Revoke = "C",
 }

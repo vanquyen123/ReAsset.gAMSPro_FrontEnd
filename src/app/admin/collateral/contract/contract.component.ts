@@ -14,7 +14,6 @@ import { FileDownloadService } from "@shared/utils/file-download.service";
 import { finalize } from "rxjs/operators";
 
 @Component({
-  // selector: 'app-outside-shareholder',
   templateUrl: "./contract.component.html",
   animations: [appModuleAnimation()],
   encapsulation: ViewEncapsulation.None,
@@ -66,15 +65,11 @@ export class ContractComponent extends ListComponentBase<REA_CONTRACT_ENTITY> im
     this.appToolbar.setRole('Contract', true, true, false, true, true, true, false, true);
     this.appToolbar.setEnableForListPage();
 
-    // this._contractService.rEA_CONTRACT_Search(this.getFillterForCombobox()).subscribe(response => {
-    //     this.contracts = response.items;
-    //     this.updateView();
-    // });
+    this._contractService.rEA_CONTRACT_Search(this.getFillterForCombobox()).subscribe(response => {
+        this.contracts = response.items;
+        this.updateView();
+    });
     var filterCombobox=this.getFillterForCombobox();
-  //   this.branchService.cM_BRANCH_Search(filterCombobox).subscribe(response => {
-  //       this.branchs = response.items;
-  //       this.updateView();
-  //   });
     setTimeout(()=>{this.filterInputSearch=this.filterInput,this.search()}, 1000);
   }
 
@@ -110,15 +105,15 @@ search(): void {
 
       this.setSortingForFilterModel(this.filterInputSearch);
 
-    //   this._contractService.rEA_CONTRACT_Search(this.filterInputSearch)
-    //       .pipe(finalize(() => this.hideTableLoading()))
-    //       .subscribe(result => {
-    //           this.dataTable.records = result.items;
-    //           this.dataTable.totalRecordsCount = result.totalCount;
-    //           // this.filterInputSearch.totalCounT = result.totalCount; 
-    //           this.appToolbar.setEnableForListPage();
-    //           this.updateView();
-    //       });
+      this._contractService.rEA_CONTRACT_Search(this.filterInputSearch)
+          .pipe(finalize(() => this.hideTableLoading()))
+          .subscribe(result => {
+              this.dataTable.records = result.items;
+              this.dataTable.totalRecordsCount = result.totalCount;
+            //   this.filterInputSearch.totalCounT = result.totalCount; 
+              this.appToolbar.setEnableForListPage();
+              this.updateView();
+          });
       console.log('Running');
   }
 
@@ -127,17 +122,17 @@ search(): void {
   }
 
   onUpdate(item: REA_CONTRACT_ENTITY): void {
-      this.navigatePassParam('/app/admin/contract-edit', { contract: item.contracT_ID }, { filterInput: JSON.stringify(this.filterInputSearch) });
+      this.navigatePassParam('/app/admin/contract-edit', { contract: item.id }, { filterInput: JSON.stringify(this.filterInputSearch) });
   }
 
   onDelete(item: REA_CONTRACT_ENTITY): void {
       this.message.confirm(
-          this.l('DeleteWarningMessage', item.contracT_ID),
+          this.l('DeleteWarningMessage', item.id),
           this.l('AreYouSure'),
           (isConfirmed) => {
               if (isConfirmed) {
                   this.saving = true;
-                  this._contractService.rEA_CONTRACT_Del(item.contracT_ID)
+                  this._contractService.rEA_CONTRACT_Del(item.id)
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
                           if (response.result != '0') {
@@ -159,7 +154,7 @@ search(): void {
   }
 
   onViewDetail(item: REA_CONTRACT_ENTITY): void {
-      this.navigatePassParam('/app/admin/contract-view', { contract: item.contracT_ID }, { filterInput: JSON.stringify(this.filterInputSearch) });
+      this.navigatePassParam('/app/admin/contract-view', { contract: item.id }, { filterInput: JSON.stringify(this.filterInputSearch) });
   }
 
   onSave(): void {

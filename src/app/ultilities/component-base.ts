@@ -239,7 +239,7 @@ export abstract class ComponentBase {
 
     getFillterForCombobox(): any {
         return {
-            maxResultCount: -1,
+            maxResultCount: 1,
             recorD_STATUS: RecordStatusConsts.Active,
             autH_STATUS: AuthStatusConsts.Approve
         };

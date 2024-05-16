@@ -45,7 +45,7 @@
                                   <div class="form-group">
                                       <label>Số hợp đồng</label>
                                       <input 
-                                          [(ngModel)]="filterInput.contracT_ID"
+                                          [(ngModel)]="filterInput.id"
                                           name="contracT_IDFilter"
                                           autoFocus
                                           class="form-control m-input"
@@ -69,38 +69,34 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                               <div class="form-group">
                                   <label>Ngày ký từ</label>
-                                  <input 
-                                  class="form-control" 
-                                  type="date" 
-                                  #contracT_SIGN_DT="ngModel" 
-                                  name="contracT_SIGN_DT" 
-                                  [ngModel]="filterInput.contracT_SIGN_DT"
-                                  (ngModelChange)="filterInput.contracT_SIGN_DT = $event"
-                                  >
+                                  <date-control 
+                                  #contracT_SIGN_DT="ngModel"
+                                  name="contracT_SIGN_DT"
+                                  [(ngModel)]="filterInput.contracT_SIGN_DT"
+                                  autoFocus>
+                                  </date-control>
                               </div>
                             </div>
 
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                               <div class="form-group">
                                   <label>Ngày ký đến</label>
-                                  <input 
-                                  class="form-control" 
-                                  type="date" 
-                                  #contracT_SIGN_DT="ngModel" 
-                                  name="contracT_SIGN_DT" 
-                                  [ngModel]="filterInput.contracT_SIGN_DT"
-                                  (ngModelChange)="filterInput.contracT_SIGN_DT = $event"
-                                  >
+                                  <date-control 
+                                  #contracT_SIGN_DT="ngModel"
+                                  name="contracT_SIGN_DT"
+                                  [(ngModel)]="filterInput.contracT_SIGN_DT"
+                                  autoFocus>
+                                  </date-control>
                               </div>
                             </div>
 
                               <!-- Trạng thái duyệt -->
                               <div class="col-md-4">
                                   <div class="form-group">
-                                      <label>Trạng thái duyệt</label>
+                                      <label>{{l("ApproveStatus")}}</label>
                                       <select2-custom (onChangeSelect2)="onSelectRecord($event)"
                                           name="autH_STATUS"
                                           class="transparent"
@@ -184,7 +180,7 @@
                                       </th>
                                       <!-- Trạng thái duyệt -->
                                       <th sortField="autH_STATUS_NAME">
-                                          <span style="width: 150px">Trạng thái duyệt</span>
+                                          <span style="width: 150px">{{l("ApproveStatus")}}</span>
                                       </th>
                                       <th sortField="notes">
                                         <span style="width: 150px">Ghi chú</span>
@@ -203,7 +199,7 @@
                                           + dataTable.records.indexOf(record)) + 1}}
                                       </td>
                                       <!-- Mã phòng -->
-                                      <td><span class="mo-header"></span>{{record.contracT_ID}}</td>
+                                      <td><span class="mo-header"></span>{{record.id}}</td>
                                       <td><span class="mo-header"></span>{{record.contracT_SIGN_DT}}</td>
                                       <td><span class="mo-header"></span>{{record.contracT_PARTNER_ID}}</td>
                                       <td><span class="mo-header"></span></td>

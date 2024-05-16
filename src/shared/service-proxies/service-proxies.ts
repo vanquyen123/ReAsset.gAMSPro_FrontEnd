@@ -6643,6 +6643,83 @@ export class CmUserServiceProxy {
 }
 
 @Injectable()
+export class ComboboxServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param className (optional) 
+     * @param nameAttribute (optional) 
+     * @return Success
+     */
+    getComboboxData(className: string | undefined, nameAttribute: string | undefined): Observable<ComboboxResult[]> {
+        let url_ = this.baseUrl + "/api/Combobox/GetComboboxData?";
+        if (className === null)
+            throw new Error("The parameter 'className' cannot be null.");
+        else if (className !== undefined)
+            url_ += "className=" + encodeURIComponent("" + className) + "&"; 
+        if (nameAttribute === null)
+            throw new Error("The parameter 'nameAttribute' cannot be null.");
+        else if (nameAttribute !== undefined)
+            url_ += "nameAttribute=" + encodeURIComponent("" + nameAttribute) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetComboboxData(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetComboboxData(<any>response_);
+                } catch (e) {
+                    return <Observable<ComboboxResult[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ComboboxResult[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetComboboxData(response: HttpResponseBase): Observable<ComboboxResult[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ComboboxResult.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ComboboxResult[]>(<any>null);
+    }
+}
+
+@Injectable()
 export class CommonLookupServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -6814,6 +6891,481 @@ export class CommonLookupServiceProxy {
             }));
         }
         return _observableOf<GetDefaultEditionNameOutput>(<any>null);
+    }
+}
+
+@Injectable()
+export class CompanyServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    cM_COMPANY_Ins(body: CM_COMPANY_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    cM_COMPANY_Upd(body: CM_COMPANY_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    cM_COMPANY_Del(id: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_Del?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_Del(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_Del(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_Del(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    cM_COMPANY_Search(body: CM_COMPANY_SEARCH_DTO | undefined): Observable<PagedResultDtoOfCM_COMPANY_ENTITY> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_Search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_Search(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_Search(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfCM_COMPANY_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfCM_COMPANY_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_Search(response: HttpResponseBase): Observable<PagedResultDtoOfCM_COMPANY_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfCM_COMPANY_ENTITY.fromJS(resultData200) : new PagedResultDtoOfCM_COMPANY_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfCM_COMPANY_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    cM_COMPANY_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_App?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_App(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_App(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_App(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    cM_COMPANY_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_Rej?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_Rej(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_Rej(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_Rej(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    cM_COMPANY_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_Can?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_Can(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_Can(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_Can(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    cM_COMPANY_ById(id: string | undefined): Observable<CM_COMPANY_ENTITY> {
+        let url_ = this.baseUrl + "/api/Company/CM_COMPANY_ById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_COMPANY_ById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_COMPANY_ById(<any>response_);
+                } catch (e) {
+                    return <Observable<CM_COMPANY_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CM_COMPANY_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_COMPANY_ById(response: HttpResponseBase): Observable<CM_COMPANY_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CM_COMPANY_ENTITY.fromJS(resultData200) : new CM_COMPANY_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CM_COMPANY_ENTITY>(<any>null);
     }
 }
 
@@ -7055,9 +7607,10 @@ export class ContractServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_CONTRACT_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_CONTRACT_App(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Contract/REA_CONTRACT_App?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -7067,6 +7620,10 @@ export class ContractServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -7116,9 +7673,10 @@ export class ContractServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_CONTRACT_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_CONTRACT_Rej(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Contract/REA_CONTRACT_Rej?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -7128,6 +7686,10 @@ export class ContractServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -7177,9 +7739,10 @@ export class ContractServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_CONTRACT_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_CONTRACT_Can(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Contract/REA_CONTRACT_Can?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -7189,6 +7752,10 @@ export class ContractServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -7289,6 +7856,66 @@ export class ContractServiceProxy {
             }));
         }
         return _observableOf<REA_CONTRACT_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_CONTRACT_SearchInvestmentProject(body: REA_INVESTMENT_PROPERTY_SEARCH_DTO | undefined): Observable<REA_INVEST_PROPERTY_LOOKUP[]> {
+        let url_ = this.baseUrl + "/api/Contract/REA_CONTRACT_SearchInvestmentProject";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_CONTRACT_SearchInvestmentProject(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_CONTRACT_SearchInvestmentProject(<any>response_);
+                } catch (e) {
+                    return <Observable<REA_INVEST_PROPERTY_LOOKUP[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<REA_INVEST_PROPERTY_LOOKUP[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_CONTRACT_SearchInvestmentProject(response: HttpResponseBase): Observable<REA_INVEST_PROPERTY_LOOKUP[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(REA_INVEST_PROPERTY_LOOKUP.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<REA_INVEST_PROPERTY_LOOKUP[]>(<any>null);
     }
 }
 
@@ -7746,6 +8373,57 @@ export class DashboardServiceProxy {
             }));
         }
         return _observableOf<DASBOARD_06[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getDataForDashboard(): Observable<DashBoardDto> {
+        let url_ = this.baseUrl + "/api/Dashboard/GetDataForDashboard";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDataForDashboard(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDataForDashboard(<any>response_);
+                } catch (e) {
+                    return <Observable<DashBoardDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<DashBoardDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetDataForDashboard(response: HttpResponseBase): Observable<DashBoardDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? DashBoardDto.fromJS(resultData200) : new DashBoardDto();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<DashBoardDto>(<any>null);
     }
 }
 
@@ -10505,6 +11183,122 @@ export class EmployeeServiceProxy {
             }));
         }
         return _observableOf<CommonResult>(<any>null);
+    }
+}
+
+@Injectable()
+export class FileServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param fileId (optional) 
+     * @return Success
+     */
+    getFileBlob(fileId: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/File/GetFileBlob?";
+        if (fileId === null)
+            throw new Error("The parameter 'fileId' cannot be null.");
+        else if (fileId !== undefined)
+            url_ += "fileId=" + encodeURIComponent("" + fileId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFileBlob(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFileBlob(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetFileBlob(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getZipFileBlob(body: string[] | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/File/GetZipFileBlob";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetZipFileBlob(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetZipFileBlob(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetZipFileBlob(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
     }
 }
 
@@ -13392,7 +14186,7 @@ export class InvestmentPropertyServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    rEA_INVESTMENT_PROPERTY_Search(body: REA_INVESTMENT_PROPERTY_ENTITY | undefined): Observable<PagedResultDtoOfREA_INVESTMENT_PROPERTY_ENTITY> {
+    rEA_INVESTMENT_PROPERTY_Search(body: REA_INVESTMENT_PROPERTY_SEARCH_DTO | undefined): Observable<PagedResultDtoOfREA_INVESTMENT_PROPERTY_ENTITY> {
         let url_ = this.baseUrl + "/api/InvestmentProperty/REA_INVESTMENT_PROPERTY_Search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -13447,9 +14241,10 @@ export class InvestmentPropertyServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_INVESTMENT_PROPERTY_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_INVESTMENT_PROPERTY_App(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/InvestmentProperty/REA_INVESTMENT_PROPERTY_App?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -13459,6 +14254,10 @@ export class InvestmentPropertyServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -13508,9 +14307,10 @@ export class InvestmentPropertyServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_INVESTMENT_PROPERTY_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_INVESTMENT_PROPERTY_Rej(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/InvestmentProperty/REA_INVESTMENT_PROPERTY_Rej?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -13520,6 +14320,10 @@ export class InvestmentPropertyServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -13569,9 +14373,10 @@ export class InvestmentPropertyServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_INVESTMENT_PROPERTY_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_INVESTMENT_PROPERTY_Can(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/InvestmentProperty/REA_INVESTMENT_PROPERTY_Can?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -13581,6 +14386,10 @@ export class InvestmentPropertyServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -14506,7 +15315,7 @@ export class LandAreaServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    rEA_LAND_AREA_Search(body: REA_LAND_AREA_ENTITY | undefined): Observable<PagedResultDtoOfREA_LAND_AREA_ENTITY> {
+    rEA_LAND_AREA_Search(body: REA_LAND_AREA_SEARCH_DTO | undefined): Observable<PagedResultDtoOfREA_LAND_AREA_ENTITY> {
         let url_ = this.baseUrl + "/api/LandArea/REA_LAND_AREA_Search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -14561,9 +15370,10 @@ export class LandAreaServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_LAND_AREA_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_LAND_AREA_App(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/LandArea/REA_LAND_AREA_App?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -14573,6 +15383,10 @@ export class LandAreaServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -14622,9 +15436,10 @@ export class LandAreaServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_LAND_AREA_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_LAND_AREA_Rej(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/LandArea/REA_LAND_AREA_Rej?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -14634,6 +15449,10 @@ export class LandAreaServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -14683,9 +15502,10 @@ export class LandAreaServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_LAND_AREA_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_LAND_AREA_Can(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/LandArea/REA_LAND_AREA_Can?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -14695,6 +15515,10 @@ export class LandAreaServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -16221,7 +17045,7 @@ export class MortgageServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    rEA_MORTGAGE_Search(body: REA_MORTGAGE_ENTITY | undefined): Observable<PagedResultDtoOfREA_MORTGAGE_ENTITY> {
+    rEA_MORTGAGE_Search(body: REA_MORTGAGE_SEARCH_REQUEST_DTO | undefined): Observable<PagedResultDtoOfREA_MORTGAGE_ENTITY> {
         let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_Search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -16276,9 +17100,10 @@ export class MortgageServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_MORTGAGE_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_MORTGAGE_App(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_App?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -16288,6 +17113,10 @@ export class MortgageServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -16337,9 +17166,10 @@ export class MortgageServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_MORTGAGE_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_MORTGAGE_Rej(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_Rej?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -16349,6 +17179,10 @@ export class MortgageServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -16398,9 +17232,10 @@ export class MortgageServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_MORTGAGE_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_MORTGAGE_Can(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_Can?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -16410,6 +17245,10 @@ export class MortgageServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -16510,6 +17349,174 @@ export class MortgageServiceProxy {
             }));
         }
         return _observableOf<REA_MORTGAGE_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_MORTGAGE_GetProjects(body: ProjectMortgageSearchDto | undefined): Observable<PagedResultDtoOfProjectMortgageSearchResultDto> {
+        let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_GetProjects";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_MORTGAGE_GetProjects(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_MORTGAGE_GetProjects(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfProjectMortgageSearchResultDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfProjectMortgageSearchResultDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_MORTGAGE_GetProjects(response: HttpResponseBase): Observable<PagedResultDtoOfProjectMortgageSearchResultDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfProjectMortgageSearchResultDto.fromJS(resultData200) : new PagedResultDtoOfProjectMortgageSearchResultDto();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfProjectMortgageSearchResultDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_MORTGAGE_GetAreas(body: LandAreaMortgageSearchDto | undefined): Observable<PagedResultDtoOfLandAreaMortgageSearchResultDto> {
+        let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_GetAreas";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_MORTGAGE_GetAreas(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_MORTGAGE_GetAreas(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfLandAreaMortgageSearchResultDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfLandAreaMortgageSearchResultDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_MORTGAGE_GetAreas(response: HttpResponseBase): Observable<PagedResultDtoOfLandAreaMortgageSearchResultDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfLandAreaMortgageSearchResultDto.fromJS(resultData200) : new PagedResultDtoOfLandAreaMortgageSearchResultDto();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfLandAreaMortgageSearchResultDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_MORTGAGE_GetSoDos(body: SoDoMortgageSearchDto | undefined): Observable<PagedResultDtoOfSoDoMortgageSearchResultDto> {
+        let url_ = this.baseUrl + "/api/Mortgage/REA_MORTGAGE_GetSoDos";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_MORTGAGE_GetSoDos(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_MORTGAGE_GetSoDos(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfSoDoMortgageSearchResultDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfSoDoMortgageSearchResultDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_MORTGAGE_GetSoDos(response: HttpResponseBase): Observable<PagedResultDtoOfSoDoMortgageSearchResultDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfSoDoMortgageSearchResultDto.fromJS(resultData200) : new PagedResultDtoOfSoDoMortgageSearchResultDto();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfSoDoMortgageSearchResultDto>(<any>null);
     }
 }
 
@@ -18573,6 +19580,62 @@ export class OwnerServiceProxy {
         }
         return _observableOf<CommonResult>(<any>null);
     }
+
+    /**
+     * @param userId (optional) 
+     * @return Success
+     */
+    getUserFullName(userId: string | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/Owner/GetUserFullName?";
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserFullName(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserFullName(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetUserFullName(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
 }
 
 @Injectable()
@@ -20364,7 +21427,7 @@ export class ProjectServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    rEA_PROJECT_Search(body: REA_PROJECT_ENTITY | undefined): Observable<PagedResultDtoOfREA_PROJECT_ENTITY> {
+    rEA_PROJECT_Search(body: REA_PROJECT_SEARCH_DTO | undefined): Observable<PagedResultDtoOfREA_PROJECT_ENTITY> {
         let url_ = this.baseUrl + "/api/Project/REA_PROJECT_Search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -20419,9 +21482,10 @@ export class ProjectServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_PROJECT_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_PROJECT_App(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Project/REA_PROJECT_App?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -20431,6 +21495,10 @@ export class ProjectServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -20480,9 +21548,10 @@ export class ProjectServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_PROJECT_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_PROJECT_Rej(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Project/REA_PROJECT_Rej?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -20492,6 +21561,10 @@ export class ProjectServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -20541,9 +21614,10 @@ export class ProjectServiceProxy {
     /**
      * @param id (optional) 
      * @param currentUserName (optional) 
+     * @param reason (optional) 
      * @return Success
      */
-    rEA_PROJECT_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+    rEA_PROJECT_Can(id: string | undefined, currentUserName: string | undefined, reason: string | undefined): Observable<CommonResult> {
         let url_ = this.baseUrl + "/api/Project/REA_PROJECT_Can?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -20553,6 +21627,10 @@ export class ProjectServiceProxy {
             throw new Error("The parameter 'currentUserName' cannot be null.");
         else if (currentUserName !== undefined)
             url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        if (reason === null)
+            throw new Error("The parameter 'reason' cannot be null.");
+        else if (reason !== undefined)
+            url_ += "reason=" + encodeURIComponent("" + reason) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -20653,6 +21731,1611 @@ export class ProjectServiceProxy {
             }));
         }
         return _observableOf<REA_PROJECT_ENTITY>(<any>null);
+    }
+}
+
+@Injectable()
+export class PropertyGroupServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_Ins(body: REA_PROPERTY_GROUP_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_Upd(body: REA_PROPERTY_GROUP_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_Del(id: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_Del?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_Del(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_Del(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_Del(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_Search(body: REA_PROPERTY_GROUP_ENTITY | undefined): Observable<PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_Search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_Search(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_Search(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_Search(response: HttpResponseBase): Observable<PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY.fromJS(resultData200) : new PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_App?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_App(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_App(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_App(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_Rej?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_Rej(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_Rej(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_Rej(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_Can?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_Can(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_Can(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_Can(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_GROUP_ById(id: string | undefined): Observable<REA_PROPERTY_GROUP_ENTITY> {
+        let url_ = this.baseUrl + "/api/PropertyGroup/REA_PROPERTY_GROUP_ById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_GROUP_ById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_GROUP_ById(<any>response_);
+                } catch (e) {
+                    return <Observable<REA_PROPERTY_GROUP_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<REA_PROPERTY_GROUP_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_GROUP_ById(response: HttpResponseBase): Observable<REA_PROPERTY_GROUP_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? REA_PROPERTY_GROUP_ENTITY.fromJS(resultData200) : new REA_PROPERTY_GROUP_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<REA_PROPERTY_GROUP_ENTITY>(<any>null);
+    }
+}
+
+@Injectable()
+export class PropertyInformationServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_INFORMATION_Ins(body: REA_PROPERTY_INFORMATION_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyInformation/REA_PROPERTY_INFORMATION_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_INFORMATION_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_INFORMATION_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_INFORMATION_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_INFORMATION_Upd(body: REA_PROPERTY_INFORMATION_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyInformation/REA_PROPERTY_INFORMATION_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_INFORMATION_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_INFORMATION_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_INFORMATION_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    searchPropertyInfo(body: PropertyInfoSearchDto | undefined): Observable<PagedResultDtoOfPropertyInfoSearchResultDto> {
+        let url_ = this.baseUrl + "/api/PropertyInformation/SearchPropertyInfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearchPropertyInfo(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearchPropertyInfo(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfPropertyInfoSearchResultDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfPropertyInfoSearchResultDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSearchPropertyInfo(response: HttpResponseBase): Observable<PagedResultDtoOfPropertyInfoSearchResultDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfPropertyInfoSearchResultDto.fromJS(resultData200) : new PagedResultDtoOfPropertyInfoSearchResultDto();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfPropertyInfoSearchResultDto>(<any>null);
+    }
+}
+
+@Injectable()
+export class PropertyLocationServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_Ins(body: REA_PROPERTY_LOCATION_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_Upd(body: REA_PROPERTY_LOCATION_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_Del(id: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_Del?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_Del(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_Del(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_Del(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_Search(body: REA_PROPERTY_LOCATION_ENTITY | undefined): Observable<PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_Search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_Search(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_Search(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_Search(response: HttpResponseBase): Observable<PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY.fromJS(resultData200) : new PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_App?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_App(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_App(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_App(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_Rej?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_Rej(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_Rej(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_Rej(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_Can?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_Can(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_Can(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_Can(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_LOCATION_ById(id: string | undefined): Observable<REA_PROPERTY_LOCATION_ENTITY> {
+        let url_ = this.baseUrl + "/api/PropertyLocation/REA_PROPERTY_LOCATION_ById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_LOCATION_ById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_LOCATION_ById(<any>response_);
+                } catch (e) {
+                    return <Observable<REA_PROPERTY_LOCATION_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<REA_PROPERTY_LOCATION_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_LOCATION_ById(response: HttpResponseBase): Observable<REA_PROPERTY_LOCATION_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? REA_PROPERTY_LOCATION_ENTITY.fromJS(resultData200) : new REA_PROPERTY_LOCATION_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<REA_PROPERTY_LOCATION_ENTITY>(<any>null);
+    }
+}
+
+@Injectable()
+export class PropertyTypeServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_Ins(body: REA_PROPERTY_TYPE_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_Upd(body: REA_PROPERTY_TYPE_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_Del(id: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_Del?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_Del(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_Del(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_Del(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_Search(body: REA_PROPERTY_TYPE_ENTITY | undefined): Observable<PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_Search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_Search(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_Search(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_Search(response: HttpResponseBase): Observable<PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY.fromJS(resultData200) : new PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_App?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_App(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_App(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_App(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_Rej?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_Rej(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_Rej(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_Rej(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_Can?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_Can(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_Can(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_Can(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    rEA_PROPERTY_TYPE_ById(id: string | undefined): Observable<REA_PROPERTY_TYPE_ENTITY> {
+        let url_ = this.baseUrl + "/api/PropertyType/REA_PROPERTY_TYPE_ById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_PROPERTY_TYPE_ById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_PROPERTY_TYPE_ById(<any>response_);
+                } catch (e) {
+                    return <Observable<REA_PROPERTY_TYPE_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<REA_PROPERTY_TYPE_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_PROPERTY_TYPE_ById(response: HttpResponseBase): Observable<REA_PROPERTY_TYPE_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? REA_PROPERTY_TYPE_ENTITY.fromJS(resultData200) : new REA_PROPERTY_TYPE_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<REA_PROPERTY_TYPE_ENTITY>(<any>null);
     }
 }
 
@@ -23131,21 +25814,21 @@ export class ShareholderServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param companyId (optional) 
      * @return Success
      */
-    rEA_SHAREHOLDER_Search(body: REA_SHAREHOLDER_ENTITY | undefined): Observable<PagedResultDtoOfREA_SHAREHOLDER_ENTITY> {
-        let url_ = this.baseUrl + "/api/Shareholder/REA_SHAREHOLDER_Search";
+    rEA_SHAREHOLDER_Search(companyId: string | undefined): Observable<REA_SHAREHOLDER_SEARCH_RESULT> {
+        let url_ = this.baseUrl + "/api/Shareholder/REA_SHAREHOLDER_Search?";
+        if (companyId === null)
+            throw new Error("The parameter 'companyId' cannot be null.");
+        else if (companyId !== undefined)
+            url_ += "companyId=" + encodeURIComponent("" + companyId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
                 "Accept": "application/json"
             })
         };
@@ -23157,14 +25840,14 @@ export class ShareholderServiceProxy {
                 try {
                     return this.processREA_SHAREHOLDER_Search(<any>response_);
                 } catch (e) {
-                    return <Observable<PagedResultDtoOfREA_SHAREHOLDER_ENTITY>><any>_observableThrow(e);
+                    return <Observable<REA_SHAREHOLDER_SEARCH_RESULT>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PagedResultDtoOfREA_SHAREHOLDER_ENTITY>><any>_observableThrow(response_);
+                return <Observable<REA_SHAREHOLDER_SEARCH_RESULT>><any>_observableThrow(response_);
         }));
     }
 
-    protected processREA_SHAREHOLDER_Search(response: HttpResponseBase): Observable<PagedResultDtoOfREA_SHAREHOLDER_ENTITY> {
+    protected processREA_SHAREHOLDER_Search(response: HttpResponseBase): Observable<REA_SHAREHOLDER_SEARCH_RESULT> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -23175,7 +25858,7 @@ export class ShareholderServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? PagedResultDtoOfREA_SHAREHOLDER_ENTITY.fromJS(resultData200) : new PagedResultDtoOfREA_SHAREHOLDER_ENTITY();
+            result200 = resultData200 ? REA_SHAREHOLDER_SEARCH_RESULT.fromJS(resultData200) : new REA_SHAREHOLDER_SEARCH_RESULT();
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -23183,7 +25866,7 @@ export class ShareholderServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PagedResultDtoOfREA_SHAREHOLDER_ENTITY>(<any>null);
+        return _observableOf<REA_SHAREHOLDER_SEARCH_RESULT>(<any>null);
     }
 
     /**
@@ -23609,7 +26292,7 @@ export class SodoServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    rEA_SODO_Search(body: REA_SODO_ENTITY | undefined): Observable<PagedResultDtoOfREA_SODO_ENTITY> {
+    rEA_SODO_Search(body: REA_SODO_SEARCH_DTO | undefined): Observable<PagedResultDtoOfREA_SODO_ENTITY> {
         let url_ = this.baseUrl + "/api/Sodo/REA_SODO_Search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -24275,6 +26958,481 @@ export class SubscriptionServiceProxy {
             }));
         }
         return _observableOf<void>(<any>null);
+    }
+}
+
+@Injectable()
+export class SubsidiaryCompanyServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_Ins(body: CM_SUBSIDIARY_COMPANY_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_Upd(body: CM_SUBSIDIARY_COMPANY_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_Upd";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_Upd(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_Upd(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_Upd(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_Del(id: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_Del?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_Del(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_Del(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_Del(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_Search(body: CM_SUBSIDIARY_COMPANY_SEARCH_DTO | undefined): Observable<PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_Search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_Search(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_Search(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_Search(response: HttpResponseBase): Observable<PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY.fromJS(resultData200) : new PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_App(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_App?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_App(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_App(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_App(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_Rej(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_Rej?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_Rej(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_Rej(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_Rej(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param currentUserName (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_Can(id: string | undefined, currentUserName: string | undefined): Observable<CommonResult> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_Can?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        if (currentUserName === null)
+            throw new Error("The parameter 'currentUserName' cannot be null.");
+        else if (currentUserName !== undefined)
+            url_ += "currentUserName=" + encodeURIComponent("" + currentUserName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_Can(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_Can(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_Can(response: HttpResponseBase): Observable<CommonResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CommonResult.fromJS(resultData200) : new CommonResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonResult>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    cM_SUBSIDIARY_COMPANY_ById(id: string | undefined): Observable<CM_SUBSIDIARY_COMPANY_ENTITY> {
+        let url_ = this.baseUrl + "/api/SubsidiaryCompany/CM_SUBSIDIARY_COMPANY_ById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCM_SUBSIDIARY_COMPANY_ById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCM_SUBSIDIARY_COMPANY_ById(<any>response_);
+                } catch (e) {
+                    return <Observable<CM_SUBSIDIARY_COMPANY_ENTITY>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CM_SUBSIDIARY_COMPANY_ENTITY>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCM_SUBSIDIARY_COMPANY_ById(response: HttpResponseBase): Observable<CM_SUBSIDIARY_COMPANY_ENTITY> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? CM_SUBSIDIARY_COMPANY_ENTITY.fromJS(resultData200) : new CM_SUBSIDIARY_COMPANY_ENTITY();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CM_SUBSIDIARY_COMPANY_ENTITY>(<any>null);
     }
 }
 
@@ -27197,6 +30355,74 @@ export class TermServiceProxy {
             }));
         }
         return _observableOf<PagedResultDtoOfCM_TERM_ENTITY>(<any>null);
+    }
+}
+
+@Injectable()
+export class TicketServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    rEA_TICKET_Ins(body: REA_TICKET_ENTITY | undefined): Observable<InsertResult> {
+        let url_ = this.baseUrl + "/api/Ticket/REA_TICKET_Ins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processREA_TICKET_Ins(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processREA_TICKET_Ins(<any>response_);
+                } catch (e) {
+                    return <Observable<InsertResult>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InsertResult>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processREA_TICKET_Ins(response: HttpResponseBase): Observable<InsertResult> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? InsertResult.fromJS(resultData200) : new InsertResult();
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InsertResult>(<any>null);
     }
 }
 
@@ -34421,8 +37647,9 @@ export interface ICM_CAR_TYPE_ENTITY {
 }
 
 export class CM_COMPANY_ENTITY implements ICM_COMPANY_ENTITY {
-    companY_ID!: string | undefined;
+    id!: string | undefined;
     companY_NAME!: string | undefined;
+    companY_CODE!: string | undefined;
     companY_TYPE!: string | undefined;
     companY_PAR_VALUE_PER_SHARE!: number;
     companY_ADDRESS!: string | undefined;
@@ -34435,6 +37662,8 @@ export class CM_COMPANY_ENTITY implements ICM_COMPANY_ENTITY {
     autH_STATUS!: string | undefined;
     checkeR_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
 
     constructor(data?: ICM_COMPANY_ENTITY) {
         if (data) {
@@ -34447,8 +37676,9 @@ export class CM_COMPANY_ENTITY implements ICM_COMPANY_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.companY_ID = data["companY_ID"];
+            this.id = data["id"];
             this.companY_NAME = data["companY_NAME"];
+            this.companY_CODE = data["companY_CODE"];
             this.companY_TYPE = data["companY_TYPE"];
             this.companY_PAR_VALUE_PER_SHARE = data["companY_PAR_VALUE_PER_SHARE"];
             this.companY_ADDRESS = data["companY_ADDRESS"];
@@ -34461,6 +37691,8 @@ export class CM_COMPANY_ENTITY implements ICM_COMPANY_ENTITY {
             this.autH_STATUS = data["autH_STATUS"];
             this.checkeR_ID = data["checkeR_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
         }
     }
 
@@ -34473,8 +37705,9 @@ export class CM_COMPANY_ENTITY implements ICM_COMPANY_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["companY_ID"] = this.companY_ID;
+        data["id"] = this.id;
         data["companY_NAME"] = this.companY_NAME;
+        data["companY_CODE"] = this.companY_CODE;
         data["companY_TYPE"] = this.companY_TYPE;
         data["companY_PAR_VALUE_PER_SHARE"] = this.companY_PAR_VALUE_PER_SHARE;
         data["companY_ADDRESS"] = this.companY_ADDRESS;
@@ -34487,13 +37720,16 @@ export class CM_COMPANY_ENTITY implements ICM_COMPANY_ENTITY {
         data["autH_STATUS"] = this.autH_STATUS;
         data["checkeR_ID"] = this.checkeR_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         return data; 
     }
 }
 
 export interface ICM_COMPANY_ENTITY {
-    companY_ID: string | undefined;
+    id: string | undefined;
     companY_NAME: string | undefined;
+    companY_CODE: string | undefined;
     companY_TYPE: string | undefined;
     companY_PAR_VALUE_PER_SHARE: number;
     companY_ADDRESS: string | undefined;
@@ -34506,6 +37742,96 @@ export interface ICM_COMPANY_ENTITY {
     autH_STATUS: string | undefined;
     checkeR_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+}
+
+export class CM_COMPANY_SEARCH_DTO implements ICM_COMPANY_SEARCH_DTO {
+    id!: string | undefined;
+    companY_NAME!: string | undefined;
+    companY_CODE!: string | undefined;
+    companY_TYPE!: string | undefined;
+    companY_PAR_VALUE_PER_SHARE!: number;
+    companY_ADDRESS!: string | undefined;
+    companY_TEL!: string | undefined;
+    companY_TAX_NO!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    autH_STATUS!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: ICM_COMPANY_SEARCH_DTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.companY_NAME = data["companY_NAME"];
+            this.companY_CODE = data["companY_CODE"];
+            this.companY_TYPE = data["companY_TYPE"];
+            this.companY_PAR_VALUE_PER_SHARE = data["companY_PAR_VALUE_PER_SHARE"];
+            this.companY_ADDRESS = data["companY_ADDRESS"];
+            this.companY_TEL = data["companY_TEL"];
+            this.companY_TAX_NO = data["companY_TAX_NO"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.autH_STATUS = data["autH_STATUS"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): CM_COMPANY_SEARCH_DTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new CM_COMPANY_SEARCH_DTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["companY_NAME"] = this.companY_NAME;
+        data["companY_CODE"] = this.companY_CODE;
+        data["companY_TYPE"] = this.companY_TYPE;
+        data["companY_PAR_VALUE_PER_SHARE"] = this.companY_PAR_VALUE_PER_SHARE;
+        data["companY_ADDRESS"] = this.companY_ADDRESS;
+        data["companY_TEL"] = this.companY_TEL;
+        data["companY_TAX_NO"] = this.companY_TAX_NO;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface ICM_COMPANY_SEARCH_DTO {
+    id: string | undefined;
+    companY_NAME: string | undefined;
+    companY_CODE: string | undefined;
+    companY_TYPE: string | undefined;
+    companY_PAR_VALUE_PER_SHARE: number;
+    companY_ADDRESS: string | undefined;
+    companY_TEL: string | undefined;
+    companY_TAX_NO: string | undefined;
+    recorD_STATUS: string | undefined;
+    autH_STATUS: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class CM_DEPARTMENT_ENTITY implements ICM_DEPARTMENT_ENTITY {
@@ -35705,6 +39031,7 @@ export class CM_KHOI_DT_ENTITY implements ICM_KHOI_DT_ENTITY {
     ccld!: number | undefined;
     btsc!: number | undefined;
     recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
     totalCount!: number | undefined;
     brancH_CODE!: string | undefined;
     brancH_NAME!: string | undefined;
@@ -35743,6 +39070,7 @@ export class CM_KHOI_DT_ENTITY implements ICM_KHOI_DT_ENTITY {
             this.ccld = data["ccld"];
             this.btsc = data["btsc"];
             this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.totalCount = data["totalCount"];
             this.brancH_CODE = data["brancH_CODE"];
             this.brancH_NAME = data["brancH_NAME"];
@@ -35781,6 +39109,7 @@ export class CM_KHOI_DT_ENTITY implements ICM_KHOI_DT_ENTITY {
         data["ccld"] = this.ccld;
         data["btsc"] = this.btsc;
         data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["totalCount"] = this.totalCount;
         data["brancH_CODE"] = this.brancH_CODE;
         data["brancH_NAME"] = this.brancH_NAME;
@@ -35812,6 +39141,7 @@ export interface ICM_KHOI_DT_ENTITY {
     ccld: number | undefined;
     btsc: number | undefined;
     recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
     totalCount: number | undefined;
     brancH_CODE: string | undefined;
     brancH_NAME: string | undefined;
@@ -36637,6 +39967,8 @@ export class CM_REPORT_TEMPLATE_DETAIL_ENTITY implements ICM_REPORT_TEMPLATE_DET
     autH_STATUS!: string | undefined;
     checkeR_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
     recorD_STATUS!: string | undefined;
     no!: number;
     page!: number;
@@ -36665,6 +39997,8 @@ export class CM_REPORT_TEMPLATE_DETAIL_ENTITY implements ICM_REPORT_TEMPLATE_DET
             this.autH_STATUS = data["autH_STATUS"];
             this.checkeR_ID = data["checkeR_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.recorD_STATUS = data["recorD_STATUS"];
             this.no = data["no"];
             this.page = data["page"];
@@ -36693,6 +40027,8 @@ export class CM_REPORT_TEMPLATE_DETAIL_ENTITY implements ICM_REPORT_TEMPLATE_DET
         data["autH_STATUS"] = this.autH_STATUS;
         data["checkeR_ID"] = this.checkeR_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["recorD_STATUS"] = this.recorD_STATUS;
         data["no"] = this.no;
         data["page"] = this.page;
@@ -36714,6 +40050,8 @@ export interface ICM_REPORT_TEMPLATE_DETAIL_ENTITY {
     autH_STATUS: string | undefined;
     checkeR_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
     recorD_STATUS: string | undefined;
     no: number;
     page: number;
@@ -36731,6 +40069,8 @@ export class CM_REPORT_TEMPLATE_ENTITY implements ICM_REPORT_TEMPLATE_ENTITY {
     autH_STATUS!: string | undefined;
     checkeR_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
     recorD_STATUS!: string | undefined;
     reporT_TEMPLATE_DETAILs!: CM_REPORT_TEMPLATE_DETAIL_ENTITY[] | undefined;
     reporT_TEMPLATE_DETAIL_XML!: string | undefined;
@@ -36761,6 +40101,8 @@ export class CM_REPORT_TEMPLATE_ENTITY implements ICM_REPORT_TEMPLATE_ENTITY {
             this.autH_STATUS = data["autH_STATUS"];
             this.checkeR_ID = data["checkeR_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.recorD_STATUS = data["recorD_STATUS"];
             if (data["reporT_TEMPLATE_DETAILs"] && data["reporT_TEMPLATE_DETAILs"].constructor === Array) {
                 this.reporT_TEMPLATE_DETAILs = [] as any;
@@ -36795,6 +40137,8 @@ export class CM_REPORT_TEMPLATE_ENTITY implements ICM_REPORT_TEMPLATE_ENTITY {
         data["autH_STATUS"] = this.autH_STATUS;
         data["checkeR_ID"] = this.checkeR_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["recorD_STATUS"] = this.recorD_STATUS;
         if (this.reporT_TEMPLATE_DETAILs && this.reporT_TEMPLATE_DETAILs.constructor === Array) {
             data["reporT_TEMPLATE_DETAILs"] = [];
@@ -36822,6 +40166,8 @@ export interface ICM_REPORT_TEMPLATE_ENTITY {
     autH_STATUS: string | undefined;
     checkeR_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
     recorD_STATUS: string | undefined;
     reporT_TEMPLATE_DETAILs: CM_REPORT_TEMPLATE_DETAIL_ENTITY[] | undefined;
     reporT_TEMPLATE_DETAIL_XML: string | undefined;
@@ -36931,6 +40277,214 @@ export interface ICM_SECUR_INFO_ENTITY {
     recorD_STATUS_NAME: string | undefined;
     top: number | undefined;
     totalCount: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class CM_SUBSIDIARY_COMPANY_ENTITY implements ICM_SUBSIDIARY_COMPANY_ENTITY {
+    id!: string | undefined;
+    subsidiarY_NAME!: string | undefined;
+    subsidiarY_CODE!: string | undefined;
+    subsidiarY_SHORT_NAME!: string | undefined;
+    companY_ID!: string | undefined;
+    subsidiarY_COMPANY_TYPE!: string | undefined;
+    regioN_ID!: string | undefined;
+    provincE_ID!: string | undefined;
+    subsidiarY_ADDRESS!: string | undefined;
+    subsidiarY_TEL!: string | undefined;
+    subsidiarY_TAX_CODE!: string | undefined;
+    subsidiarY_COMPANY_PAR_VALUE_PER_SHARE!: number;
+    subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL!: number;
+    companY_TOTAL_SHARE_VALUE!: number;
+    notes!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    makeR_ID!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    checkeR_ID!: string | undefined;
+    approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
+
+    constructor(data?: ICM_SUBSIDIARY_COMPANY_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.subsidiarY_NAME = data["subsidiarY_NAME"];
+            this.subsidiarY_CODE = data["subsidiarY_CODE"];
+            this.subsidiarY_SHORT_NAME = data["subsidiarY_SHORT_NAME"];
+            this.companY_ID = data["companY_ID"];
+            this.subsidiarY_COMPANY_TYPE = data["subsidiarY_COMPANY_TYPE"];
+            this.regioN_ID = data["regioN_ID"];
+            this.provincE_ID = data["provincE_ID"];
+            this.subsidiarY_ADDRESS = data["subsidiarY_ADDRESS"];
+            this.subsidiarY_TEL = data["subsidiarY_TEL"];
+            this.subsidiarY_TAX_CODE = data["subsidiarY_TAX_CODE"];
+            this.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE = data["subsidiarY_COMPANY_PAR_VALUE_PER_SHARE"];
+            this.subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL = data["subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL"];
+            this.companY_TOTAL_SHARE_VALUE = data["companY_TOTAL_SHARE_VALUE"];
+            this.notes = data["notes"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.makeR_ID = data["makeR_ID"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.checkeR_ID = data["checkeR_ID"];
+            this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+        }
+    }
+
+    static fromJS(data: any): CM_SUBSIDIARY_COMPANY_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new CM_SUBSIDIARY_COMPANY_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["subsidiarY_NAME"] = this.subsidiarY_NAME;
+        data["subsidiarY_CODE"] = this.subsidiarY_CODE;
+        data["subsidiarY_SHORT_NAME"] = this.subsidiarY_SHORT_NAME;
+        data["companY_ID"] = this.companY_ID;
+        data["subsidiarY_COMPANY_TYPE"] = this.subsidiarY_COMPANY_TYPE;
+        data["regioN_ID"] = this.regioN_ID;
+        data["provincE_ID"] = this.provincE_ID;
+        data["subsidiarY_ADDRESS"] = this.subsidiarY_ADDRESS;
+        data["subsidiarY_TEL"] = this.subsidiarY_TEL;
+        data["subsidiarY_TAX_CODE"] = this.subsidiarY_TAX_CODE;
+        data["subsidiarY_COMPANY_PAR_VALUE_PER_SHARE"] = this.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE;
+        data["subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL"] = this.subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL;
+        data["companY_TOTAL_SHARE_VALUE"] = this.companY_TOTAL_SHARE_VALUE;
+        data["notes"] = this.notes;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["makeR_ID"] = this.makeR_ID;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["checkeR_ID"] = this.checkeR_ID;
+        data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        return data; 
+    }
+}
+
+export interface ICM_SUBSIDIARY_COMPANY_ENTITY {
+    id: string | undefined;
+    subsidiarY_NAME: string | undefined;
+    subsidiarY_CODE: string | undefined;
+    subsidiarY_SHORT_NAME: string | undefined;
+    companY_ID: string | undefined;
+    subsidiarY_COMPANY_TYPE: string | undefined;
+    regioN_ID: string | undefined;
+    provincE_ID: string | undefined;
+    subsidiarY_ADDRESS: string | undefined;
+    subsidiarY_TEL: string | undefined;
+    subsidiarY_TAX_CODE: string | undefined;
+    subsidiarY_COMPANY_PAR_VALUE_PER_SHARE: number;
+    subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL: number;
+    companY_TOTAL_SHARE_VALUE: number;
+    notes: string | undefined;
+    recorD_STATUS: string | undefined;
+    makeR_ID: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    checkeR_ID: string | undefined;
+    approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+}
+
+export class CM_SUBSIDIARY_COMPANY_SEARCH_DTO implements ICM_SUBSIDIARY_COMPANY_SEARCH_DTO {
+    subsidiarY_NAME!: string | undefined;
+    subsidiarY_CODE!: string | undefined;
+    subsidiarY_COMPANY_TYPE!: string | undefined;
+    regioN_NAME!: string | undefined;
+    provincE_NAME!: string | undefined;
+    subsidiarY_ADDRESS!: string | undefined;
+    subsidiarY_TEL!: string | undefined;
+    subsidiarY_TAX_CODE!: string | undefined;
+    autH_STATUS!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: ICM_SUBSIDIARY_COMPANY_SEARCH_DTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.subsidiarY_NAME = data["subsidiarY_NAME"];
+            this.subsidiarY_CODE = data["subsidiarY_CODE"];
+            this.subsidiarY_COMPANY_TYPE = data["subsidiarY_COMPANY_TYPE"];
+            this.regioN_NAME = data["regioN_NAME"];
+            this.provincE_NAME = data["provincE_NAME"];
+            this.subsidiarY_ADDRESS = data["subsidiarY_ADDRESS"];
+            this.subsidiarY_TEL = data["subsidiarY_TEL"];
+            this.subsidiarY_TAX_CODE = data["subsidiarY_TAX_CODE"];
+            this.autH_STATUS = data["autH_STATUS"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): CM_SUBSIDIARY_COMPANY_SEARCH_DTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new CM_SUBSIDIARY_COMPANY_SEARCH_DTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["subsidiarY_NAME"] = this.subsidiarY_NAME;
+        data["subsidiarY_CODE"] = this.subsidiarY_CODE;
+        data["subsidiarY_COMPANY_TYPE"] = this.subsidiarY_COMPANY_TYPE;
+        data["regioN_NAME"] = this.regioN_NAME;
+        data["provincE_NAME"] = this.provincE_NAME;
+        data["subsidiarY_ADDRESS"] = this.subsidiarY_ADDRESS;
+        data["subsidiarY_TEL"] = this.subsidiarY_TEL;
+        data["subsidiarY_TAX_CODE"] = this.subsidiarY_TAX_CODE;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface ICM_SUBSIDIARY_COMPANY_SEARCH_DTO {
+    subsidiarY_NAME: string | undefined;
+    subsidiarY_CODE: string | undefined;
+    subsidiarY_COMPANY_TYPE: string | undefined;
+    regioN_NAME: string | undefined;
+    provincE_NAME: string | undefined;
+    subsidiarY_ADDRESS: string | undefined;
+    subsidiarY_TEL: string | undefined;
+    subsidiarY_TAX_CODE: string | undefined;
+    autH_STATUS: string | undefined;
+    top: number | undefined;
     sorting: string | undefined;
     maxResultCount: number;
     skipCount: number;
@@ -37528,6 +41082,8 @@ export class CM_WORKFLOW_ASSIGN_ENTITY implements ICM_WORKFLOW_ASSIGN_ENTITY {
     autH_STATUS!: string | undefined;
     checkeR_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
     recorD_STATUS!: string | undefined;
     no!: number;
     page!: number;
@@ -37555,6 +41111,8 @@ export class CM_WORKFLOW_ASSIGN_ENTITY implements ICM_WORKFLOW_ASSIGN_ENTITY {
             this.autH_STATUS = data["autH_STATUS"];
             this.checkeR_ID = data["checkeR_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.recorD_STATUS = data["recorD_STATUS"];
             this.no = data["no"];
             this.page = data["page"];
@@ -37582,6 +41140,8 @@ export class CM_WORKFLOW_ASSIGN_ENTITY implements ICM_WORKFLOW_ASSIGN_ENTITY {
         data["autH_STATUS"] = this.autH_STATUS;
         data["checkeR_ID"] = this.checkeR_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["recorD_STATUS"] = this.recorD_STATUS;
         data["no"] = this.no;
         data["page"] = this.page;
@@ -37602,6 +41162,8 @@ export interface ICM_WORKFLOW_ASSIGN_ENTITY {
     autH_STATUS: string | undefined;
     checkeR_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
     recorD_STATUS: string | undefined;
     no: number;
     page: number;
@@ -37860,6 +41422,46 @@ export interface IComboboxItemDto {
     isSelected: boolean;
 }
 
+export class ComboboxResult implements IComboboxResult {
+    id!: string | undefined;
+    name!: string | undefined;
+
+    constructor(data?: IComboboxResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+        }
+    }
+
+    static fromJS(data: any): ComboboxResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new ComboboxResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IComboboxResult {
+    id: string | undefined;
+    name: string | undefined;
+}
+
 export class CommonResult implements ICommonResult {
     result!: string | undefined;
     errorDesc!: string | undefined;
@@ -38053,7 +41655,7 @@ export interface ICommonSettingEditDto {
 }
 
 export class CONTRACT_ANNEX_ENTITY implements ICONTRACT_ANNEX_ENTITY {
-    contracT_ANNEX_ID!: string | undefined;
+    id!: number;
     contracT_ID!: string | undefined;
     anneX_NAME!: string | undefined;
     anneX_SIGN_DT!: moment.Moment | undefined;
@@ -38078,7 +41680,7 @@ export class CONTRACT_ANNEX_ENTITY implements ICONTRACT_ANNEX_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.contracT_ANNEX_ID = data["contracT_ANNEX_ID"];
+            this.id = data["id"];
             this.contracT_ID = data["contracT_ID"];
             this.anneX_NAME = data["anneX_NAME"];
             this.anneX_SIGN_DT = data["anneX_SIGN_DT"] ? moment(data["anneX_SIGN_DT"].toString()) : <any>undefined;
@@ -38103,7 +41705,7 @@ export class CONTRACT_ANNEX_ENTITY implements ICONTRACT_ANNEX_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["contracT_ANNEX_ID"] = this.contracT_ANNEX_ID;
+        data["id"] = this.id;
         data["contracT_ID"] = this.contracT_ID;
         data["anneX_NAME"] = this.anneX_NAME;
         data["anneX_SIGN_DT"] = this.anneX_SIGN_DT ? this.anneX_SIGN_DT.toISOString() : <any>undefined;
@@ -38121,7 +41723,7 @@ export class CONTRACT_ANNEX_ENTITY implements ICONTRACT_ANNEX_ENTITY {
 }
 
 export interface ICONTRACT_ANNEX_ENTITY {
-    contracT_ANNEX_ID: string | undefined;
+    id: number;
     contracT_ID: string | undefined;
     anneX_NAME: string | undefined;
     anneX_SIGN_DT: moment.Moment | undefined;
@@ -38137,9 +41739,13 @@ export interface ICONTRACT_ANNEX_ENTITY {
 }
 
 export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
-    contracT_ITEM_ID!: string | undefined;
+    id!: number;
     contracT_ID!: string | undefined;
     contracT_ITEM_INVESTMENT_PROP_ID!: string | undefined;
+    contracT_ITEM_INVESTMENT_PROP_CODE!: string | undefined;
+    contracT_ITEM_INVESTMENT_PROP_NAME!: string | undefined;
+    contracT_ITEM_INVESTMENT_PROP_LOCATION!: string | undefined;
+    contracT_ITEM_REF_ID!: number;
     contracT_ITEM_TYPE!: string | undefined;
     contracT_ITEM_RENTAL_AREA!: number;
     contracT_ITEM_TERM!: number;
@@ -38147,6 +41753,7 @@ export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
     contracT_ITEM_TERMINATE_DT!: moment.Moment | undefined;
     notes!: string | undefined;
     contracT_ITEM_RENTAL_PRICE!: CONTRACT_ITEM_RENTAL_PRICE_ENTITY;
+    rentaL_PRICE_UNIT_PRICE_VND!: number;
     contracT_ITEM_TYPE_NAME!: string | undefined;
     iS_CHANGED!: boolean;
     iS_NEW!: boolean;
@@ -38166,9 +41773,13 @@ export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.contracT_ITEM_ID = data["contracT_ITEM_ID"];
+            this.id = data["id"];
             this.contracT_ID = data["contracT_ID"];
             this.contracT_ITEM_INVESTMENT_PROP_ID = data["contracT_ITEM_INVESTMENT_PROP_ID"];
+            this.contracT_ITEM_INVESTMENT_PROP_CODE = data["contracT_ITEM_INVESTMENT_PROP_CODE"];
+            this.contracT_ITEM_INVESTMENT_PROP_NAME = data["contracT_ITEM_INVESTMENT_PROP_NAME"];
+            this.contracT_ITEM_INVESTMENT_PROP_LOCATION = data["contracT_ITEM_INVESTMENT_PROP_LOCATION"];
+            this.contracT_ITEM_REF_ID = data["contracT_ITEM_REF_ID"];
             this.contracT_ITEM_TYPE = data["contracT_ITEM_TYPE"];
             this.contracT_ITEM_RENTAL_AREA = data["contracT_ITEM_RENTAL_AREA"];
             this.contracT_ITEM_TERM = data["contracT_ITEM_TERM"];
@@ -38176,6 +41787,7 @@ export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
             this.contracT_ITEM_TERMINATE_DT = data["contracT_ITEM_TERMINATE_DT"] ? moment(data["contracT_ITEM_TERMINATE_DT"].toString()) : <any>undefined;
             this.notes = data["notes"];
             this.contracT_ITEM_RENTAL_PRICE = data["contracT_ITEM_RENTAL_PRICE"] ? CONTRACT_ITEM_RENTAL_PRICE_ENTITY.fromJS(data["contracT_ITEM_RENTAL_PRICE"]) : <any>undefined;
+            this.rentaL_PRICE_UNIT_PRICE_VND = data["rentaL_PRICE_UNIT_PRICE_VND"];
             this.contracT_ITEM_TYPE_NAME = data["contracT_ITEM_TYPE_NAME"];
             this.iS_CHANGED = data["iS_CHANGED"];
             this.iS_NEW = data["iS_NEW"];
@@ -38195,9 +41807,13 @@ export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["contracT_ITEM_ID"] = this.contracT_ITEM_ID;
+        data["id"] = this.id;
         data["contracT_ID"] = this.contracT_ID;
         data["contracT_ITEM_INVESTMENT_PROP_ID"] = this.contracT_ITEM_INVESTMENT_PROP_ID;
+        data["contracT_ITEM_INVESTMENT_PROP_CODE"] = this.contracT_ITEM_INVESTMENT_PROP_CODE;
+        data["contracT_ITEM_INVESTMENT_PROP_NAME"] = this.contracT_ITEM_INVESTMENT_PROP_NAME;
+        data["contracT_ITEM_INVESTMENT_PROP_LOCATION"] = this.contracT_ITEM_INVESTMENT_PROP_LOCATION;
+        data["contracT_ITEM_REF_ID"] = this.contracT_ITEM_REF_ID;
         data["contracT_ITEM_TYPE"] = this.contracT_ITEM_TYPE;
         data["contracT_ITEM_RENTAL_AREA"] = this.contracT_ITEM_RENTAL_AREA;
         data["contracT_ITEM_TERM"] = this.contracT_ITEM_TERM;
@@ -38205,6 +41821,7 @@ export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
         data["contracT_ITEM_TERMINATE_DT"] = this.contracT_ITEM_TERMINATE_DT ? this.contracT_ITEM_TERMINATE_DT.toISOString() : <any>undefined;
         data["notes"] = this.notes;
         data["contracT_ITEM_RENTAL_PRICE"] = this.contracT_ITEM_RENTAL_PRICE ? this.contracT_ITEM_RENTAL_PRICE.toJSON() : <any>undefined;
+        data["rentaL_PRICE_UNIT_PRICE_VND"] = this.rentaL_PRICE_UNIT_PRICE_VND;
         data["contracT_ITEM_TYPE_NAME"] = this.contracT_ITEM_TYPE_NAME;
         data["iS_CHANGED"] = this.iS_CHANGED;
         data["iS_NEW"] = this.iS_NEW;
@@ -38217,9 +41834,13 @@ export class CONTRACT_ITEM_ENTITY implements ICONTRACT_ITEM_ENTITY {
 }
 
 export interface ICONTRACT_ITEM_ENTITY {
-    contracT_ITEM_ID: string | undefined;
+    id: number;
     contracT_ID: string | undefined;
     contracT_ITEM_INVESTMENT_PROP_ID: string | undefined;
+    contracT_ITEM_INVESTMENT_PROP_CODE: string | undefined;
+    contracT_ITEM_INVESTMENT_PROP_NAME: string | undefined;
+    contracT_ITEM_INVESTMENT_PROP_LOCATION: string | undefined;
+    contracT_ITEM_REF_ID: number;
     contracT_ITEM_TYPE: string | undefined;
     contracT_ITEM_RENTAL_AREA: number;
     contracT_ITEM_TERM: number;
@@ -38227,6 +41848,7 @@ export interface ICONTRACT_ITEM_ENTITY {
     contracT_ITEM_TERMINATE_DT: moment.Moment | undefined;
     notes: string | undefined;
     contracT_ITEM_RENTAL_PRICE: CONTRACT_ITEM_RENTAL_PRICE_ENTITY;
+    rentaL_PRICE_UNIT_PRICE_VND: number;
     contracT_ITEM_TYPE_NAME: string | undefined;
     iS_CHANGED: boolean;
     iS_NEW: boolean;
@@ -38237,8 +41859,8 @@ export interface ICONTRACT_ITEM_ENTITY {
 }
 
 export class CONTRACT_ITEM_RENTAL_PRICE_ENTITY implements ICONTRACT_ITEM_RENTAL_PRICE_ENTITY {
-    contracT_ITEM_PRICE_ID!: string | undefined;
-    contracT_ITEM_ID!: string | undefined;
+    id!: number;
+    contracT_ITEM_ID!: number;
     rentaL_PRICE_TYPE!: string | undefined;
     rentaL_PRICE_MONTH_NUMBER!: number;
     rentAl_PRICE_EFFECT_DT!: moment.Moment | undefined;
@@ -38267,7 +41889,7 @@ export class CONTRACT_ITEM_RENTAL_PRICE_ENTITY implements ICONTRACT_ITEM_RENTAL_
 
     init(data?: any) {
         if (data) {
-            this.contracT_ITEM_PRICE_ID = data["contracT_ITEM_PRICE_ID"];
+            this.id = data["id"];
             this.contracT_ITEM_ID = data["contracT_ITEM_ID"];
             this.rentaL_PRICE_TYPE = data["rentaL_PRICE_TYPE"];
             this.rentaL_PRICE_MONTH_NUMBER = data["rentaL_PRICE_MONTH_NUMBER"];
@@ -38297,7 +41919,7 @@ export class CONTRACT_ITEM_RENTAL_PRICE_ENTITY implements ICONTRACT_ITEM_RENTAL_
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["contracT_ITEM_PRICE_ID"] = this.contracT_ITEM_PRICE_ID;
+        data["id"] = this.id;
         data["contracT_ITEM_ID"] = this.contracT_ITEM_ID;
         data["rentaL_PRICE_TYPE"] = this.rentaL_PRICE_TYPE;
         data["rentaL_PRICE_MONTH_NUMBER"] = this.rentaL_PRICE_MONTH_NUMBER;
@@ -38320,8 +41942,8 @@ export class CONTRACT_ITEM_RENTAL_PRICE_ENTITY implements ICONTRACT_ITEM_RENTAL_
 }
 
 export interface ICONTRACT_ITEM_RENTAL_PRICE_ENTITY {
-    contracT_ITEM_PRICE_ID: string | undefined;
-    contracT_ITEM_ID: string | undefined;
+    id: number;
+    contracT_ITEM_ID: number;
     rentaL_PRICE_TYPE: string | undefined;
     rentaL_PRICE_MONTH_NUMBER: number;
     rentAl_PRICE_EFFECT_DT: moment.Moment | undefined;
@@ -39087,6 +42709,58 @@ export interface IDASBOARD_06 {
     month: number;
 }
 
+export class DashBoardDto implements IDashBoardDto {
+    soDoProjectDashboard!: SoDoProjectDashboardDto;
+    dueDateContractAndMortgage!: DueDateContractAndMortgageDto;
+    mortgageItemDashboard!: MortgageItemDashboardDto;
+    projectTypeDashboard!: ProjectTypeDashboardDto;
+    top10ProjectValuation!: Top10ProjectValuationDto;
+
+    constructor(data?: IDashBoardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.soDoProjectDashboard = data["soDoProjectDashboard"] ? SoDoProjectDashboardDto.fromJS(data["soDoProjectDashboard"]) : <any>undefined;
+            this.dueDateContractAndMortgage = data["dueDateContractAndMortgage"] ? DueDateContractAndMortgageDto.fromJS(data["dueDateContractAndMortgage"]) : <any>undefined;
+            this.mortgageItemDashboard = data["mortgageItemDashboard"] ? MortgageItemDashboardDto.fromJS(data["mortgageItemDashboard"]) : <any>undefined;
+            this.projectTypeDashboard = data["projectTypeDashboard"] ? ProjectTypeDashboardDto.fromJS(data["projectTypeDashboard"]) : <any>undefined;
+            this.top10ProjectValuation = data["top10ProjectValuation"] ? Top10ProjectValuationDto.fromJS(data["top10ProjectValuation"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): DashBoardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DashBoardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["soDoProjectDashboard"] = this.soDoProjectDashboard ? this.soDoProjectDashboard.toJSON() : <any>undefined;
+        data["dueDateContractAndMortgage"] = this.dueDateContractAndMortgage ? this.dueDateContractAndMortgage.toJSON() : <any>undefined;
+        data["mortgageItemDashboard"] = this.mortgageItemDashboard ? this.mortgageItemDashboard.toJSON() : <any>undefined;
+        data["projectTypeDashboard"] = this.projectTypeDashboard ? this.projectTypeDashboard.toJSON() : <any>undefined;
+        data["top10ProjectValuation"] = this.top10ProjectValuation ? this.top10ProjectValuation.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IDashBoardDto {
+    soDoProjectDashboard: SoDoProjectDashboardDto;
+    dueDateContractAndMortgage: DueDateContractAndMortgageDto;
+    mortgageItemDashboard: MortgageItemDashboardDto;
+    projectTypeDashboard: ProjectTypeDashboardDto;
+    top10ProjectValuation: Top10ProjectValuationDto;
+}
+
 export class DashboarDto implements IDashboarDto {
     procName!: string | undefined;
     parameters!: ReportParameter[] | undefined;
@@ -39169,6 +42843,62 @@ export class DateToStringOutput implements IDateToStringOutput {
 
 export interface IDateToStringOutput {
     dateString: string | undefined;
+}
+
+export class DueDateContractAndMortgageDto implements IDueDateContractAndMortgageDto {
+    dueDateContractMetrics!: StatisticDateAncCountDto[] | undefined;
+    dueDateMortgageMetrics!: StatisticDateAncCountDto[] | undefined;
+
+    constructor(data?: IDueDateContractAndMortgageDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["dueDateContractMetrics"] && data["dueDateContractMetrics"].constructor === Array) {
+                this.dueDateContractMetrics = [] as any;
+                for (let item of data["dueDateContractMetrics"])
+                    this.dueDateContractMetrics!.push(StatisticDateAncCountDto.fromJS(item));
+            }
+            if (data["dueDateMortgageMetrics"] && data["dueDateMortgageMetrics"].constructor === Array) {
+                this.dueDateMortgageMetrics = [] as any;
+                for (let item of data["dueDateMortgageMetrics"])
+                    this.dueDateMortgageMetrics!.push(StatisticDateAncCountDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): DueDateContractAndMortgageDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DueDateContractAndMortgageDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.dueDateContractMetrics && this.dueDateContractMetrics.constructor === Array) {
+            data["dueDateContractMetrics"] = [];
+            for (let item of this.dueDateContractMetrics)
+                data["dueDateContractMetrics"].push(item.toJSON());
+        }
+        if (this.dueDateMortgageMetrics && this.dueDateMortgageMetrics.constructor === Array) {
+            data["dueDateMortgageMetrics"] = [];
+            for (let item of this.dueDateMortgageMetrics)
+                data["dueDateMortgageMetrics"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IDueDateContractAndMortgageDto {
+    dueDateContractMetrics: StatisticDateAncCountDto[] | undefined;
+    dueDateMortgageMetrics: StatisticDateAncCountDto[] | undefined;
 }
 
 export class EditionCreateDto implements IEditionCreateDto {
@@ -42500,6 +46230,36 @@ export interface IIInputType {
     validator: IValueValidator;
 }
 
+export class IMortgagePropertyDto implements IIMortgagePropertyDto {
+
+    constructor(data?: IIMortgagePropertyDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+    }
+
+    static fromJS(data: any): IMortgagePropertyDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new IMortgagePropertyDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data; 
+    }
+}
+
+export interface IIMortgagePropertyDto {
+}
+
 export class ImpersonatedAuthenticateResultModel implements IImpersonatedAuthenticateResultModel {
     accessToken!: string | undefined;
     encryptedAccessToken!: string | undefined;
@@ -43190,6 +46950,122 @@ export class IValueValidator implements IIValueValidator {
 export interface IIValueValidator {
     name: string | undefined;
     attributes: { [key: string] : any; } | undefined;
+}
+
+export class LandAreaMortgageSearchDto implements ILandAreaMortgageSearchDto {
+    projecT_ID!: string | undefined;
+    investoR_ID!: string | undefined;
+    id!: string | undefined;
+    projecT_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: ILandAreaMortgageSearchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.projecT_ID = data["projecT_ID"];
+            this.investoR_ID = data["investoR_ID"];
+            this.id = data["id"];
+            this.projecT_NAME = data["projecT_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): LandAreaMortgageSearchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LandAreaMortgageSearchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["projecT_ID"] = this.projecT_ID;
+        data["investoR_ID"] = this.investoR_ID;
+        data["id"] = this.id;
+        data["projecT_NAME"] = this.projecT_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface ILandAreaMortgageSearchDto {
+    projecT_ID: string | undefined;
+    investoR_ID: string | undefined;
+    id: string | undefined;
+    projecT_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class LandAreaMortgageSearchResultDto implements ILandAreaMortgageSearchResultDto {
+    id!: string | undefined;
+    lanD_AREA_NAME!: string | undefined;
+    projecT_NAME!: string | undefined;
+    lanD_AREA_LOCATION!: string | undefined;
+    notes!: string | undefined;
+
+    constructor(data?: ILandAreaMortgageSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.lanD_AREA_NAME = data["lanD_AREA_NAME"];
+            this.projecT_NAME = data["projecT_NAME"];
+            this.lanD_AREA_LOCATION = data["lanD_AREA_LOCATION"];
+            this.notes = data["notes"];
+        }
+    }
+
+    static fromJS(data: any): LandAreaMortgageSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LandAreaMortgageSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["lanD_AREA_NAME"] = this.lanD_AREA_NAME;
+        data["projecT_NAME"] = this.projecT_NAME;
+        data["lanD_AREA_LOCATION"] = this.lanD_AREA_LOCATION;
+        data["notes"] = this.notes;
+        return data; 
+    }
+}
+
+export interface ILandAreaMortgageSearchResultDto {
+    id: string | undefined;
+    lanD_AREA_NAME: string | undefined;
+    projecT_NAME: string | undefined;
+    lanD_AREA_LOCATION: string | undefined;
+    notes: string | undefined;
 }
 
 export class LanguageInfo implements ILanguageInfo {
@@ -44096,6 +47972,62 @@ export interface IMemberActivity {
     rate: string | undefined;
 }
 
+export class MortgageItemDashboardDto implements IMortgageItemDashboardDto {
+    projectInMortgage!: number;
+    totalProject!: number;
+    landAreaInMortgage!: number;
+    totalLandArea!: number;
+    soDoInMortgage!: number;
+    totalSoDo!: number;
+
+    constructor(data?: IMortgageItemDashboardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.projectInMortgage = data["projectInMortgage"];
+            this.totalProject = data["totalProject"];
+            this.landAreaInMortgage = data["landAreaInMortgage"];
+            this.totalLandArea = data["totalLandArea"];
+            this.soDoInMortgage = data["soDoInMortgage"];
+            this.totalSoDo = data["totalSoDo"];
+        }
+    }
+
+    static fromJS(data: any): MortgageItemDashboardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new MortgageItemDashboardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["projectInMortgage"] = this.projectInMortgage;
+        data["totalProject"] = this.totalProject;
+        data["landAreaInMortgage"] = this.landAreaInMortgage;
+        data["totalLandArea"] = this.totalLandArea;
+        data["soDoInMortgage"] = this.soDoInMortgage;
+        data["totalSoDo"] = this.totalSoDo;
+        return data; 
+    }
+}
+
+export interface IMortgageItemDashboardDto {
+    projectInMortgage: number;
+    totalProject: number;
+    landAreaInMortgage: number;
+    totalLandArea: number;
+    soDoInMortgage: number;
+    totalSoDo: number;
+}
+
 export class MoveOrganizationUnitInput implements IMoveOrganizationUnitInput {
     id!: number;
     newParentId!: number | undefined;
@@ -44953,6 +48885,54 @@ export interface IPagedResultDtoOfCM_CAR_TYPE_ENTITY {
     items: CM_CAR_TYPE_ENTITY[] | undefined;
 }
 
+export class PagedResultDtoOfCM_COMPANY_ENTITY implements IPagedResultDtoOfCM_COMPANY_ENTITY {
+    totalCount!: number;
+    items!: CM_COMPANY_ENTITY[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfCM_COMPANY_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(CM_COMPANY_ENTITY.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfCM_COMPANY_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfCM_COMPANY_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfCM_COMPANY_ENTITY {
+    totalCount: number;
+    items: CM_COMPANY_ENTITY[] | undefined;
+}
+
 export class PagedResultDtoOfCM_DEPARTMENT_ENTITY implements IPagedResultDtoOfCM_DEPARTMENT_ENTITY {
     totalCount!: number;
     items!: CM_DEPARTMENT_ENTITY[] | undefined;
@@ -45721,6 +49701,54 @@ export interface IPagedResultDtoOfCM_SECUR_INFO_ENTITY {
     items: CM_SECUR_INFO_ENTITY[] | undefined;
 }
 
+export class PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY implements IPagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY {
+    totalCount!: number;
+    items!: CM_SUBSIDIARY_COMPANY_ENTITY[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(CM_SUBSIDIARY_COMPANY_ENTITY.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfCM_SUBSIDIARY_COMPANY_ENTITY {
+    totalCount: number;
+    items: CM_SUBSIDIARY_COMPANY_ENTITY[] | undefined;
+}
+
 export class PagedResultDtoOfCM_SUPPLIER_ENTITY implements IPagedResultDtoOfCM_SUPPLIER_ENTITY {
     totalCount!: number;
     items!: CM_SUPPLIER_ENTITY[] | undefined;
@@ -46009,6 +50037,54 @@ export interface IPagedResultDtoOfEntityChangeListDto {
     items: EntityChangeListDto[] | undefined;
 }
 
+export class PagedResultDtoOfLandAreaMortgageSearchResultDto implements IPagedResultDtoOfLandAreaMortgageSearchResultDto {
+    totalCount!: number;
+    items!: LandAreaMortgageSearchResultDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfLandAreaMortgageSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(LandAreaMortgageSearchResultDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfLandAreaMortgageSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfLandAreaMortgageSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfLandAreaMortgageSearchResultDto {
+    totalCount: number;
+    items: LandAreaMortgageSearchResultDto[] | undefined;
+}
+
 export class PagedResultDtoOfLanguageTextListDto implements IPagedResultDtoOfLanguageTextListDto {
     totalCount!: number;
     items!: LanguageTextListDto[] | undefined;
@@ -46247,6 +50323,102 @@ export class PagedResultDtoOfOrganizationUnitUserListDto implements IPagedResult
 export interface IPagedResultDtoOfOrganizationUnitUserListDto {
     totalCount: number;
     items: OrganizationUnitUserListDto[] | undefined;
+}
+
+export class PagedResultDtoOfProjectMortgageSearchResultDto implements IPagedResultDtoOfProjectMortgageSearchResultDto {
+    totalCount!: number;
+    items!: ProjectMortgageSearchResultDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfProjectMortgageSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(ProjectMortgageSearchResultDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfProjectMortgageSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfProjectMortgageSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfProjectMortgageSearchResultDto {
+    totalCount: number;
+    items: ProjectMortgageSearchResultDto[] | undefined;
+}
+
+export class PagedResultDtoOfPropertyInfoSearchResultDto implements IPagedResultDtoOfPropertyInfoSearchResultDto {
+    totalCount!: number;
+    items!: PropertyInfoSearchResultDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfPropertyInfoSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(PropertyInfoSearchResultDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfPropertyInfoSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfPropertyInfoSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfPropertyInfoSearchResultDto {
+    totalCount: number;
+    items: PropertyInfoSearchResultDto[] | undefined;
 }
 
 export class PagedResultDtoOfREA_ALLCODE_ENTITY implements IPagedResultDtoOfREA_ALLCODE_ENTITY {
@@ -46681,6 +50853,150 @@ export interface IPagedResultDtoOfREA_PROJECT_ENTITY {
     items: REA_PROJECT_ENTITY[] | undefined;
 }
 
+export class PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY implements IPagedResultDtoOfREA_PROPERTY_GROUP_ENTITY {
+    totalCount!: number;
+    items!: REA_PROPERTY_GROUP_ENTITY[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfREA_PROPERTY_GROUP_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(REA_PROPERTY_GROUP_ENTITY.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfREA_PROPERTY_GROUP_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfREA_PROPERTY_GROUP_ENTITY {
+    totalCount: number;
+    items: REA_PROPERTY_GROUP_ENTITY[] | undefined;
+}
+
+export class PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY implements IPagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY {
+    totalCount!: number;
+    items!: REA_PROPERTY_LOCATION_ENTITY[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(REA_PROPERTY_LOCATION_ENTITY.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfREA_PROPERTY_LOCATION_ENTITY {
+    totalCount: number;
+    items: REA_PROPERTY_LOCATION_ENTITY[] | undefined;
+}
+
+export class PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY implements IPagedResultDtoOfREA_PROPERTY_TYPE_ENTITY {
+    totalCount!: number;
+    items!: REA_PROPERTY_TYPE_ENTITY[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfREA_PROPERTY_TYPE_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(REA_PROPERTY_TYPE_ENTITY.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfREA_PROPERTY_TYPE_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfREA_PROPERTY_TYPE_ENTITY {
+    totalCount: number;
+    items: REA_PROPERTY_TYPE_ENTITY[] | undefined;
+}
+
 export class PagedResultDtoOfREA_SHAREHOLDER_ENTITY implements IPagedResultDtoOfREA_SHAREHOLDER_ENTITY {
     totalCount!: number;
     items!: REA_SHAREHOLDER_ENTITY[] | undefined;
@@ -46775,6 +51091,54 @@ export class PagedResultDtoOfREA_SODO_ENTITY implements IPagedResultDtoOfREA_SOD
 export interface IPagedResultDtoOfREA_SODO_ENTITY {
     totalCount: number;
     items: REA_SODO_ENTITY[] | undefined;
+}
+
+export class PagedResultDtoOfSoDoMortgageSearchResultDto implements IPagedResultDtoOfSoDoMortgageSearchResultDto {
+    totalCount!: number;
+    items!: SoDoMortgageSearchResultDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfSoDoMortgageSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.totalCount = data["totalCount"];
+            if (data["items"] && data["items"].constructor === Array) {
+                this.items = [] as any;
+                for (let item of data["items"])
+                    this.items!.push(SoDoMortgageSearchResultDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfSoDoMortgageSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfSoDoMortgageSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (this.items && this.items.constructor === Array) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfSoDoMortgageSearchResultDto {
+    totalCount: number;
+    items: SoDoMortgageSearchResultDto[] | undefined;
 }
 
 export class PagedResultDtoOfSubscriptionPaymentListDto implements IPagedResultDtoOfSubscriptionPaymentListDto {
@@ -47298,6 +51662,402 @@ export interface IPayPalConfigurationDto {
     demoPassword: string | undefined;
 }
 
+export class ProjectMortgageSearchDto implements IProjectMortgageSearchDto {
+    projecT_TYPE!: string | undefined;
+    id!: string | undefined;
+    projecT_NAME!: string | undefined;
+    projecT_LOCATION!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IProjectMortgageSearchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.projecT_TYPE = data["projecT_TYPE"];
+            this.id = data["id"];
+            this.projecT_NAME = data["projecT_NAME"];
+            this.projecT_LOCATION = data["projecT_LOCATION"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): ProjectMortgageSearchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProjectMortgageSearchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["projecT_TYPE"] = this.projecT_TYPE;
+        data["id"] = this.id;
+        data["projecT_NAME"] = this.projecT_NAME;
+        data["projecT_LOCATION"] = this.projecT_LOCATION;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IProjectMortgageSearchDto {
+    projecT_TYPE: string | undefined;
+    id: string | undefined;
+    projecT_NAME: string | undefined;
+    projecT_LOCATION: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class ProjectMortgageSearchResultDto implements IProjectMortgageSearchResultDto {
+    id!: string | undefined;
+    projecT_NAME!: string | undefined;
+    projecT_LOCATION!: string | undefined;
+    notes!: string | undefined;
+
+    constructor(data?: IProjectMortgageSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.projecT_NAME = data["projecT_NAME"];
+            this.projecT_LOCATION = data["projecT_LOCATION"];
+            this.notes = data["notes"];
+        }
+    }
+
+    static fromJS(data: any): ProjectMortgageSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProjectMortgageSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["projecT_NAME"] = this.projecT_NAME;
+        data["projecT_LOCATION"] = this.projecT_LOCATION;
+        data["notes"] = this.notes;
+        return data; 
+    }
+}
+
+export interface IProjectMortgageSearchResultDto {
+    id: string | undefined;
+    projecT_NAME: string | undefined;
+    projecT_LOCATION: string | undefined;
+    notes: string | undefined;
+}
+
+export class ProjectTypeDashboardDto implements IProjectTypeDashboardDto {
+    dtProject!: number;
+    tmProject!: number;
+    rlProject!: number;
+    totalProject!: number;
+
+    constructor(data?: IProjectTypeDashboardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.dtProject = data["dtProject"];
+            this.tmProject = data["tmProject"];
+            this.rlProject = data["rlProject"];
+            this.totalProject = data["totalProject"];
+        }
+    }
+
+    static fromJS(data: any): ProjectTypeDashboardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProjectTypeDashboardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dtProject"] = this.dtProject;
+        data["tmProject"] = this.tmProject;
+        data["rlProject"] = this.rlProject;
+        data["totalProject"] = this.totalProject;
+        return data; 
+    }
+}
+
+export interface IProjectTypeDashboardDto {
+    dtProject: number;
+    tmProject: number;
+    rlProject: number;
+    totalProject: number;
+}
+
+export class ProjectValuationDashboardDto implements IProjectValuationDashboardDto {
+    projecT_ID!: string | undefined;
+    projecT_NAME!: string | undefined;
+    projecT_VALUATION!: number;
+
+    constructor(data?: IProjectValuationDashboardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.projecT_ID = data["projecT_ID"];
+            this.projecT_NAME = data["projecT_NAME"];
+            this.projecT_VALUATION = data["projecT_VALUATION"];
+        }
+    }
+
+    static fromJS(data: any): ProjectValuationDashboardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProjectValuationDashboardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["projecT_ID"] = this.projecT_ID;
+        data["projecT_NAME"] = this.projecT_NAME;
+        data["projecT_VALUATION"] = this.projecT_VALUATION;
+        return data; 
+    }
+}
+
+export interface IProjectValuationDashboardDto {
+    projecT_ID: string | undefined;
+    projecT_NAME: string | undefined;
+    projecT_VALUATION: number;
+}
+
+export class PropertyInfoSearchDto implements IPropertyInfoSearchDto {
+    propertY_TYPE_ID!: string | undefined;
+    propertY_LEVEL!: string | undefined;
+    propertY_GROUP_ID!: string | undefined;
+    yeaR_OF_MANUFACTURE!: string | undefined;
+    managemenT_COMPANY_ID!: string | undefined;
+    id!: string | undefined;
+    propertY_TYPE_NAME!: string | undefined;
+
+    constructor(data?: IPropertyInfoSearchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.propertY_TYPE_ID = data["propertY_TYPE_ID"];
+            this.propertY_LEVEL = data["propertY_LEVEL"];
+            this.propertY_GROUP_ID = data["propertY_GROUP_ID"];
+            this.yeaR_OF_MANUFACTURE = data["yeaR_OF_MANUFACTURE"];
+            this.managemenT_COMPANY_ID = data["managemenT_COMPANY_ID"];
+            this.id = data["id"];
+            this.propertY_TYPE_NAME = data["propertY_TYPE_NAME"];
+        }
+    }
+
+    static fromJS(data: any): PropertyInfoSearchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PropertyInfoSearchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["propertY_TYPE_ID"] = this.propertY_TYPE_ID;
+        data["propertY_LEVEL"] = this.propertY_LEVEL;
+        data["propertY_GROUP_ID"] = this.propertY_GROUP_ID;
+        data["yeaR_OF_MANUFACTURE"] = this.yeaR_OF_MANUFACTURE;
+        data["managemenT_COMPANY_ID"] = this.managemenT_COMPANY_ID;
+        data["id"] = this.id;
+        data["propertY_TYPE_NAME"] = this.propertY_TYPE_NAME;
+        return data; 
+    }
+}
+
+export interface IPropertyInfoSearchDto {
+    propertY_TYPE_ID: string | undefined;
+    propertY_LEVEL: string | undefined;
+    propertY_GROUP_ID: string | undefined;
+    yeaR_OF_MANUFACTURE: string | undefined;
+    managemenT_COMPANY_ID: string | undefined;
+    id: string | undefined;
+    propertY_TYPE_NAME: string | undefined;
+}
+
+export class PropertyInfoSearchResultDto implements IPropertyInfoSearchResultDto {
+    id!: string | undefined;
+    propertY_TYPE_NAME!: string | undefined;
+    propertY_NAME!: string | undefined;
+    propertY_FIRST_LEVEL_NAME!: string | undefined;
+    propertY_SECOND_LEVEL_NAME!: string | undefined;
+    propertY_DESCRIPTION!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    managemenT_COMPANY_NAME!: string | undefined;
+    originaL_PRICE!: string | undefined;
+
+    constructor(data?: IPropertyInfoSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.propertY_TYPE_NAME = data["propertY_TYPE_NAME"];
+            this.propertY_NAME = data["propertY_NAME"];
+            this.propertY_FIRST_LEVEL_NAME = data["propertY_FIRST_LEVEL_NAME"];
+            this.propertY_SECOND_LEVEL_NAME = data["propertY_SECOND_LEVEL_NAME"];
+            this.propertY_DESCRIPTION = data["propertY_DESCRIPTION"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.managemenT_COMPANY_NAME = data["managemenT_COMPANY_NAME"];
+            this.originaL_PRICE = data["originaL_PRICE"];
+        }
+    }
+
+    static fromJS(data: any): PropertyInfoSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PropertyInfoSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["propertY_TYPE_NAME"] = this.propertY_TYPE_NAME;
+        data["propertY_NAME"] = this.propertY_NAME;
+        data["propertY_FIRST_LEVEL_NAME"] = this.propertY_FIRST_LEVEL_NAME;
+        data["propertY_SECOND_LEVEL_NAME"] = this.propertY_SECOND_LEVEL_NAME;
+        data["propertY_DESCRIPTION"] = this.propertY_DESCRIPTION;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["managemenT_COMPANY_NAME"] = this.managemenT_COMPANY_NAME;
+        data["originaL_PRICE"] = this.originaL_PRICE;
+        return data; 
+    }
+}
+
+export interface IPropertyInfoSearchResultDto {
+    id: string | undefined;
+    propertY_TYPE_NAME: string | undefined;
+    propertY_NAME: string | undefined;
+    propertY_FIRST_LEVEL_NAME: string | undefined;
+    propertY_SECOND_LEVEL_NAME: string | undefined;
+    propertY_DESCRIPTION: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    managemenT_COMPANY_NAME: string | undefined;
+    originaL_PRICE: string | undefined;
+}
+
+export class REA_ADDITIONAL_FEE_ENTITY implements IREA_ADDITIONAL_FEE_ENTITY {
+    id!: number;
+    propertY_INFORMATION_ID!: string | undefined;
+    feE_TYPE!: string | undefined;
+    feE_NAME!: string | undefined;
+    feE_IN_MONEY!: string | undefined;
+    notes!: string | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
+
+    constructor(data?: IREA_ADDITIONAL_FEE_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.propertY_INFORMATION_ID = data["propertY_INFORMATION_ID"];
+            this.feE_TYPE = data["feE_TYPE"];
+            this.feE_NAME = data["feE_NAME"];
+            this.feE_IN_MONEY = data["feE_IN_MONEY"];
+            this.notes = data["notes"];
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
+        }
+    }
+
+    static fromJS(data: any): REA_ADDITIONAL_FEE_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_ADDITIONAL_FEE_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["propertY_INFORMATION_ID"] = this.propertY_INFORMATION_ID;
+        data["feE_TYPE"] = this.feE_TYPE;
+        data["feE_NAME"] = this.feE_NAME;
+        data["feE_IN_MONEY"] = this.feE_IN_MONEY;
+        data["notes"] = this.notes;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
+        return data; 
+    }
+}
+
+export interface IREA_ADDITIONAL_FEE_ENTITY {
+    id: number;
+    propertY_INFORMATION_ID: string | undefined;
+    feE_TYPE: string | undefined;
+    feE_NAME: string | undefined;
+    feE_IN_MONEY: string | undefined;
+    notes: string | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
+}
+
 export class REA_ALLCODE_ENTITY implements IREA_ALLCODE_ENTITY {
     id!: number | undefined;
     cdname!: string | undefined;
@@ -47489,14 +52249,15 @@ export interface IREA_AUTHORIZED_PERSON_ENTITY {
 export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
     contracT_ANNEXES!: CONTRACT_ANNEX_ENTITY[] | undefined;
     contracT_ITEMS!: CONTRACT_ITEM_ENTITY[] | undefined;
-    contracT_ID!: string | undefined;
+    id!: string | undefined;
     contracT_SIGN_DT!: moment.Moment | undefined;
     contracT_CONTENT!: string | undefined;
     contracT_PARTNER_ID!: string | undefined;
+    contracT_PARTNER_NAME!: string | undefined;
     contracT_STATUS!: string | undefined;
     contracT_TERMINATE_DT!: moment.Moment | undefined;
     contracT_TERMINATE_REASON!: string | undefined;
-    contracT_REJECT_REASON!: string | undefined;
+    rejecT_REASON!: string | undefined;
     notes!: string | undefined;
     recorD_STATUS!: string | undefined;
     makeR_ID!: string | undefined;
@@ -47504,13 +52265,19 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
     autH_STATUS!: string | undefined;
     checkeR_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    modifieR_ID!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
+    modifieR_NAME!: string | undefined;
     recorD_STATUS_NAME!: string | undefined;
     autH_STATUS_NAME!: string | undefined;
     contracT_STATUS_NAME!: string | undefined;
-    deleteD_ITEM_ID_LIST!: string[] | undefined;
-    deleteD_ANNEX_ID_LIST!: string[] | undefined;
-    deleteD_ITEM_PRICE_ID_LIST!: string[] | undefined;
+    deleteD_ITEM_ID_LIST!: number[] | undefined;
+    deleteD_ANNEX_ID_LIST!: number[] | undefined;
+    deleteD_ITEM_PRICE_ID_LIST!: number[] | undefined;
     totaL_REVENUE!: number;
+    totalCount!: number | undefined;
     top!: number | undefined;
     sorting!: string | undefined;
     maxResultCount!: number;
@@ -47537,14 +52304,15 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
                 for (let item of data["contracT_ITEMS"])
                     this.contracT_ITEMS!.push(CONTRACT_ITEM_ENTITY.fromJS(item));
             }
-            this.contracT_ID = data["contracT_ID"];
+            this.id = data["id"];
             this.contracT_SIGN_DT = data["contracT_SIGN_DT"] ? moment(data["contracT_SIGN_DT"].toString()) : <any>undefined;
             this.contracT_CONTENT = data["contracT_CONTENT"];
             this.contracT_PARTNER_ID = data["contracT_PARTNER_ID"];
+            this.contracT_PARTNER_NAME = data["contracT_PARTNER_NAME"];
             this.contracT_STATUS = data["contracT_STATUS"];
             this.contracT_TERMINATE_DT = data["contracT_TERMINATE_DT"] ? moment(data["contracT_TERMINATE_DT"].toString()) : <any>undefined;
             this.contracT_TERMINATE_REASON = data["contracT_TERMINATE_REASON"];
-            this.contracT_REJECT_REASON = data["contracT_REJECT_REASON"];
+            this.rejecT_REASON = data["rejecT_REASON"];
             this.notes = data["notes"];
             this.recorD_STATUS = data["recorD_STATUS"];
             this.makeR_ID = data["makeR_ID"];
@@ -47552,6 +52320,11 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
             this.autH_STATUS = data["autH_STATUS"];
             this.checkeR_ID = data["checkeR_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
+            this.modifieR_NAME = data["modifieR_NAME"];
             this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
             this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.contracT_STATUS_NAME = data["contracT_STATUS_NAME"];
@@ -47571,6 +52344,7 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
                     this.deleteD_ITEM_PRICE_ID_LIST!.push(item);
             }
             this.totaL_REVENUE = data["totaL_REVENUE"];
+            this.totalCount = data["totalCount"];
             this.top = data["top"];
             this.sorting = data["sorting"];
             this.maxResultCount = data["maxResultCount"];
@@ -47597,14 +52371,15 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
             for (let item of this.contracT_ITEMS)
                 data["contracT_ITEMS"].push(item.toJSON());
         }
-        data["contracT_ID"] = this.contracT_ID;
+        data["id"] = this.id;
         data["contracT_SIGN_DT"] = this.contracT_SIGN_DT ? this.contracT_SIGN_DT.toISOString() : <any>undefined;
         data["contracT_CONTENT"] = this.contracT_CONTENT;
         data["contracT_PARTNER_ID"] = this.contracT_PARTNER_ID;
+        data["contracT_PARTNER_NAME"] = this.contracT_PARTNER_NAME;
         data["contracT_STATUS"] = this.contracT_STATUS;
         data["contracT_TERMINATE_DT"] = this.contracT_TERMINATE_DT ? this.contracT_TERMINATE_DT.toISOString() : <any>undefined;
         data["contracT_TERMINATE_REASON"] = this.contracT_TERMINATE_REASON;
-        data["contracT_REJECT_REASON"] = this.contracT_REJECT_REASON;
+        data["rejecT_REASON"] = this.rejecT_REASON;
         data["notes"] = this.notes;
         data["recorD_STATUS"] = this.recorD_STATUS;
         data["makeR_ID"] = this.makeR_ID;
@@ -47612,6 +52387,11 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
         data["autH_STATUS"] = this.autH_STATUS;
         data["checkeR_ID"] = this.checkeR_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
+        data["modifieR_NAME"] = this.modifieR_NAME;
         data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
         data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["contracT_STATUS_NAME"] = this.contracT_STATUS_NAME;
@@ -47631,6 +52411,7 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
                 data["deleteD_ITEM_PRICE_ID_LIST"].push(item);
         }
         data["totaL_REVENUE"] = this.totaL_REVENUE;
+        data["totalCount"] = this.totalCount;
         data["top"] = this.top;
         data["sorting"] = this.sorting;
         data["maxResultCount"] = this.maxResultCount;
@@ -47642,14 +52423,15 @@ export class REA_CONTRACT_ENTITY implements IREA_CONTRACT_ENTITY {
 export interface IREA_CONTRACT_ENTITY {
     contracT_ANNEXES: CONTRACT_ANNEX_ENTITY[] | undefined;
     contracT_ITEMS: CONTRACT_ITEM_ENTITY[] | undefined;
-    contracT_ID: string | undefined;
+    id: string | undefined;
     contracT_SIGN_DT: moment.Moment | undefined;
     contracT_CONTENT: string | undefined;
     contracT_PARTNER_ID: string | undefined;
+    contracT_PARTNER_NAME: string | undefined;
     contracT_STATUS: string | undefined;
     contracT_TERMINATE_DT: moment.Moment | undefined;
     contracT_TERMINATE_REASON: string | undefined;
-    contracT_REJECT_REASON: string | undefined;
+    rejecT_REASON: string | undefined;
     notes: string | undefined;
     recorD_STATUS: string | undefined;
     makeR_ID: string | undefined;
@@ -47657,13 +52439,19 @@ export interface IREA_CONTRACT_ENTITY {
     autH_STATUS: string | undefined;
     checkeR_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    modifieR_ID: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+    modifieR_NAME: string | undefined;
     recorD_STATUS_NAME: string | undefined;
     autH_STATUS_NAME: string | undefined;
     contracT_STATUS_NAME: string | undefined;
-    deleteD_ITEM_ID_LIST: string[] | undefined;
-    deleteD_ANNEX_ID_LIST: string[] | undefined;
-    deleteD_ITEM_PRICE_ID_LIST: string[] | undefined;
+    deleteD_ITEM_ID_LIST: number[] | undefined;
+    deleteD_ANNEX_ID_LIST: number[] | undefined;
+    deleteD_ITEM_PRICE_ID_LIST: number[] | undefined;
     totaL_REVENUE: number;
+    totalCount: number | undefined;
     top: number | undefined;
     sorting: string | undefined;
     maxResultCount: number;
@@ -47680,7 +52468,7 @@ export class REA_FILE_ENTITY implements IREA_FILE_ENTITY {
     filE_DESCRIPTION!: string | undefined;
     filE_ATTACH_DT!: moment.Moment | undefined;
     makeR_ID!: string | undefined;
-    filE_CONTENT!: Stream;
+    filE_CONTENT!: string | undefined;
     iS_CHANGED!: boolean;
     iS_NEW!: boolean;
 
@@ -47704,7 +52492,7 @@ export class REA_FILE_ENTITY implements IREA_FILE_ENTITY {
             this.filE_DESCRIPTION = data["filE_DESCRIPTION"];
             this.filE_ATTACH_DT = data["filE_ATTACH_DT"] ? moment(data["filE_ATTACH_DT"].toString()) : <any>undefined;
             this.makeR_ID = data["makeR_ID"];
-            this.filE_CONTENT = data["filE_CONTENT"] ? Stream.fromJS(data["filE_CONTENT"]) : <any>undefined;
+            this.filE_CONTENT = data["filE_CONTENT"];
             this.iS_CHANGED = data["iS_CHANGED"];
             this.iS_NEW = data["iS_NEW"];
         }
@@ -47728,7 +52516,7 @@ export class REA_FILE_ENTITY implements IREA_FILE_ENTITY {
         data["filE_DESCRIPTION"] = this.filE_DESCRIPTION;
         data["filE_ATTACH_DT"] = this.filE_ATTACH_DT ? this.filE_ATTACH_DT.toISOString() : <any>undefined;
         data["makeR_ID"] = this.makeR_ID;
-        data["filE_CONTENT"] = this.filE_CONTENT ? this.filE_CONTENT.toJSON() : <any>undefined;
+        data["filE_CONTENT"] = this.filE_CONTENT;
         data["iS_CHANGED"] = this.iS_CHANGED;
         data["iS_NEW"] = this.iS_NEW;
         return data; 
@@ -47745,17 +52533,19 @@ export interface IREA_FILE_ENTITY {
     filE_DESCRIPTION: string | undefined;
     filE_ATTACH_DT: moment.Moment | undefined;
     makeR_ID: string | undefined;
-    filE_CONTENT: Stream;
+    filE_CONTENT: string | undefined;
     iS_CHANGED: boolean;
     iS_NEW: boolean;
 }
 
 export class REA_FLOOR_MANAGEMENT_ENTITY implements IREA_FLOOR_MANAGEMENT_ENTITY {
-    flooR_MANAGEMENT_ID!: string | undefined;
+    id!: string | undefined;
     invesT_PROP_ID!: string | undefined;
     flooR_DESCRIPTION!: string | undefined;
     flooR_AREA!: number;
     notes!: string | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
 
     constructor(data?: IREA_FLOOR_MANAGEMENT_ENTITY) {
         if (data) {
@@ -47768,11 +52558,13 @@ export class REA_FLOOR_MANAGEMENT_ENTITY implements IREA_FLOOR_MANAGEMENT_ENTITY
 
     init(data?: any) {
         if (data) {
-            this.flooR_MANAGEMENT_ID = data["flooR_MANAGEMENT_ID"];
+            this.id = data["id"];
             this.invesT_PROP_ID = data["invesT_PROP_ID"];
             this.flooR_DESCRIPTION = data["flooR_DESCRIPTION"];
             this.flooR_AREA = data["flooR_AREA"];
             this.notes = data["notes"];
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
         }
     }
 
@@ -47785,28 +52577,77 @@ export class REA_FLOOR_MANAGEMENT_ENTITY implements IREA_FLOOR_MANAGEMENT_ENTITY
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["flooR_MANAGEMENT_ID"] = this.flooR_MANAGEMENT_ID;
+        data["id"] = this.id;
         data["invesT_PROP_ID"] = this.invesT_PROP_ID;
         data["flooR_DESCRIPTION"] = this.flooR_DESCRIPTION;
         data["flooR_AREA"] = this.flooR_AREA;
         data["notes"] = this.notes;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
         return data; 
     }
 }
 
 export interface IREA_FLOOR_MANAGEMENT_ENTITY {
-    flooR_MANAGEMENT_ID: string | undefined;
+    id: string | undefined;
     invesT_PROP_ID: string | undefined;
     flooR_DESCRIPTION: string | undefined;
     flooR_AREA: number;
     notes: string | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
+}
+
+export class REA_INVEST_PROPERTY_LOOKUP implements IREA_INVEST_PROPERTY_LOOKUP {
+    invesT_PROP_BUSINESS_AREA!: number;
+    id!: string | undefined;
+    name!: string | undefined;
+
+    constructor(data?: IREA_INVEST_PROPERTY_LOOKUP) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.invesT_PROP_BUSINESS_AREA = data["invesT_PROP_BUSINESS_AREA"];
+            this.id = data["id"];
+            this.name = data["name"];
+        }
+    }
+
+    static fromJS(data: any): REA_INVEST_PROPERTY_LOOKUP {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_INVEST_PROPERTY_LOOKUP();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["invesT_PROP_BUSINESS_AREA"] = this.invesT_PROP_BUSINESS_AREA;
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IREA_INVEST_PROPERTY_LOOKUP {
+    invesT_PROP_BUSINESS_AREA: number;
+    id: string | undefined;
+    name: string | undefined;
 }
 
 export class REA_INVESTMENT_PROPERTY_ENTITY implements IREA_INVESTMENT_PROPERTY_ENTITY {
-    propertY_ID!: string | undefined;
-    invesT_PROP_ID!: string | undefined;
+    id!: string | undefined;
     projecT_ID!: string | undefined;
-    retaL_PARTNER_ID!: string | undefined;
+    propjecT_NAME!: string | undefined;
+    rentaL_PARTNER_ID!: string | undefined;
+    rentaL_PARTNER_NAME!: string | undefined;
     invesT_PROP_LOCATION!: string | undefined;
     invesT_PROP_NAME!: string | undefined;
     invesT_PROP_CAMPUS_AREA!: number;
@@ -47827,9 +52668,19 @@ export class REA_INVESTMENT_PROPERTY_ENTITY implements IREA_INVESTMENT_PROPERTY_
     approvE_DT!: moment.Moment | undefined;
     recorD_STATUS_NAME!: string | undefined;
     autH_STATUS_NAME!: string | undefined;
+    invesT_PROP_STATUS_NAME!: string | undefined;
+    invesT_PROP_GCN_STATUS_NAME!: string | undefined;
+    invesT_PROP_LEGAL_STATUS_NAME!: string | undefined;
     flooR_LIST!: REA_FLOOR_MANAGEMENT_ENTITY[] | undefined;
-    propertY_INFORMATION!: REA_PROPERTY_INFORMATION;
+    propertY_INFORMATION!: REA_PROPERTY_INFORMATION_ENTITY;
+    contracT_ITEM_LIST!: CONTRACT_ITEM_ENTITY[] | undefined;
+    mortgagE_OVERALL_LIST!: REA_MORTGAGE_OVERALL[] | undefined;
     deleteD_FLOOR_ID_LIST!: string[] | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
 
     constructor(data?: IREA_INVESTMENT_PROPERTY_ENTITY) {
         if (data) {
@@ -47842,10 +52693,11 @@ export class REA_INVESTMENT_PROPERTY_ENTITY implements IREA_INVESTMENT_PROPERTY_
 
     init(data?: any) {
         if (data) {
-            this.propertY_ID = data["propertY_ID"];
-            this.invesT_PROP_ID = data["invesT_PROP_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
-            this.retaL_PARTNER_ID = data["retaL_PARTNER_ID"];
+            this.propjecT_NAME = data["propjecT_NAME"];
+            this.rentaL_PARTNER_ID = data["rentaL_PARTNER_ID"];
+            this.rentaL_PARTNER_NAME = data["rentaL_PARTNER_NAME"];
             this.invesT_PROP_LOCATION = data["invesT_PROP_LOCATION"];
             this.invesT_PROP_NAME = data["invesT_PROP_NAME"];
             this.invesT_PROP_CAMPUS_AREA = data["invesT_PROP_CAMPUS_AREA"];
@@ -47866,17 +52718,35 @@ export class REA_INVESTMENT_PROPERTY_ENTITY implements IREA_INVESTMENT_PROPERTY_
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
             this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
             this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+            this.invesT_PROP_STATUS_NAME = data["invesT_PROP_STATUS_NAME"];
+            this.invesT_PROP_GCN_STATUS_NAME = data["invesT_PROP_GCN_STATUS_NAME"];
+            this.invesT_PROP_LEGAL_STATUS_NAME = data["invesT_PROP_LEGAL_STATUS_NAME"];
             if (data["flooR_LIST"] && data["flooR_LIST"].constructor === Array) {
                 this.flooR_LIST = [] as any;
                 for (let item of data["flooR_LIST"])
                     this.flooR_LIST!.push(REA_FLOOR_MANAGEMENT_ENTITY.fromJS(item));
             }
-            this.propertY_INFORMATION = data["propertY_INFORMATION"] ? REA_PROPERTY_INFORMATION.fromJS(data["propertY_INFORMATION"]) : <any>undefined;
+            this.propertY_INFORMATION = data["propertY_INFORMATION"] ? REA_PROPERTY_INFORMATION_ENTITY.fromJS(data["propertY_INFORMATION"]) : <any>undefined;
+            if (data["contracT_ITEM_LIST"] && data["contracT_ITEM_LIST"].constructor === Array) {
+                this.contracT_ITEM_LIST = [] as any;
+                for (let item of data["contracT_ITEM_LIST"])
+                    this.contracT_ITEM_LIST!.push(CONTRACT_ITEM_ENTITY.fromJS(item));
+            }
+            if (data["mortgagE_OVERALL_LIST"] && data["mortgagE_OVERALL_LIST"].constructor === Array) {
+                this.mortgagE_OVERALL_LIST = [] as any;
+                for (let item of data["mortgagE_OVERALL_LIST"])
+                    this.mortgagE_OVERALL_LIST!.push(REA_MORTGAGE_OVERALL.fromJS(item));
+            }
             if (data["deleteD_FLOOR_ID_LIST"] && data["deleteD_FLOOR_ID_LIST"].constructor === Array) {
                 this.deleteD_FLOOR_ID_LIST = [] as any;
                 for (let item of data["deleteD_FLOOR_ID_LIST"])
                     this.deleteD_FLOOR_ID_LIST!.push(item);
             }
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
         }
     }
 
@@ -47889,10 +52759,11 @@ export class REA_INVESTMENT_PROPERTY_ENTITY implements IREA_INVESTMENT_PROPERTY_
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["propertY_ID"] = this.propertY_ID;
-        data["invesT_PROP_ID"] = this.invesT_PROP_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
-        data["retaL_PARTNER_ID"] = this.retaL_PARTNER_ID;
+        data["propjecT_NAME"] = this.propjecT_NAME;
+        data["rentaL_PARTNER_ID"] = this.rentaL_PARTNER_ID;
+        data["rentaL_PARTNER_NAME"] = this.rentaL_PARTNER_NAME;
         data["invesT_PROP_LOCATION"] = this.invesT_PROP_LOCATION;
         data["invesT_PROP_NAME"] = this.invesT_PROP_NAME;
         data["invesT_PROP_CAMPUS_AREA"] = this.invesT_PROP_CAMPUS_AREA;
@@ -47913,26 +52784,45 @@ export class REA_INVESTMENT_PROPERTY_ENTITY implements IREA_INVESTMENT_PROPERTY_
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
         data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
         data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        data["invesT_PROP_STATUS_NAME"] = this.invesT_PROP_STATUS_NAME;
+        data["invesT_PROP_GCN_STATUS_NAME"] = this.invesT_PROP_GCN_STATUS_NAME;
+        data["invesT_PROP_LEGAL_STATUS_NAME"] = this.invesT_PROP_LEGAL_STATUS_NAME;
         if (this.flooR_LIST && this.flooR_LIST.constructor === Array) {
             data["flooR_LIST"] = [];
             for (let item of this.flooR_LIST)
                 data["flooR_LIST"].push(item.toJSON());
         }
         data["propertY_INFORMATION"] = this.propertY_INFORMATION ? this.propertY_INFORMATION.toJSON() : <any>undefined;
+        if (this.contracT_ITEM_LIST && this.contracT_ITEM_LIST.constructor === Array) {
+            data["contracT_ITEM_LIST"] = [];
+            for (let item of this.contracT_ITEM_LIST)
+                data["contracT_ITEM_LIST"].push(item.toJSON());
+        }
+        if (this.mortgagE_OVERALL_LIST && this.mortgagE_OVERALL_LIST.constructor === Array) {
+            data["mortgagE_OVERALL_LIST"] = [];
+            for (let item of this.mortgagE_OVERALL_LIST)
+                data["mortgagE_OVERALL_LIST"].push(item.toJSON());
+        }
         if (this.deleteD_FLOOR_ID_LIST && this.deleteD_FLOOR_ID_LIST.constructor === Array) {
             data["deleteD_FLOOR_ID_LIST"] = [];
             for (let item of this.deleteD_FLOOR_ID_LIST)
                 data["deleteD_FLOOR_ID_LIST"].push(item);
         }
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
         return data; 
     }
 }
 
 export interface IREA_INVESTMENT_PROPERTY_ENTITY {
-    propertY_ID: string | undefined;
-    invesT_PROP_ID: string | undefined;
+    id: string | undefined;
     projecT_ID: string | undefined;
-    retaL_PARTNER_ID: string | undefined;
+    propjecT_NAME: string | undefined;
+    rentaL_PARTNER_ID: string | undefined;
+    rentaL_PARTNER_NAME: string | undefined;
     invesT_PROP_LOCATION: string | undefined;
     invesT_PROP_NAME: string | undefined;
     invesT_PROP_CAMPUS_AREA: number;
@@ -47953,15 +52843,115 @@ export interface IREA_INVESTMENT_PROPERTY_ENTITY {
     approvE_DT: moment.Moment | undefined;
     recorD_STATUS_NAME: string | undefined;
     autH_STATUS_NAME: string | undefined;
+    invesT_PROP_STATUS_NAME: string | undefined;
+    invesT_PROP_GCN_STATUS_NAME: string | undefined;
+    invesT_PROP_LEGAL_STATUS_NAME: string | undefined;
     flooR_LIST: REA_FLOOR_MANAGEMENT_ENTITY[] | undefined;
-    propertY_INFORMATION: REA_PROPERTY_INFORMATION;
+    propertY_INFORMATION: REA_PROPERTY_INFORMATION_ENTITY;
+    contracT_ITEM_LIST: CONTRACT_ITEM_ENTITY[] | undefined;
+    mortgagE_OVERALL_LIST: REA_MORTGAGE_OVERALL[] | undefined;
     deleteD_FLOOR_ID_LIST: string[] | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+}
+
+export class REA_INVESTMENT_PROPERTY_SEARCH_DTO implements IREA_INVESTMENT_PROPERTY_SEARCH_DTO {
+    id!: string | undefined;
+    invesT_PROP_NAME!: string | undefined;
+    invesT_PROP_LOCATION!: string | undefined;
+    projecT_ID!: string | undefined;
+    propertY_TYPE_ID!: string | undefined;
+    invesT_PROP_STATUS!: string | undefined;
+    invesT_PROP_LEGAL_STATUS!: string | undefined;
+    creatE_DT_FROM!: moment.Moment | undefined;
+    creatE_DT_TO!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_INVESTMENT_PROPERTY_SEARCH_DTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.invesT_PROP_NAME = data["invesT_PROP_NAME"];
+            this.invesT_PROP_LOCATION = data["invesT_PROP_LOCATION"];
+            this.projecT_ID = data["projecT_ID"];
+            this.propertY_TYPE_ID = data["propertY_TYPE_ID"];
+            this.invesT_PROP_STATUS = data["invesT_PROP_STATUS"];
+            this.invesT_PROP_LEGAL_STATUS = data["invesT_PROP_LEGAL_STATUS"];
+            this.creatE_DT_FROM = data["creatE_DT_FROM"] ? moment(data["creatE_DT_FROM"].toString()) : <any>undefined;
+            this.creatE_DT_TO = data["creatE_DT_TO"] ? moment(data["creatE_DT_TO"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_INVESTMENT_PROPERTY_SEARCH_DTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_INVESTMENT_PROPERTY_SEARCH_DTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["invesT_PROP_NAME"] = this.invesT_PROP_NAME;
+        data["invesT_PROP_LOCATION"] = this.invesT_PROP_LOCATION;
+        data["projecT_ID"] = this.projecT_ID;
+        data["propertY_TYPE_ID"] = this.propertY_TYPE_ID;
+        data["invesT_PROP_STATUS"] = this.invesT_PROP_STATUS;
+        data["invesT_PROP_LEGAL_STATUS"] = this.invesT_PROP_LEGAL_STATUS;
+        data["creatE_DT_FROM"] = this.creatE_DT_FROM ? this.creatE_DT_FROM.toISOString() : <any>undefined;
+        data["creatE_DT_TO"] = this.creatE_DT_TO ? this.creatE_DT_TO.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_INVESTMENT_PROPERTY_SEARCH_DTO {
+    id: string | undefined;
+    invesT_PROP_NAME: string | undefined;
+    invesT_PROP_LOCATION: string | undefined;
+    projecT_ID: string | undefined;
+    propertY_TYPE_ID: string | undefined;
+    invesT_PROP_STATUS: string | undefined;
+    invesT_PROP_LEGAL_STATUS: string | undefined;
+    creatE_DT_FROM: moment.Moment | undefined;
+    creatE_DT_TO: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class REA_LAND_AREA_ENTITY implements IREA_LAND_AREA_ENTITY {
-    lanD_AREA_ID!: string | undefined;
+    id!: string | undefined;
     projecT_ID!: string | undefined;
+    projecT_NAME!: string | undefined;
     investoR_ID!: string | undefined;
+    investoR_NAME!: string | undefined;
     lanD_AREA_NAME!: string | undefined;
     lanD_AREA_SCALE!: number;
     lanD_AREA_LOCATION!: string | undefined;
@@ -47976,10 +52966,18 @@ export class REA_LAND_AREA_ENTITY implements IREA_LAND_AREA_ENTITY {
     approvE_DT!: moment.Moment | undefined;
     recorD_STATUS_NAME!: string | undefined;
     autH_STATUS_NAME!: string | undefined;
-    attacheD_IMAGE!: REA_FILE_ENTITY;
+    attacheD_IMAGES!: REA_FILE_ENTITY[] | undefined;
     valuation!: REA_VALUATION_ENTITY;
     usE_REGISTRATION_LIST!: REA_USE_REGISTRATION_ENTITY[] | undefined;
-    deleteD_USE_REGISTRATION_ID_LIST!: string[] | undefined;
+    lanD_AREA_SODO_LIST!: REA_LAND_AREA_SODO[] | undefined;
+    mortgagE_OVERALL_LIST!: REA_MORTGAGE_OVERALL[] | undefined;
+    deleteD_USE_REGISTRATION_ID_LIST!: number[] | undefined;
+    deleteD_ATTACHED_IMAGES_ID_LIST!: string[] | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
 
     constructor(data?: IREA_LAND_AREA_ENTITY) {
         if (data) {
@@ -47992,9 +52990,11 @@ export class REA_LAND_AREA_ENTITY implements IREA_LAND_AREA_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.lanD_AREA_ID = data["lanD_AREA_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
+            this.projecT_NAME = data["projecT_NAME"];
             this.investoR_ID = data["investoR_ID"];
+            this.investoR_NAME = data["investoR_NAME"];
             this.lanD_AREA_NAME = data["lanD_AREA_NAME"];
             this.lanD_AREA_SCALE = data["lanD_AREA_SCALE"];
             this.lanD_AREA_LOCATION = data["lanD_AREA_LOCATION"];
@@ -48009,18 +53009,42 @@ export class REA_LAND_AREA_ENTITY implements IREA_LAND_AREA_ENTITY {
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
             this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
             this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
-            this.attacheD_IMAGE = data["attacheD_IMAGE"] ? REA_FILE_ENTITY.fromJS(data["attacheD_IMAGE"]) : <any>undefined;
+            if (data["attacheD_IMAGES"] && data["attacheD_IMAGES"].constructor === Array) {
+                this.attacheD_IMAGES = [] as any;
+                for (let item of data["attacheD_IMAGES"])
+                    this.attacheD_IMAGES!.push(REA_FILE_ENTITY.fromJS(item));
+            }
             this.valuation = data["valuation"] ? REA_VALUATION_ENTITY.fromJS(data["valuation"]) : <any>undefined;
             if (data["usE_REGISTRATION_LIST"] && data["usE_REGISTRATION_LIST"].constructor === Array) {
                 this.usE_REGISTRATION_LIST = [] as any;
                 for (let item of data["usE_REGISTRATION_LIST"])
                     this.usE_REGISTRATION_LIST!.push(REA_USE_REGISTRATION_ENTITY.fromJS(item));
             }
+            if (data["lanD_AREA_SODO_LIST"] && data["lanD_AREA_SODO_LIST"].constructor === Array) {
+                this.lanD_AREA_SODO_LIST = [] as any;
+                for (let item of data["lanD_AREA_SODO_LIST"])
+                    this.lanD_AREA_SODO_LIST!.push(REA_LAND_AREA_SODO.fromJS(item));
+            }
+            if (data["mortgagE_OVERALL_LIST"] && data["mortgagE_OVERALL_LIST"].constructor === Array) {
+                this.mortgagE_OVERALL_LIST = [] as any;
+                for (let item of data["mortgagE_OVERALL_LIST"])
+                    this.mortgagE_OVERALL_LIST!.push(REA_MORTGAGE_OVERALL.fromJS(item));
+            }
             if (data["deleteD_USE_REGISTRATION_ID_LIST"] && data["deleteD_USE_REGISTRATION_ID_LIST"].constructor === Array) {
                 this.deleteD_USE_REGISTRATION_ID_LIST = [] as any;
                 for (let item of data["deleteD_USE_REGISTRATION_ID_LIST"])
                     this.deleteD_USE_REGISTRATION_ID_LIST!.push(item);
             }
+            if (data["deleteD_ATTACHED_IMAGES_ID_LIST"] && data["deleteD_ATTACHED_IMAGES_ID_LIST"].constructor === Array) {
+                this.deleteD_ATTACHED_IMAGES_ID_LIST = [] as any;
+                for (let item of data["deleteD_ATTACHED_IMAGES_ID_LIST"])
+                    this.deleteD_ATTACHED_IMAGES_ID_LIST!.push(item);
+            }
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
         }
     }
 
@@ -48033,9 +53057,11 @@ export class REA_LAND_AREA_ENTITY implements IREA_LAND_AREA_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["lanD_AREA_ID"] = this.lanD_AREA_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
+        data["projecT_NAME"] = this.projecT_NAME;
         data["investoR_ID"] = this.investoR_ID;
+        data["investoR_NAME"] = this.investoR_NAME;
         data["lanD_AREA_NAME"] = this.lanD_AREA_NAME;
         data["lanD_AREA_SCALE"] = this.lanD_AREA_SCALE;
         data["lanD_AREA_LOCATION"] = this.lanD_AREA_LOCATION;
@@ -48050,26 +53076,52 @@ export class REA_LAND_AREA_ENTITY implements IREA_LAND_AREA_ENTITY {
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
         data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
         data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
-        data["attacheD_IMAGE"] = this.attacheD_IMAGE ? this.attacheD_IMAGE.toJSON() : <any>undefined;
+        if (this.attacheD_IMAGES && this.attacheD_IMAGES.constructor === Array) {
+            data["attacheD_IMAGES"] = [];
+            for (let item of this.attacheD_IMAGES)
+                data["attacheD_IMAGES"].push(item.toJSON());
+        }
         data["valuation"] = this.valuation ? this.valuation.toJSON() : <any>undefined;
         if (this.usE_REGISTRATION_LIST && this.usE_REGISTRATION_LIST.constructor === Array) {
             data["usE_REGISTRATION_LIST"] = [];
             for (let item of this.usE_REGISTRATION_LIST)
                 data["usE_REGISTRATION_LIST"].push(item.toJSON());
         }
+        if (this.lanD_AREA_SODO_LIST && this.lanD_AREA_SODO_LIST.constructor === Array) {
+            data["lanD_AREA_SODO_LIST"] = [];
+            for (let item of this.lanD_AREA_SODO_LIST)
+                data["lanD_AREA_SODO_LIST"].push(item.toJSON());
+        }
+        if (this.mortgagE_OVERALL_LIST && this.mortgagE_OVERALL_LIST.constructor === Array) {
+            data["mortgagE_OVERALL_LIST"] = [];
+            for (let item of this.mortgagE_OVERALL_LIST)
+                data["mortgagE_OVERALL_LIST"].push(item.toJSON());
+        }
         if (this.deleteD_USE_REGISTRATION_ID_LIST && this.deleteD_USE_REGISTRATION_ID_LIST.constructor === Array) {
             data["deleteD_USE_REGISTRATION_ID_LIST"] = [];
             for (let item of this.deleteD_USE_REGISTRATION_ID_LIST)
                 data["deleteD_USE_REGISTRATION_ID_LIST"].push(item);
         }
+        if (this.deleteD_ATTACHED_IMAGES_ID_LIST && this.deleteD_ATTACHED_IMAGES_ID_LIST.constructor === Array) {
+            data["deleteD_ATTACHED_IMAGES_ID_LIST"] = [];
+            for (let item of this.deleteD_ATTACHED_IMAGES_ID_LIST)
+                data["deleteD_ATTACHED_IMAGES_ID_LIST"].push(item);
+        }
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
         return data; 
     }
 }
 
 export interface IREA_LAND_AREA_ENTITY {
-    lanD_AREA_ID: string | undefined;
+    id: string | undefined;
     projecT_ID: string | undefined;
+    projecT_NAME: string | undefined;
     investoR_ID: string | undefined;
+    investoR_NAME: string | undefined;
     lanD_AREA_NAME: string | undefined;
     lanD_AREA_SCALE: number;
     lanD_AREA_LOCATION: string | undefined;
@@ -48084,19 +53136,188 @@ export interface IREA_LAND_AREA_ENTITY {
     approvE_DT: moment.Moment | undefined;
     recorD_STATUS_NAME: string | undefined;
     autH_STATUS_NAME: string | undefined;
-    attacheD_IMAGE: REA_FILE_ENTITY;
+    attacheD_IMAGES: REA_FILE_ENTITY[] | undefined;
     valuation: REA_VALUATION_ENTITY;
     usE_REGISTRATION_LIST: REA_USE_REGISTRATION_ENTITY[] | undefined;
-    deleteD_USE_REGISTRATION_ID_LIST: string[] | undefined;
+    lanD_AREA_SODO_LIST: REA_LAND_AREA_SODO[] | undefined;
+    mortgagE_OVERALL_LIST: REA_MORTGAGE_OVERALL[] | undefined;
+    deleteD_USE_REGISTRATION_ID_LIST: number[] | undefined;
+    deleteD_ATTACHED_IMAGES_ID_LIST: string[] | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+}
+
+export class REA_LAND_AREA_OVERALL implements IREA_LAND_AREA_OVERALL {
+    id!: string | undefined;
+    lanD_AREA_NAME!: string | undefined;
+    lanD_AREA_SCALE!: number;
+
+    constructor(data?: IREA_LAND_AREA_OVERALL) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.lanD_AREA_NAME = data["lanD_AREA_NAME"];
+            this.lanD_AREA_SCALE = data["lanD_AREA_SCALE"];
+        }
+    }
+
+    static fromJS(data: any): REA_LAND_AREA_OVERALL {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_LAND_AREA_OVERALL();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["lanD_AREA_NAME"] = this.lanD_AREA_NAME;
+        data["lanD_AREA_SCALE"] = this.lanD_AREA_SCALE;
+        return data; 
+    }
+}
+
+export interface IREA_LAND_AREA_OVERALL {
+    id: string | undefined;
+    lanD_AREA_NAME: string | undefined;
+    lanD_AREA_SCALE: number;
+}
+
+export class REA_LAND_AREA_SEARCH_DTO implements IREA_LAND_AREA_SEARCH_DTO {
+    id!: string | undefined;
+    lanD_AREA_NAME!: string | undefined;
+    lanD_AREA_LOCATION!: string | undefined;
+    projecT_ID!: string | undefined;
+    investoR_ID!: string | undefined;
+    autH_STATUS!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_LAND_AREA_SEARCH_DTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.lanD_AREA_NAME = data["lanD_AREA_NAME"];
+            this.lanD_AREA_LOCATION = data["lanD_AREA_LOCATION"];
+            this.projecT_ID = data["projecT_ID"];
+            this.investoR_ID = data["investoR_ID"];
+            this.autH_STATUS = data["autH_STATUS"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_LAND_AREA_SEARCH_DTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_LAND_AREA_SEARCH_DTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["lanD_AREA_NAME"] = this.lanD_AREA_NAME;
+        data["lanD_AREA_LOCATION"] = this.lanD_AREA_LOCATION;
+        data["projecT_ID"] = this.projecT_ID;
+        data["investoR_ID"] = this.investoR_ID;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_LAND_AREA_SEARCH_DTO {
+    id: string | undefined;
+    lanD_AREA_NAME: string | undefined;
+    lanD_AREA_LOCATION: string | undefined;
+    projecT_ID: string | undefined;
+    investoR_ID: string | undefined;
+    autH_STATUS: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class REA_LAND_AREA_SODO implements IREA_LAND_AREA_SODO {
+    id!: string | undefined;
+    sodO_SO_VAO_SO!: string | undefined;
+    sodO_AREA!: number;
+
+    constructor(data?: IREA_LAND_AREA_SODO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.sodO_SO_VAO_SO = data["sodO_SO_VAO_SO"];
+            this.sodO_AREA = data["sodO_AREA"];
+        }
+    }
+
+    static fromJS(data: any): REA_LAND_AREA_SODO {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_LAND_AREA_SODO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sodO_SO_VAO_SO"] = this.sodO_SO_VAO_SO;
+        data["sodO_AREA"] = this.sodO_AREA;
+        return data; 
+    }
+}
+
+export interface IREA_LAND_AREA_SODO {
+    id: string | undefined;
+    sodO_SO_VAO_SO: string | undefined;
+    sodO_AREA: number;
 }
 
 export class REA_MORTGAGE_CHANGE_HISTORY_ENTITY implements IREA_MORTGAGE_CHANGE_HISTORY_ENTITY {
-    mortgagE_CHANGE_ID!: string | undefined;
+    id!: number;
     mortgagE_ID!: string | undefined;
     mortgagE_CHANGE_FIELD!: string | undefined;
     mortgagE_CHANGE_BEFORE_VALUE!: string | undefined;
     mortgagE_CHANGE_AFTER_VALUE!: string | undefined;
-    modifiteR_ID!: string | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
     modifY_DT!: moment.Moment | undefined;
     iS_CHANGED!: boolean;
     iS_NEW!: boolean;
@@ -48112,12 +53333,13 @@ export class REA_MORTGAGE_CHANGE_HISTORY_ENTITY implements IREA_MORTGAGE_CHANGE_
 
     init(data?: any) {
         if (data) {
-            this.mortgagE_CHANGE_ID = data["mortgagE_CHANGE_ID"];
+            this.id = data["id"];
             this.mortgagE_ID = data["mortgagE_ID"];
             this.mortgagE_CHANGE_FIELD = data["mortgagE_CHANGE_FIELD"];
             this.mortgagE_CHANGE_BEFORE_VALUE = data["mortgagE_CHANGE_BEFORE_VALUE"];
             this.mortgagE_CHANGE_AFTER_VALUE = data["mortgagE_CHANGE_AFTER_VALUE"];
-            this.modifiteR_ID = data["modifiteR_ID"];
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
             this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
             this.iS_CHANGED = data["iS_CHANGED"];
             this.iS_NEW = data["iS_NEW"];
@@ -48133,12 +53355,13 @@ export class REA_MORTGAGE_CHANGE_HISTORY_ENTITY implements IREA_MORTGAGE_CHANGE_
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["mortgagE_CHANGE_ID"] = this.mortgagE_CHANGE_ID;
+        data["id"] = this.id;
         data["mortgagE_ID"] = this.mortgagE_ID;
         data["mortgagE_CHANGE_FIELD"] = this.mortgagE_CHANGE_FIELD;
         data["mortgagE_CHANGE_BEFORE_VALUE"] = this.mortgagE_CHANGE_BEFORE_VALUE;
         data["mortgagE_CHANGE_AFTER_VALUE"] = this.mortgagE_CHANGE_AFTER_VALUE;
-        data["modifiteR_ID"] = this.modifiteR_ID;
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
         data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
         data["iS_CHANGED"] = this.iS_CHANGED;
         data["iS_NEW"] = this.iS_NEW;
@@ -48147,24 +53370,25 @@ export class REA_MORTGAGE_CHANGE_HISTORY_ENTITY implements IREA_MORTGAGE_CHANGE_
 }
 
 export interface IREA_MORTGAGE_CHANGE_HISTORY_ENTITY {
-    mortgagE_CHANGE_ID: string | undefined;
+    id: number;
     mortgagE_ID: string | undefined;
     mortgagE_CHANGE_FIELD: string | undefined;
     mortgagE_CHANGE_BEFORE_VALUE: string | undefined;
     mortgagE_CHANGE_AFTER_VALUE: string | undefined;
-    modifiteR_ID: string | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
     modifY_DT: moment.Moment | undefined;
     iS_CHANGED: boolean;
     iS_NEW: boolean;
 }
 
 export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
-    mortgagE_ID!: string | undefined;
+    id!: string | undefined;
     mortgagE_TYPE!: string | undefined;
     mortgagE_NAME!: string | undefined;
     mortgagE_TERM!: number;
-    mortgagE_SIGN_DT!: moment.Moment;
-    mortgagE_DUE_DATE!: moment.Moment;
+    mortgagE_SIGN_DT!: moment.Moment | undefined;
+    mortgagE_DUE_DATE!: moment.Moment | undefined;
     mortgagE_INTEREST_RATE!: number;
     mortgagE_ISSUE_VALUE!: number;
     mortgagE_COVERAGE_RATIO!: number;
@@ -48184,8 +53408,8 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
     recorD_STATUS_NAME!: string | undefined;
     autH_STATUS_NAME!: string | undefined;
     remaiN_DEBT!: number;
-    mortgagE_INITIAL_COVERAGE_RATIO!: string | undefined;
-    mortgagE_CURRENT_COVERAGE_RATIO!: string | undefined;
+    mortgagE_INITIAL_COVERAGE_RATIO!: number;
+    mortgagE_CURRENT_COVERAGE_RATIO!: number;
     numbeR_OF_MORTGAGE_PROPERTIES!: number;
     mortgagE_TYPE_NAME!: string | undefined;
     mortgagE_STATUS_NAME!: string | undefined;
@@ -48196,6 +53420,11 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
     deleteD_MORTGAGE_ITEM_ID_LIST!: string[] | undefined;
     deleteD_MORTGAGE_SHARE_ID_LIST!: string[] | undefined;
     deleteD_MORTGAGE_RELEASE_HISTORY_ID_LIST!: string[] | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
     top!: number | undefined;
     sorting!: string | undefined;
     maxResultCount!: number;
@@ -48212,7 +53441,7 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.mortgagE_ID = data["mortgagE_ID"];
+            this.id = data["id"];
             this.mortgagE_TYPE = data["mortgagE_TYPE"];
             this.mortgagE_NAME = data["mortgagE_NAME"];
             this.mortgagE_TERM = data["mortgagE_TERM"];
@@ -48277,6 +53506,11 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
                 for (let item of data["deleteD_MORTGAGE_RELEASE_HISTORY_ID_LIST"])
                     this.deleteD_MORTGAGE_RELEASE_HISTORY_ID_LIST!.push(item);
             }
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
             this.top = data["top"];
             this.sorting = data["sorting"];
             this.maxResultCount = data["maxResultCount"];
@@ -48293,7 +53527,7 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["mortgagE_ID"] = this.mortgagE_ID;
+        data["id"] = this.id;
         data["mortgagE_TYPE"] = this.mortgagE_TYPE;
         data["mortgagE_NAME"] = this.mortgagE_NAME;
         data["mortgagE_TERM"] = this.mortgagE_TERM;
@@ -48358,6 +53592,11 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
             for (let item of this.deleteD_MORTGAGE_RELEASE_HISTORY_ID_LIST)
                 data["deleteD_MORTGAGE_RELEASE_HISTORY_ID_LIST"].push(item);
         }
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
         data["top"] = this.top;
         data["sorting"] = this.sorting;
         data["maxResultCount"] = this.maxResultCount;
@@ -48367,12 +53606,12 @@ export class REA_MORTGAGE_ENTITY implements IREA_MORTGAGE_ENTITY {
 }
 
 export interface IREA_MORTGAGE_ENTITY {
-    mortgagE_ID: string | undefined;
+    id: string | undefined;
     mortgagE_TYPE: string | undefined;
     mortgagE_NAME: string | undefined;
     mortgagE_TERM: number;
-    mortgagE_SIGN_DT: moment.Moment;
-    mortgagE_DUE_DATE: moment.Moment;
+    mortgagE_SIGN_DT: moment.Moment | undefined;
+    mortgagE_DUE_DATE: moment.Moment | undefined;
     mortgagE_INTEREST_RATE: number;
     mortgagE_ISSUE_VALUE: number;
     mortgagE_COVERAGE_RATIO: number;
@@ -48392,8 +53631,8 @@ export interface IREA_MORTGAGE_ENTITY {
     recorD_STATUS_NAME: string | undefined;
     autH_STATUS_NAME: string | undefined;
     remaiN_DEBT: number;
-    mortgagE_INITIAL_COVERAGE_RATIO: string | undefined;
-    mortgagE_CURRENT_COVERAGE_RATIO: string | undefined;
+    mortgagE_INITIAL_COVERAGE_RATIO: number;
+    mortgagE_CURRENT_COVERAGE_RATIO: number;
     numbeR_OF_MORTGAGE_PROPERTIES: number;
     mortgagE_TYPE_NAME: string | undefined;
     mortgagE_STATUS_NAME: string | undefined;
@@ -48404,6 +53643,11 @@ export interface IREA_MORTGAGE_ENTITY {
     deleteD_MORTGAGE_ITEM_ID_LIST: string[] | undefined;
     deleteD_MORTGAGE_SHARE_ID_LIST: string[] | undefined;
     deleteD_MORTGAGE_RELEASE_HISTORY_ID_LIST: string[] | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
     top: number | undefined;
     sorting: string | undefined;
     maxResultCount: number;
@@ -48411,16 +53655,22 @@ export interface IREA_MORTGAGE_ENTITY {
 }
 
 export class REA_MORTGAGE_ITEM_ENTITY implements IREA_MORTGAGE_ITEM_ENTITY {
-    morgagE_ITEM_ID!: string | undefined;
+    id!: number;
     mortgagE_ID!: string | undefined;
+    valuatioN_ID!: number;
     valuation!: REA_VALUATION_ENTITY;
+    mortgagE_ITEM_ENTITY!: IMortgagePropertyDto;
+    mortgagE_ITEM_ENTITY_TYPE!: string | undefined;
+    mortgagE_ITEM_ENTITY_ID!: string | undefined;
     mortgagE_STATUS!: string | undefined;
-    mortagE_ITEM_IS_SHARED!: boolean;
+    mortgagE_ITEM_IS_SHARED!: boolean;
     mortgagE_ITEM_STATUS!: string | undefined;
     notes!: string | undefined;
     makeR_ID!: string | undefined;
+    makeR_NAME!: string | undefined;
     creatE_DT!: moment.Moment | undefined;
     modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
     modifY_DT!: moment.Moment | undefined;
     mortgagE_STATUS_NAME!: string | undefined;
     mortgagE_ITEM_STATUS_NAME!: string | undefined;
@@ -48438,16 +53688,22 @@ export class REA_MORTGAGE_ITEM_ENTITY implements IREA_MORTGAGE_ITEM_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.morgagE_ITEM_ID = data["morgagE_ITEM_ID"];
+            this.id = data["id"];
             this.mortgagE_ID = data["mortgagE_ID"];
+            this.valuatioN_ID = data["valuatioN_ID"];
             this.valuation = data["valuation"] ? REA_VALUATION_ENTITY.fromJS(data["valuation"]) : <any>undefined;
+            this.mortgagE_ITEM_ENTITY = data["mortgagE_ITEM_ENTITY"] ? IMortgagePropertyDto.fromJS(data["mortgagE_ITEM_ENTITY"]) : <any>undefined;
+            this.mortgagE_ITEM_ENTITY_TYPE = data["mortgagE_ITEM_ENTITY_TYPE"];
+            this.mortgagE_ITEM_ENTITY_ID = data["mortgagE_ITEM_ENTITY_ID"];
             this.mortgagE_STATUS = data["mortgagE_STATUS"];
-            this.mortagE_ITEM_IS_SHARED = data["mortagE_ITEM_IS_SHARED"];
+            this.mortgagE_ITEM_IS_SHARED = data["mortgagE_ITEM_IS_SHARED"];
             this.mortgagE_ITEM_STATUS = data["mortgagE_ITEM_STATUS"];
             this.notes = data["notes"];
             this.makeR_ID = data["makeR_ID"];
+            this.makeR_NAME = data["makeR_NAME"];
             this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
             this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
             this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
             this.mortgagE_STATUS_NAME = data["mortgagE_STATUS_NAME"];
             this.mortgagE_ITEM_STATUS_NAME = data["mortgagE_ITEM_STATUS_NAME"];
@@ -48465,16 +53721,22 @@ export class REA_MORTGAGE_ITEM_ENTITY implements IREA_MORTGAGE_ITEM_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["morgagE_ITEM_ID"] = this.morgagE_ITEM_ID;
+        data["id"] = this.id;
         data["mortgagE_ID"] = this.mortgagE_ID;
+        data["valuatioN_ID"] = this.valuatioN_ID;
         data["valuation"] = this.valuation ? this.valuation.toJSON() : <any>undefined;
+        data["mortgagE_ITEM_ENTITY"] = this.mortgagE_ITEM_ENTITY ? this.mortgagE_ITEM_ENTITY.toJSON() : <any>undefined;
+        data["mortgagE_ITEM_ENTITY_TYPE"] = this.mortgagE_ITEM_ENTITY_TYPE;
+        data["mortgagE_ITEM_ENTITY_ID"] = this.mortgagE_ITEM_ENTITY_ID;
         data["mortgagE_STATUS"] = this.mortgagE_STATUS;
-        data["mortagE_ITEM_IS_SHARED"] = this.mortagE_ITEM_IS_SHARED;
+        data["mortgagE_ITEM_IS_SHARED"] = this.mortgagE_ITEM_IS_SHARED;
         data["mortgagE_ITEM_STATUS"] = this.mortgagE_ITEM_STATUS;
         data["notes"] = this.notes;
         data["makeR_ID"] = this.makeR_ID;
+        data["makeR_NAME"] = this.makeR_NAME;
         data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
         data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
         data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
         data["mortgagE_STATUS_NAME"] = this.mortgagE_STATUS_NAME;
         data["mortgagE_ITEM_STATUS_NAME"] = this.mortgagE_ITEM_STATUS_NAME;
@@ -48485,16 +53747,22 @@ export class REA_MORTGAGE_ITEM_ENTITY implements IREA_MORTGAGE_ITEM_ENTITY {
 }
 
 export interface IREA_MORTGAGE_ITEM_ENTITY {
-    morgagE_ITEM_ID: string | undefined;
+    id: number;
     mortgagE_ID: string | undefined;
+    valuatioN_ID: number;
     valuation: REA_VALUATION_ENTITY;
+    mortgagE_ITEM_ENTITY: IMortgagePropertyDto;
+    mortgagE_ITEM_ENTITY_TYPE: string | undefined;
+    mortgagE_ITEM_ENTITY_ID: string | undefined;
     mortgagE_STATUS: string | undefined;
-    mortagE_ITEM_IS_SHARED: boolean;
+    mortgagE_ITEM_IS_SHARED: boolean;
     mortgagE_ITEM_STATUS: string | undefined;
     notes: string | undefined;
     makeR_ID: string | undefined;
+    makeR_NAME: string | undefined;
     creatE_DT: moment.Moment | undefined;
     modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
     modifY_DT: moment.Moment | undefined;
     mortgagE_STATUS_NAME: string | undefined;
     mortgagE_ITEM_STATUS_NAME: string | undefined;
@@ -48502,15 +53770,86 @@ export interface IREA_MORTGAGE_ITEM_ENTITY {
     iS_NEW: boolean;
 }
 
+export class REA_MORTGAGE_OVERALL implements IREA_MORTGAGE_OVERALL {
+    id!: string | undefined;
+    mortgagE_NAME!: string | undefined;
+    mortgagE_TERM!: number;
+    mortgagE_DUE_DATE!: moment.Moment | undefined;
+    valuatioN_PARTY_NAME!: string | undefined;
+    valuatioN_DT!: moment.Moment | undefined;
+    mortgagE_STATUS_NAME!: string | undefined;
+    mortgagE_ITEM_IS_SHARED!: boolean;
+    mortgagE_ITEM_STATUS_NAME!: string | undefined;
+
+    constructor(data?: IREA_MORTGAGE_OVERALL) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.mortgagE_NAME = data["mortgagE_NAME"];
+            this.mortgagE_TERM = data["mortgagE_TERM"];
+            this.mortgagE_DUE_DATE = data["mortgagE_DUE_DATE"] ? moment(data["mortgagE_DUE_DATE"].toString()) : <any>undefined;
+            this.valuatioN_PARTY_NAME = data["valuatioN_PARTY_NAME"];
+            this.valuatioN_DT = data["valuatioN_DT"] ? moment(data["valuatioN_DT"].toString()) : <any>undefined;
+            this.mortgagE_STATUS_NAME = data["mortgagE_STATUS_NAME"];
+            this.mortgagE_ITEM_IS_SHARED = data["mortgagE_ITEM_IS_SHARED"];
+            this.mortgagE_ITEM_STATUS_NAME = data["mortgagE_ITEM_STATUS_NAME"];
+        }
+    }
+
+    static fromJS(data: any): REA_MORTGAGE_OVERALL {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_MORTGAGE_OVERALL();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["mortgagE_NAME"] = this.mortgagE_NAME;
+        data["mortgagE_TERM"] = this.mortgagE_TERM;
+        data["mortgagE_DUE_DATE"] = this.mortgagE_DUE_DATE ? this.mortgagE_DUE_DATE.toISOString() : <any>undefined;
+        data["valuatioN_PARTY_NAME"] = this.valuatioN_PARTY_NAME;
+        data["valuatioN_DT"] = this.valuatioN_DT ? this.valuatioN_DT.toISOString() : <any>undefined;
+        data["mortgagE_STATUS_NAME"] = this.mortgagE_STATUS_NAME;
+        data["mortgagE_ITEM_IS_SHARED"] = this.mortgagE_ITEM_IS_SHARED;
+        data["mortgagE_ITEM_STATUS_NAME"] = this.mortgagE_ITEM_STATUS_NAME;
+        return data; 
+    }
+}
+
+export interface IREA_MORTGAGE_OVERALL {
+    id: string | undefined;
+    mortgagE_NAME: string | undefined;
+    mortgagE_TERM: number;
+    mortgagE_DUE_DATE: moment.Moment | undefined;
+    valuatioN_PARTY_NAME: string | undefined;
+    valuatioN_DT: moment.Moment | undefined;
+    mortgagE_STATUS_NAME: string | undefined;
+    mortgagE_ITEM_IS_SHARED: boolean;
+    mortgagE_ITEM_STATUS_NAME: string | undefined;
+}
+
 export class REA_MORTGAGE_RELEASE_HISTORY_ENTITY implements IREA_MORTGAGE_RELEASE_HISTORY_ENTITY {
-    reA_MORTGAGE_RELEASE_ID!: string | undefined;
+    id!: number;
     mortgagE_ID!: string | undefined;
     mortgagE_RELEASE_VALUE!: number;
     mortgagE_RELEASE_DATE!: moment.Moment | undefined;
     makeR_ID!: string | undefined;
+    makeR_NAME!: string | undefined;
     updatE_DT!: moment.Moment | undefined;
     notes!: string | undefined;
     remaiN_DEBT!: number | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
 
     constructor(data?: IREA_MORTGAGE_RELEASE_HISTORY_ENTITY) {
         if (data) {
@@ -48523,14 +53862,17 @@ export class REA_MORTGAGE_RELEASE_HISTORY_ENTITY implements IREA_MORTGAGE_RELEAS
 
     init(data?: any) {
         if (data) {
-            this.reA_MORTGAGE_RELEASE_ID = data["reA_MORTGAGE_RELEASE_ID"];
+            this.id = data["id"];
             this.mortgagE_ID = data["mortgagE_ID"];
             this.mortgagE_RELEASE_VALUE = data["mortgagE_RELEASE_VALUE"];
             this.mortgagE_RELEASE_DATE = data["mortgagE_RELEASE_DATE"] ? moment(data["mortgagE_RELEASE_DATE"].toString()) : <any>undefined;
             this.makeR_ID = data["makeR_ID"];
+            this.makeR_NAME = data["makeR_NAME"];
             this.updatE_DT = data["updatE_DT"] ? moment(data["updatE_DT"].toString()) : <any>undefined;
             this.notes = data["notes"];
             this.remaiN_DEBT = data["remaiN_DEBT"];
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
         }
     }
 
@@ -48543,44 +53885,169 @@ export class REA_MORTGAGE_RELEASE_HISTORY_ENTITY implements IREA_MORTGAGE_RELEAS
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["reA_MORTGAGE_RELEASE_ID"] = this.reA_MORTGAGE_RELEASE_ID;
+        data["id"] = this.id;
         data["mortgagE_ID"] = this.mortgagE_ID;
         data["mortgagE_RELEASE_VALUE"] = this.mortgagE_RELEASE_VALUE;
         data["mortgagE_RELEASE_DATE"] = this.mortgagE_RELEASE_DATE ? this.mortgagE_RELEASE_DATE.toISOString() : <any>undefined;
         data["makeR_ID"] = this.makeR_ID;
+        data["makeR_NAME"] = this.makeR_NAME;
         data["updatE_DT"] = this.updatE_DT ? this.updatE_DT.toISOString() : <any>undefined;
         data["notes"] = this.notes;
         data["remaiN_DEBT"] = this.remaiN_DEBT;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
         return data; 
     }
 }
 
 export interface IREA_MORTGAGE_RELEASE_HISTORY_ENTITY {
-    reA_MORTGAGE_RELEASE_ID: string | undefined;
+    id: number;
     mortgagE_ID: string | undefined;
     mortgagE_RELEASE_VALUE: number;
     mortgagE_RELEASE_DATE: moment.Moment | undefined;
     makeR_ID: string | undefined;
+    makeR_NAME: string | undefined;
     updatE_DT: moment.Moment | undefined;
     notes: string | undefined;
     remaiN_DEBT: number | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
+}
+
+export class REA_MORTGAGE_SEARCH_REQUEST_DTO implements IREA_MORTGAGE_SEARCH_REQUEST_DTO {
+    id!: string | undefined;
+    mortgagE_TYPE!: string | undefined;
+    mortgagE_NAME!: string | undefined;
+    mortgagE_DUE_DATE_FROM!: moment.Moment | undefined;
+    mortgagE_DUE_DATE_TO!: moment.Moment | undefined;
+    projecT_ID!: string | undefined;
+    areA_ID!: string | undefined;
+    sodO_ID!: string | undefined;
+    mortgagE_STATUS!: string | undefined;
+    mortgagE_OWNER_ID!: string | undefined;
+    mortgagE_PUBLISHER_ID!: string | undefined;
+    legaL_ENTITY_TYPE!: string | undefined;
+    legaL_ENTITY_REF_ID!: string | undefined;
+    autH_STATUS!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_MORTGAGE_SEARCH_REQUEST_DTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.mortgagE_TYPE = data["mortgagE_TYPE"];
+            this.mortgagE_NAME = data["mortgagE_NAME"];
+            this.mortgagE_DUE_DATE_FROM = data["mortgagE_DUE_DATE_FROM"] ? moment(data["mortgagE_DUE_DATE_FROM"].toString()) : <any>undefined;
+            this.mortgagE_DUE_DATE_TO = data["mortgagE_DUE_DATE_TO"] ? moment(data["mortgagE_DUE_DATE_TO"].toString()) : <any>undefined;
+            this.projecT_ID = data["projecT_ID"];
+            this.areA_ID = data["areA_ID"];
+            this.sodO_ID = data["sodO_ID"];
+            this.mortgagE_STATUS = data["mortgagE_STATUS"];
+            this.mortgagE_OWNER_ID = data["mortgagE_OWNER_ID"];
+            this.mortgagE_PUBLISHER_ID = data["mortgagE_PUBLISHER_ID"];
+            this.legaL_ENTITY_TYPE = data["legaL_ENTITY_TYPE"];
+            this.legaL_ENTITY_REF_ID = data["legaL_ENTITY_REF_ID"];
+            this.autH_STATUS = data["autH_STATUS"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_MORTGAGE_SEARCH_REQUEST_DTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_MORTGAGE_SEARCH_REQUEST_DTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["mortgagE_TYPE"] = this.mortgagE_TYPE;
+        data["mortgagE_NAME"] = this.mortgagE_NAME;
+        data["mortgagE_DUE_DATE_FROM"] = this.mortgagE_DUE_DATE_FROM ? this.mortgagE_DUE_DATE_FROM.toISOString() : <any>undefined;
+        data["mortgagE_DUE_DATE_TO"] = this.mortgagE_DUE_DATE_TO ? this.mortgagE_DUE_DATE_TO.toISOString() : <any>undefined;
+        data["projecT_ID"] = this.projecT_ID;
+        data["areA_ID"] = this.areA_ID;
+        data["sodO_ID"] = this.sodO_ID;
+        data["mortgagE_STATUS"] = this.mortgagE_STATUS;
+        data["mortgagE_OWNER_ID"] = this.mortgagE_OWNER_ID;
+        data["mortgagE_PUBLISHER_ID"] = this.mortgagE_PUBLISHER_ID;
+        data["legaL_ENTITY_TYPE"] = this.legaL_ENTITY_TYPE;
+        data["legaL_ENTITY_REF_ID"] = this.legaL_ENTITY_REF_ID;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_MORTGAGE_SEARCH_REQUEST_DTO {
+    id: string | undefined;
+    mortgagE_TYPE: string | undefined;
+    mortgagE_NAME: string | undefined;
+    mortgagE_DUE_DATE_FROM: moment.Moment | undefined;
+    mortgagE_DUE_DATE_TO: moment.Moment | undefined;
+    projecT_ID: string | undefined;
+    areA_ID: string | undefined;
+    sodO_ID: string | undefined;
+    mortgagE_STATUS: string | undefined;
+    mortgagE_OWNER_ID: string | undefined;
+    mortgagE_PUBLISHER_ID: string | undefined;
+    legaL_ENTITY_TYPE: string | undefined;
+    legaL_ENTITY_REF_ID: string | undefined;
+    autH_STATUS: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class REA_MORTGAGE_SHARE_ENTITY implements IREA_MORTGAGE_SHARE_ENTITY {
-    mortgagE_SHARE_ID!: string | undefined;
+    id!: number;
     mortgagE_NAME!: string | undefined;
     mortgagE_ID!: string | undefined;
+    valuatioN_ID!: number;
     valuation!: REA_VALUATION_ENTITY;
-    mortgagE_SHARE_REF_ID!: string | undefined;
+    mortgagE_SHARE_REF_ID!: number | undefined;
     shareholdeR_ID!: string | undefined;
+    shareholdeR_NAME!: string | undefined;
+    companY_ID!: string | undefined;
     mortgagE_SHARE_IS_SHARED!: boolean;
     mortgagE_SHARE_QUANTITY!: number;
-    mortgagE_SHARE_TOTAL_VALUATION_VALUE!: number;
+    mortgagE_SHARE_VALUE!: number;
     mortgagE_STATUS!: string | undefined;
     mortgagE_SHARE_STATUS!: string | undefined;
     notes!: string | undefined;
     mortgagE_STATUS_NAME!: string | undefined;
-    mortgagE_ITEM_STATUS_NAME!: string | undefined;
+    mortgagE_SHARE_STATUS_NAME!: string | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
+    makeR_ID!: string | undefined;
+    makeR_NAME!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
 
     constructor(data?: IREA_MORTGAGE_SHARE_ENTITY) {
         if (data) {
@@ -48593,20 +54060,31 @@ export class REA_MORTGAGE_SHARE_ENTITY implements IREA_MORTGAGE_SHARE_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.mortgagE_SHARE_ID = data["mortgagE_SHARE_ID"];
+            this.id = data["id"];
             this.mortgagE_NAME = data["mortgagE_NAME"];
             this.mortgagE_ID = data["mortgagE_ID"];
+            this.valuatioN_ID = data["valuatioN_ID"];
             this.valuation = data["valuation"] ? REA_VALUATION_ENTITY.fromJS(data["valuation"]) : <any>undefined;
             this.mortgagE_SHARE_REF_ID = data["mortgagE_SHARE_REF_ID"];
             this.shareholdeR_ID = data["shareholdeR_ID"];
+            this.shareholdeR_NAME = data["shareholdeR_NAME"];
+            this.companY_ID = data["companY_ID"];
             this.mortgagE_SHARE_IS_SHARED = data["mortgagE_SHARE_IS_SHARED"];
             this.mortgagE_SHARE_QUANTITY = data["mortgagE_SHARE_QUANTITY"];
-            this.mortgagE_SHARE_TOTAL_VALUATION_VALUE = data["mortgagE_SHARE_TOTAL_VALUATION_VALUE"];
+            this.mortgagE_SHARE_VALUE = data["mortgagE_SHARE_VALUE"];
             this.mortgagE_STATUS = data["mortgagE_STATUS"];
             this.mortgagE_SHARE_STATUS = data["mortgagE_SHARE_STATUS"];
             this.notes = data["notes"];
             this.mortgagE_STATUS_NAME = data["mortgagE_STATUS_NAME"];
-            this.mortgagE_ITEM_STATUS_NAME = data["mortgagE_ITEM_STATUS_NAME"];
+            this.mortgagE_SHARE_STATUS_NAME = data["mortgagE_SHARE_STATUS_NAME"];
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
+            this.makeR_ID = data["makeR_ID"];
+            this.makeR_NAME = data["makeR_NAME"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
         }
     }
 
@@ -48619,39 +54097,61 @@ export class REA_MORTGAGE_SHARE_ENTITY implements IREA_MORTGAGE_SHARE_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["mortgagE_SHARE_ID"] = this.mortgagE_SHARE_ID;
+        data["id"] = this.id;
         data["mortgagE_NAME"] = this.mortgagE_NAME;
         data["mortgagE_ID"] = this.mortgagE_ID;
+        data["valuatioN_ID"] = this.valuatioN_ID;
         data["valuation"] = this.valuation ? this.valuation.toJSON() : <any>undefined;
         data["mortgagE_SHARE_REF_ID"] = this.mortgagE_SHARE_REF_ID;
         data["shareholdeR_ID"] = this.shareholdeR_ID;
+        data["shareholdeR_NAME"] = this.shareholdeR_NAME;
+        data["companY_ID"] = this.companY_ID;
         data["mortgagE_SHARE_IS_SHARED"] = this.mortgagE_SHARE_IS_SHARED;
         data["mortgagE_SHARE_QUANTITY"] = this.mortgagE_SHARE_QUANTITY;
-        data["mortgagE_SHARE_TOTAL_VALUATION_VALUE"] = this.mortgagE_SHARE_TOTAL_VALUATION_VALUE;
+        data["mortgagE_SHARE_VALUE"] = this.mortgagE_SHARE_VALUE;
         data["mortgagE_STATUS"] = this.mortgagE_STATUS;
         data["mortgagE_SHARE_STATUS"] = this.mortgagE_SHARE_STATUS;
         data["notes"] = this.notes;
         data["mortgagE_STATUS_NAME"] = this.mortgagE_STATUS_NAME;
-        data["mortgagE_ITEM_STATUS_NAME"] = this.mortgagE_ITEM_STATUS_NAME;
+        data["mortgagE_SHARE_STATUS_NAME"] = this.mortgagE_SHARE_STATUS_NAME;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
+        data["makeR_ID"] = this.makeR_ID;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
         return data; 
     }
 }
 
 export interface IREA_MORTGAGE_SHARE_ENTITY {
-    mortgagE_SHARE_ID: string | undefined;
+    id: number;
     mortgagE_NAME: string | undefined;
     mortgagE_ID: string | undefined;
+    valuatioN_ID: number;
     valuation: REA_VALUATION_ENTITY;
-    mortgagE_SHARE_REF_ID: string | undefined;
+    mortgagE_SHARE_REF_ID: number | undefined;
     shareholdeR_ID: string | undefined;
+    shareholdeR_NAME: string | undefined;
+    companY_ID: string | undefined;
     mortgagE_SHARE_IS_SHARED: boolean;
     mortgagE_SHARE_QUANTITY: number;
-    mortgagE_SHARE_TOTAL_VALUATION_VALUE: number;
+    mortgagE_SHARE_VALUE: number;
     mortgagE_STATUS: string | undefined;
     mortgagE_SHARE_STATUS: string | undefined;
     notes: string | undefined;
     mortgagE_STATUS_NAME: string | undefined;
-    mortgagE_ITEM_STATUS_NAME: string | undefined;
+    mortgagE_SHARE_STATUS_NAME: string | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
+    makeR_ID: string | undefined;
+    makeR_NAME: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
 }
 
 export class REA_OUTSIDE_SHAREHOLDER_ENTITY implements IREA_OUTSIDE_SHAREHOLDER_ENTITY {
@@ -48863,7 +54363,7 @@ export interface IREA_OWNER_ENTITY {
 }
 
 export class REA_PROJECT_COOPERATE_STRUCTURE_ENTITY implements IREA_PROJECT_COOPERATE_STRUCTURE_ENTITY {
-    cooperatE_STRUCTURE_ID!: string | undefined;
+    id!: number;
     projecT_ID!: string | undefined;
     entitY_TYPE!: string | undefined;
     entitY_ID!: string | undefined;
@@ -48885,7 +54385,7 @@ export class REA_PROJECT_COOPERATE_STRUCTURE_ENTITY implements IREA_PROJECT_COOP
 
     init(data?: any) {
         if (data) {
-            this.cooperatE_STRUCTURE_ID = data["cooperatE_STRUCTURE_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
             this.entitY_TYPE = data["entitY_TYPE"];
             this.entitY_ID = data["entitY_ID"];
@@ -48907,7 +54407,7 @@ export class REA_PROJECT_COOPERATE_STRUCTURE_ENTITY implements IREA_PROJECT_COOP
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["cooperatE_STRUCTURE_ID"] = this.cooperatE_STRUCTURE_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
         data["entitY_TYPE"] = this.entitY_TYPE;
         data["entitY_ID"] = this.entitY_ID;
@@ -48922,7 +54422,7 @@ export class REA_PROJECT_COOPERATE_STRUCTURE_ENTITY implements IREA_PROJECT_COOP
 }
 
 export interface IREA_PROJECT_COOPERATE_STRUCTURE_ENTITY {
-    cooperatE_STRUCTURE_ID: string | undefined;
+    id: number;
     projecT_ID: string | undefined;
     entitY_TYPE: string | undefined;
     entitY_ID: string | undefined;
@@ -48935,9 +54435,11 @@ export interface IREA_PROJECT_COOPERATE_STRUCTURE_ENTITY {
 }
 
 export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
-    projecT_ID!: string | undefined;
+    id!: string | undefined;
     provincE_ID!: string | undefined;
+    provincE_NAME!: string | undefined;
     investoR_ID!: string | undefined;
+    investoR_NAME!: string | undefined;
     projecT_NAME!: string | undefined;
     projecT_TYPE!: string | undefined;
     projecT_COMPLETE_STATUS!: string | undefined;
@@ -48952,6 +54454,8 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
     autH_STATUS!: string | undefined;
     checkeR_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
     projecT_TYPE_NAME!: string | undefined;
     projecT_COMPLETE_STATUS_NAME!: string | undefined;
     attacheD_IMAGES!: REA_FILE_ENTITY[] | undefined;
@@ -48962,13 +54466,26 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
     legaL_STATUS!: REA_PROJECT_LEGAL_STATUS_ENTITY;
     valuation!: REA_VALUATION_ENTITY;
     registratioN_LIST!: REA_USE_REGISTRATION_ENTITY[] | undefined;
-    progress!: REA_PROJECT_PROGRESS_ENTITY[] | undefined;
-    deleteD_OWN_ID_LIST!: string[] | undefined;
-    deleteD_COOPERATE_ID_LIST!: string[] | undefined;
-    deleteD_PROPERTY_ID_LIST!: string[] | undefined;
-    deleteD_EXPLOITATION_ID_LIST!: string[] | undefined;
-    deleteD_USE_REGISTRATION_ID_LIST!: string[] | undefined;
-    deleteD_PROGRESS_ID_LIST!: string[] | undefined;
+    progresS_LIST!: REA_PROJECT_PROGRESS_ENTITY[] | undefined;
+    lanD_AREA_LIST!: REA_LAND_AREA_OVERALL[] | undefined;
+    sodO_LIST!: REA_PROJECT_SODO_OVERALL[] | undefined;
+    mortgagE_LIST!: REA_MORTGAGE_OVERALL[] | undefined;
+    deleteD_OWN_ID_LIST!: number[] | undefined;
+    deleteD_COOPERATE_ID_LIST!: number[] | undefined;
+    deleteD_PROPERTY_ID_LIST!: number[] | undefined;
+    deleteD_EXPLOITATION_ID_LIST!: number[] | undefined;
+    deleteD_USE_REGISTRATION_ID_LIST!: number[] | undefined;
+    deleteD_PROGRESS_ID_LIST!: number[] | undefined;
+    deletE_FILE_ID_LIST!: string[] | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
 
     constructor(data?: IREA_PROJECT_ENTITY) {
         if (data) {
@@ -48981,9 +54498,11 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.projecT_ID = data["projecT_ID"];
+            this.id = data["id"];
             this.provincE_ID = data["provincE_ID"];
+            this.provincE_NAME = data["provincE_NAME"];
             this.investoR_ID = data["investoR_ID"];
+            this.investoR_NAME = data["investoR_NAME"];
             this.projecT_NAME = data["projecT_NAME"];
             this.projecT_TYPE = data["projecT_TYPE"];
             this.projecT_COMPLETE_STATUS = data["projecT_COMPLETE_STATUS"];
@@ -48998,6 +54517,8 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
             this.autH_STATUS = data["autH_STATUS"];
             this.checkeR_ID = data["checkeR_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.projecT_TYPE_NAME = data["projecT_TYPE_NAME"];
             this.projecT_COMPLETE_STATUS_NAME = data["projecT_COMPLETE_STATUS_NAME"];
             if (data["attacheD_IMAGES"] && data["attacheD_IMAGES"].constructor === Array) {
@@ -49032,10 +54553,25 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
                 for (let item of data["registratioN_LIST"])
                     this.registratioN_LIST!.push(REA_USE_REGISTRATION_ENTITY.fromJS(item));
             }
-            if (data["progress"] && data["progress"].constructor === Array) {
-                this.progress = [] as any;
-                for (let item of data["progress"])
-                    this.progress!.push(REA_PROJECT_PROGRESS_ENTITY.fromJS(item));
+            if (data["progresS_LIST"] && data["progresS_LIST"].constructor === Array) {
+                this.progresS_LIST = [] as any;
+                for (let item of data["progresS_LIST"])
+                    this.progresS_LIST!.push(REA_PROJECT_PROGRESS_ENTITY.fromJS(item));
+            }
+            if (data["lanD_AREA_LIST"] && data["lanD_AREA_LIST"].constructor === Array) {
+                this.lanD_AREA_LIST = [] as any;
+                for (let item of data["lanD_AREA_LIST"])
+                    this.lanD_AREA_LIST!.push(REA_LAND_AREA_OVERALL.fromJS(item));
+            }
+            if (data["sodO_LIST"] && data["sodO_LIST"].constructor === Array) {
+                this.sodO_LIST = [] as any;
+                for (let item of data["sodO_LIST"])
+                    this.sodO_LIST!.push(REA_PROJECT_SODO_OVERALL.fromJS(item));
+            }
+            if (data["mortgagE_LIST"] && data["mortgagE_LIST"].constructor === Array) {
+                this.mortgagE_LIST = [] as any;
+                for (let item of data["mortgagE_LIST"])
+                    this.mortgagE_LIST!.push(REA_MORTGAGE_OVERALL.fromJS(item));
             }
             if (data["deleteD_OWN_ID_LIST"] && data["deleteD_OWN_ID_LIST"].constructor === Array) {
                 this.deleteD_OWN_ID_LIST = [] as any;
@@ -49067,6 +54603,20 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
                 for (let item of data["deleteD_PROGRESS_ID_LIST"])
                     this.deleteD_PROGRESS_ID_LIST!.push(item);
             }
+            if (data["deletE_FILE_ID_LIST"] && data["deletE_FILE_ID_LIST"].constructor === Array) {
+                this.deletE_FILE_ID_LIST = [] as any;
+                for (let item of data["deletE_FILE_ID_LIST"])
+                    this.deletE_FILE_ID_LIST!.push(item);
+            }
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
         }
     }
 
@@ -49079,9 +54629,11 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["projecT_ID"] = this.projecT_ID;
+        data["id"] = this.id;
         data["provincE_ID"] = this.provincE_ID;
+        data["provincE_NAME"] = this.provincE_NAME;
         data["investoR_ID"] = this.investoR_ID;
+        data["investoR_NAME"] = this.investoR_NAME;
         data["projecT_NAME"] = this.projecT_NAME;
         data["projecT_TYPE"] = this.projecT_TYPE;
         data["projecT_COMPLETE_STATUS"] = this.projecT_COMPLETE_STATUS;
@@ -49096,6 +54648,8 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
         data["autH_STATUS"] = this.autH_STATUS;
         data["checkeR_ID"] = this.checkeR_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["projecT_TYPE_NAME"] = this.projecT_TYPE_NAME;
         data["projecT_COMPLETE_STATUS_NAME"] = this.projecT_COMPLETE_STATUS_NAME;
         if (this.attacheD_IMAGES && this.attacheD_IMAGES.constructor === Array) {
@@ -49130,10 +54684,25 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
             for (let item of this.registratioN_LIST)
                 data["registratioN_LIST"].push(item.toJSON());
         }
-        if (this.progress && this.progress.constructor === Array) {
-            data["progress"] = [];
-            for (let item of this.progress)
-                data["progress"].push(item.toJSON());
+        if (this.progresS_LIST && this.progresS_LIST.constructor === Array) {
+            data["progresS_LIST"] = [];
+            for (let item of this.progresS_LIST)
+                data["progresS_LIST"].push(item.toJSON());
+        }
+        if (this.lanD_AREA_LIST && this.lanD_AREA_LIST.constructor === Array) {
+            data["lanD_AREA_LIST"] = [];
+            for (let item of this.lanD_AREA_LIST)
+                data["lanD_AREA_LIST"].push(item.toJSON());
+        }
+        if (this.sodO_LIST && this.sodO_LIST.constructor === Array) {
+            data["sodO_LIST"] = [];
+            for (let item of this.sodO_LIST)
+                data["sodO_LIST"].push(item.toJSON());
+        }
+        if (this.mortgagE_LIST && this.mortgagE_LIST.constructor === Array) {
+            data["mortgagE_LIST"] = [];
+            for (let item of this.mortgagE_LIST)
+                data["mortgagE_LIST"].push(item.toJSON());
         }
         if (this.deleteD_OWN_ID_LIST && this.deleteD_OWN_ID_LIST.constructor === Array) {
             data["deleteD_OWN_ID_LIST"] = [];
@@ -49165,14 +54734,30 @@ export class REA_PROJECT_ENTITY implements IREA_PROJECT_ENTITY {
             for (let item of this.deleteD_PROGRESS_ID_LIST)
                 data["deleteD_PROGRESS_ID_LIST"].push(item);
         }
+        if (this.deletE_FILE_ID_LIST && this.deletE_FILE_ID_LIST.constructor === Array) {
+            data["deletE_FILE_ID_LIST"] = [];
+            for (let item of this.deletE_FILE_ID_LIST)
+                data["deletE_FILE_ID_LIST"].push(item);
+        }
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
         return data; 
     }
 }
 
 export interface IREA_PROJECT_ENTITY {
-    projecT_ID: string | undefined;
+    id: string | undefined;
     provincE_ID: string | undefined;
+    provincE_NAME: string | undefined;
     investoR_ID: string | undefined;
+    investoR_NAME: string | undefined;
     projecT_NAME: string | undefined;
     projecT_TYPE: string | undefined;
     projecT_COMPLETE_STATUS: string | undefined;
@@ -49187,6 +54772,8 @@ export interface IREA_PROJECT_ENTITY {
     autH_STATUS: string | undefined;
     checkeR_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
     projecT_TYPE_NAME: string | undefined;
     projecT_COMPLETE_STATUS_NAME: string | undefined;
     attacheD_IMAGES: REA_FILE_ENTITY[] | undefined;
@@ -49197,19 +54784,33 @@ export interface IREA_PROJECT_ENTITY {
     legaL_STATUS: REA_PROJECT_LEGAL_STATUS_ENTITY;
     valuation: REA_VALUATION_ENTITY;
     registratioN_LIST: REA_USE_REGISTRATION_ENTITY[] | undefined;
-    progress: REA_PROJECT_PROGRESS_ENTITY[] | undefined;
-    deleteD_OWN_ID_LIST: string[] | undefined;
-    deleteD_COOPERATE_ID_LIST: string[] | undefined;
-    deleteD_PROPERTY_ID_LIST: string[] | undefined;
-    deleteD_EXPLOITATION_ID_LIST: string[] | undefined;
-    deleteD_USE_REGISTRATION_ID_LIST: string[] | undefined;
-    deleteD_PROGRESS_ID_LIST: string[] | undefined;
+    progresS_LIST: REA_PROJECT_PROGRESS_ENTITY[] | undefined;
+    lanD_AREA_LIST: REA_LAND_AREA_OVERALL[] | undefined;
+    sodO_LIST: REA_PROJECT_SODO_OVERALL[] | undefined;
+    mortgagE_LIST: REA_MORTGAGE_OVERALL[] | undefined;
+    deleteD_OWN_ID_LIST: number[] | undefined;
+    deleteD_COOPERATE_ID_LIST: number[] | undefined;
+    deleteD_PROPERTY_ID_LIST: number[] | undefined;
+    deleteD_EXPLOITATION_ID_LIST: number[] | undefined;
+    deleteD_USE_REGISTRATION_ID_LIST: number[] | undefined;
+    deleteD_PROGRESS_ID_LIST: number[] | undefined;
+    deletE_FILE_ID_LIST: string[] | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATION_ENTITY {
-    exP_ID!: string | undefined;
+    id!: number;
     projecT_ID!: string | undefined;
     areA_ID!: string | undefined;
+    areA_NAME!: string | undefined;
     exP_PARTY!: string | undefined;
     exP_CONTRACT_NO!: string | undefined;
     exP_CONTRACT_NAME!: string | undefined;
@@ -49219,7 +54820,6 @@ export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATIO
     exP_USE_PURPOSE!: string | undefined;
     exP_REVENUE_PER_YEAR!: string | undefined;
     notes!: string | undefined;
-    areA_NAME!: string | undefined;
     attacheD_IMAGE!: REA_FILE_ENTITY;
     iS_CHANGED!: boolean;
     iS_NEW!: boolean;
@@ -49235,9 +54835,10 @@ export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATIO
 
     init(data?: any) {
         if (data) {
-            this.exP_ID = data["exP_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
             this.areA_ID = data["areA_ID"];
+            this.areA_NAME = data["areA_NAME"];
             this.exP_PARTY = data["exP_PARTY"];
             this.exP_CONTRACT_NO = data["exP_CONTRACT_NO"];
             this.exP_CONTRACT_NAME = data["exP_CONTRACT_NAME"];
@@ -49247,7 +54848,6 @@ export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATIO
             this.exP_USE_PURPOSE = data["exP_USE_PURPOSE"];
             this.exP_REVENUE_PER_YEAR = data["exP_REVENUE_PER_YEAR"];
             this.notes = data["notes"];
-            this.areA_NAME = data["areA_NAME"];
             this.attacheD_IMAGE = data["attacheD_IMAGE"] ? REA_FILE_ENTITY.fromJS(data["attacheD_IMAGE"]) : <any>undefined;
             this.iS_CHANGED = data["iS_CHANGED"];
             this.iS_NEW = data["iS_NEW"];
@@ -49263,9 +54863,10 @@ export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATIO
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["exP_ID"] = this.exP_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
         data["areA_ID"] = this.areA_ID;
+        data["areA_NAME"] = this.areA_NAME;
         data["exP_PARTY"] = this.exP_PARTY;
         data["exP_CONTRACT_NO"] = this.exP_CONTRACT_NO;
         data["exP_CONTRACT_NAME"] = this.exP_CONTRACT_NAME;
@@ -49275,7 +54876,6 @@ export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATIO
         data["exP_USE_PURPOSE"] = this.exP_USE_PURPOSE;
         data["exP_REVENUE_PER_YEAR"] = this.exP_REVENUE_PER_YEAR;
         data["notes"] = this.notes;
-        data["areA_NAME"] = this.areA_NAME;
         data["attacheD_IMAGE"] = this.attacheD_IMAGE ? this.attacheD_IMAGE.toJSON() : <any>undefined;
         data["iS_CHANGED"] = this.iS_CHANGED;
         data["iS_NEW"] = this.iS_NEW;
@@ -49284,9 +54884,10 @@ export class REA_PROJECT_EXPLOITATION_ENTITY implements IREA_PROJECT_EXPLOITATIO
 }
 
 export interface IREA_PROJECT_EXPLOITATION_ENTITY {
-    exP_ID: string | undefined;
+    id: number;
     projecT_ID: string | undefined;
     areA_ID: string | undefined;
+    areA_NAME: string | undefined;
     exP_PARTY: string | undefined;
     exP_CONTRACT_NO: string | undefined;
     exP_CONTRACT_NAME: string | undefined;
@@ -49296,15 +54897,18 @@ export interface IREA_PROJECT_EXPLOITATION_ENTITY {
     exP_USE_PURPOSE: string | undefined;
     exP_REVENUE_PER_YEAR: string | undefined;
     notes: string | undefined;
-    areA_NAME: string | undefined;
     attacheD_IMAGE: REA_FILE_ENTITY;
     iS_CHANGED: boolean;
     iS_NEW: boolean;
 }
 
 export class REA_PROJECT_LEGAL_STATUS_ENTITY implements IREA_PROJECT_LEGAL_STATUS_ENTITY {
-    legaL_STATUS_ID!: string | undefined;
-    propjecT_ID!: string | undefined;
+    id!: number;
+    projecT_ID!: string | undefined;
+    owneR_TYPE!: string | undefined;
+    owneR_TYPE_NAME!: string | undefined;
+    owneR_ID!: string | undefined;
+    owneR_NAME!: string | undefined;
     legaL_STATUS_INVESTMENT!: string | undefined;
     legaL_STATUS_LAND!: string | undefined;
     legaL_STATUS_PLANNING!: string | undefined;
@@ -49315,6 +54919,8 @@ export class REA_PROJECT_LEGAL_STATUS_ENTITY implements IREA_PROJECT_LEGAL_STATU
     legaL_STATUS_SALE_PLAN!: string | undefined;
     legaL_STATUS_PRODUCT_TYPE!: string | undefined;
     legaL_STATUS_UNIT_PRICE!: number;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
 
     constructor(data?: IREA_PROJECT_LEGAL_STATUS_ENTITY) {
         if (data) {
@@ -49327,8 +54933,12 @@ export class REA_PROJECT_LEGAL_STATUS_ENTITY implements IREA_PROJECT_LEGAL_STATU
 
     init(data?: any) {
         if (data) {
-            this.legaL_STATUS_ID = data["legaL_STATUS_ID"];
-            this.propjecT_ID = data["propjecT_ID"];
+            this.id = data["id"];
+            this.projecT_ID = data["projecT_ID"];
+            this.owneR_TYPE = data["owneR_TYPE"];
+            this.owneR_TYPE_NAME = data["owneR_TYPE_NAME"];
+            this.owneR_ID = data["owneR_ID"];
+            this.owneR_NAME = data["owneR_NAME"];
             this.legaL_STATUS_INVESTMENT = data["legaL_STATUS_INVESTMENT"];
             this.legaL_STATUS_LAND = data["legaL_STATUS_LAND"];
             this.legaL_STATUS_PLANNING = data["legaL_STATUS_PLANNING"];
@@ -49339,6 +54949,8 @@ export class REA_PROJECT_LEGAL_STATUS_ENTITY implements IREA_PROJECT_LEGAL_STATU
             this.legaL_STATUS_SALE_PLAN = data["legaL_STATUS_SALE_PLAN"];
             this.legaL_STATUS_PRODUCT_TYPE = data["legaL_STATUS_PRODUCT_TYPE"];
             this.legaL_STATUS_UNIT_PRICE = data["legaL_STATUS_UNIT_PRICE"];
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
         }
     }
 
@@ -49351,8 +54963,12 @@ export class REA_PROJECT_LEGAL_STATUS_ENTITY implements IREA_PROJECT_LEGAL_STATU
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["legaL_STATUS_ID"] = this.legaL_STATUS_ID;
-        data["propjecT_ID"] = this.propjecT_ID;
+        data["id"] = this.id;
+        data["projecT_ID"] = this.projecT_ID;
+        data["owneR_TYPE"] = this.owneR_TYPE;
+        data["owneR_TYPE_NAME"] = this.owneR_TYPE_NAME;
+        data["owneR_ID"] = this.owneR_ID;
+        data["owneR_NAME"] = this.owneR_NAME;
         data["legaL_STATUS_INVESTMENT"] = this.legaL_STATUS_INVESTMENT;
         data["legaL_STATUS_LAND"] = this.legaL_STATUS_LAND;
         data["legaL_STATUS_PLANNING"] = this.legaL_STATUS_PLANNING;
@@ -49363,13 +54979,19 @@ export class REA_PROJECT_LEGAL_STATUS_ENTITY implements IREA_PROJECT_LEGAL_STATU
         data["legaL_STATUS_SALE_PLAN"] = this.legaL_STATUS_SALE_PLAN;
         data["legaL_STATUS_PRODUCT_TYPE"] = this.legaL_STATUS_PRODUCT_TYPE;
         data["legaL_STATUS_UNIT_PRICE"] = this.legaL_STATUS_UNIT_PRICE;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
         return data; 
     }
 }
 
 export interface IREA_PROJECT_LEGAL_STATUS_ENTITY {
-    legaL_STATUS_ID: string | undefined;
-    propjecT_ID: string | undefined;
+    id: number;
+    projecT_ID: string | undefined;
+    owneR_TYPE: string | undefined;
+    owneR_TYPE_NAME: string | undefined;
+    owneR_ID: string | undefined;
+    owneR_NAME: string | undefined;
     legaL_STATUS_INVESTMENT: string | undefined;
     legaL_STATUS_LAND: string | undefined;
     legaL_STATUS_PLANNING: string | undefined;
@@ -49380,17 +55002,19 @@ export interface IREA_PROJECT_LEGAL_STATUS_ENTITY {
     legaL_STATUS_SALE_PLAN: string | undefined;
     legaL_STATUS_PRODUCT_TYPE: string | undefined;
     legaL_STATUS_UNIT_PRICE: number;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
 }
 
 export class REA_PROJECT_OWN_STRUCTURE_ENTITY implements IREA_PROJECT_OWN_STRUCTURE_ENTITY {
-    owN_STRUCTURE_ID!: string | undefined;
+    id!: number;
     projecT_ID!: string | undefined;
     owN_COMPANY_ID!: string | undefined;
+    owN_COMPANY_NAME!: string | undefined;
     shareholdeR_ID!: string | undefined;
+    shareholdeR_NAME!: string | undefined;
     owN_STRUCTURE_SHARES!: number;
     owN_STRUCTURE_SHARE_VALUE!: number;
-    owN_COMPANY_NAME!: string | undefined;
-    shareholdeR_NAME!: string | undefined;
     owN_RATIO!: number;
     iS_CHANGED!: boolean;
     iS_NEW!: boolean;
@@ -49406,14 +55030,14 @@ export class REA_PROJECT_OWN_STRUCTURE_ENTITY implements IREA_PROJECT_OWN_STRUCT
 
     init(data?: any) {
         if (data) {
-            this.owN_STRUCTURE_ID = data["owN_STRUCTURE_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
             this.owN_COMPANY_ID = data["owN_COMPANY_ID"];
+            this.owN_COMPANY_NAME = data["owN_COMPANY_NAME"];
             this.shareholdeR_ID = data["shareholdeR_ID"];
+            this.shareholdeR_NAME = data["shareholdeR_NAME"];
             this.owN_STRUCTURE_SHARES = data["owN_STRUCTURE_SHARES"];
             this.owN_STRUCTURE_SHARE_VALUE = data["owN_STRUCTURE_SHARE_VALUE"];
-            this.owN_COMPANY_NAME = data["owN_COMPANY_NAME"];
-            this.shareholdeR_NAME = data["shareholdeR_NAME"];
             this.owN_RATIO = data["owN_RATIO"];
             this.iS_CHANGED = data["iS_CHANGED"];
             this.iS_NEW = data["iS_NEW"];
@@ -49429,14 +55053,14 @@ export class REA_PROJECT_OWN_STRUCTURE_ENTITY implements IREA_PROJECT_OWN_STRUCT
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["owN_STRUCTURE_ID"] = this.owN_STRUCTURE_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
         data["owN_COMPANY_ID"] = this.owN_COMPANY_ID;
+        data["owN_COMPANY_NAME"] = this.owN_COMPANY_NAME;
         data["shareholdeR_ID"] = this.shareholdeR_ID;
+        data["shareholdeR_NAME"] = this.shareholdeR_NAME;
         data["owN_STRUCTURE_SHARES"] = this.owN_STRUCTURE_SHARES;
         data["owN_STRUCTURE_SHARE_VALUE"] = this.owN_STRUCTURE_SHARE_VALUE;
-        data["owN_COMPANY_NAME"] = this.owN_COMPANY_NAME;
-        data["shareholdeR_NAME"] = this.shareholdeR_NAME;
         data["owN_RATIO"] = this.owN_RATIO;
         data["iS_CHANGED"] = this.iS_CHANGED;
         data["iS_NEW"] = this.iS_NEW;
@@ -49445,27 +55069,29 @@ export class REA_PROJECT_OWN_STRUCTURE_ENTITY implements IREA_PROJECT_OWN_STRUCT
 }
 
 export interface IREA_PROJECT_OWN_STRUCTURE_ENTITY {
-    owN_STRUCTURE_ID: string | undefined;
+    id: number;
     projecT_ID: string | undefined;
     owN_COMPANY_ID: string | undefined;
+    owN_COMPANY_NAME: string | undefined;
     shareholdeR_ID: string | undefined;
+    shareholdeR_NAME: string | undefined;
     owN_STRUCTURE_SHARES: number;
     owN_STRUCTURE_SHARE_VALUE: number;
-    owN_COMPANY_NAME: string | undefined;
-    shareholdeR_NAME: string | undefined;
     owN_RATIO: number;
     iS_CHANGED: boolean;
     iS_NEW: boolean;
 }
 
 export class REA_PROJECT_PROGRESS_ENTITY implements IREA_PROJECT_PROGRESS_ENTITY {
-    projecT_PROGRESS_ID!: string | undefined;
+    id!: number;
     projecT_ID!: string | undefined;
     projecT_PROGRESS_DT!: moment.Moment | undefined;
     projecT_PROGRESS_CONTENT!: string | undefined;
     projecT_PROGRESS_ON_BUILD_VALUE!: number;
     notes!: string | undefined;
     attacheD_FILE!: REA_FILE_ENTITY;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
 
     constructor(data?: IREA_PROJECT_PROGRESS_ENTITY) {
         if (data) {
@@ -49478,13 +55104,15 @@ export class REA_PROJECT_PROGRESS_ENTITY implements IREA_PROJECT_PROGRESS_ENTITY
 
     init(data?: any) {
         if (data) {
-            this.projecT_PROGRESS_ID = data["projecT_PROGRESS_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
             this.projecT_PROGRESS_DT = data["projecT_PROGRESS_DT"] ? moment(data["projecT_PROGRESS_DT"].toString()) : <any>undefined;
             this.projecT_PROGRESS_CONTENT = data["projecT_PROGRESS_CONTENT"];
             this.projecT_PROGRESS_ON_BUILD_VALUE = data["projecT_PROGRESS_ON_BUILD_VALUE"];
             this.notes = data["notes"];
             this.attacheD_FILE = data["attacheD_FILE"] ? REA_FILE_ENTITY.fromJS(data["attacheD_FILE"]) : <any>undefined;
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
         }
     }
 
@@ -49497,36 +55125,40 @@ export class REA_PROJECT_PROGRESS_ENTITY implements IREA_PROJECT_PROGRESS_ENTITY
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["projecT_PROGRESS_ID"] = this.projecT_PROGRESS_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
         data["projecT_PROGRESS_DT"] = this.projecT_PROGRESS_DT ? this.projecT_PROGRESS_DT.toISOString() : <any>undefined;
         data["projecT_PROGRESS_CONTENT"] = this.projecT_PROGRESS_CONTENT;
         data["projecT_PROGRESS_ON_BUILD_VALUE"] = this.projecT_PROGRESS_ON_BUILD_VALUE;
         data["notes"] = this.notes;
         data["attacheD_FILE"] = this.attacheD_FILE ? this.attacheD_FILE.toJSON() : <any>undefined;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
         return data; 
     }
 }
 
 export interface IREA_PROJECT_PROGRESS_ENTITY {
-    projecT_PROGRESS_ID: string | undefined;
+    id: number;
     projecT_ID: string | undefined;
     projecT_PROGRESS_DT: moment.Moment | undefined;
     projecT_PROGRESS_CONTENT: string | undefined;
     projecT_PROGRESS_ON_BUILD_VALUE: number;
     notes: string | undefined;
     attacheD_FILE: REA_FILE_ENTITY;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
 }
 
 export class REA_PROJECT_PROPERTY_ENTITY implements IREA_PROJECT_PROPERTY_ENTITY {
-    projecT_PROP_ID!: string | undefined;
+    id!: number;
     projecT_ID!: string | undefined;
     areA_ID!: string | undefined;
+    areA_NAME!: string | undefined;
     projecT_PROP_NAME!: string | undefined;
     projecT_PROP_DESCRIPTION!: string | undefined;
     projecT_PROP_AREA!: number;
     notes!: string | undefined;
-    areA_NAME!: string | undefined;
     iS_CHANGED!: boolean;
     iS_NEW!: boolean;
 
@@ -49541,14 +55173,14 @@ export class REA_PROJECT_PROPERTY_ENTITY implements IREA_PROJECT_PROPERTY_ENTITY
 
     init(data?: any) {
         if (data) {
-            this.projecT_PROP_ID = data["projecT_PROP_ID"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
             this.areA_ID = data["areA_ID"];
+            this.areA_NAME = data["areA_NAME"];
             this.projecT_PROP_NAME = data["projecT_PROP_NAME"];
             this.projecT_PROP_DESCRIPTION = data["projecT_PROP_DESCRIPTION"];
             this.projecT_PROP_AREA = data["projecT_PROP_AREA"];
             this.notes = data["notes"];
-            this.areA_NAME = data["areA_NAME"];
             this.iS_CHANGED = data["iS_CHANGED"];
             this.iS_NEW = data["iS_NEW"];
         }
@@ -49563,14 +55195,14 @@ export class REA_PROJECT_PROPERTY_ENTITY implements IREA_PROJECT_PROPERTY_ENTITY
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["projecT_PROP_ID"] = this.projecT_PROP_ID;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
         data["areA_ID"] = this.areA_ID;
+        data["areA_NAME"] = this.areA_NAME;
         data["projecT_PROP_NAME"] = this.projecT_PROP_NAME;
         data["projecT_PROP_DESCRIPTION"] = this.projecT_PROP_DESCRIPTION;
         data["projecT_PROP_AREA"] = this.projecT_PROP_AREA;
         data["notes"] = this.notes;
-        data["areA_NAME"] = this.areA_NAME;
         data["iS_CHANGED"] = this.iS_CHANGED;
         data["iS_NEW"] = this.iS_NEW;
         return data; 
@@ -49578,28 +55210,30 @@ export class REA_PROJECT_PROPERTY_ENTITY implements IREA_PROJECT_PROPERTY_ENTITY
 }
 
 export interface IREA_PROJECT_PROPERTY_ENTITY {
-    projecT_PROP_ID: string | undefined;
+    id: number;
     projecT_ID: string | undefined;
     areA_ID: string | undefined;
+    areA_NAME: string | undefined;
     projecT_PROP_NAME: string | undefined;
     projecT_PROP_DESCRIPTION: string | undefined;
     projecT_PROP_AREA: number;
     notes: string | undefined;
-    areA_NAME: string | undefined;
     iS_CHANGED: boolean;
     iS_NEW: boolean;
 }
 
-export class REA_PROPERTY_INFORMATION implements IREA_PROPERTY_INFORMATION {
-    propertY_NAME!: string | undefined;
-    propertY_LEVEL_1!: string | undefined;
-    propertY_LEVEL_2!: string | undefined;
-    propertY_DESCRIPTION!: string | undefined;
-    propertY_ORIGIN_PRICE!: string | undefined;
-    propertY_COMPANY_NAME!: string | undefined;
-    propertY_DEPRECIATION_STATUS!: string | undefined;
+export class REA_PROJECT_SEARCH_DTO implements IREA_PROJECT_SEARCH_DTO {
+    id!: string | undefined;
+    projecT_NAME!: string | undefined;
+    projecT_LOCATION!: string | undefined;
+    projecT_TYPE!: string | undefined;
+    autH_STATUS!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
 
-    constructor(data?: IREA_PROPERTY_INFORMATION) {
+    constructor(data?: IREA_PROJECT_SEARCH_DTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -49610,54 +55244,727 @@ export class REA_PROPERTY_INFORMATION implements IREA_PROPERTY_INFORMATION {
 
     init(data?: any) {
         if (data) {
-            this.propertY_NAME = data["propertY_NAME"];
-            this.propertY_LEVEL_1 = data["propertY_LEVEL_1"];
-            this.propertY_LEVEL_2 = data["propertY_LEVEL_2"];
-            this.propertY_DESCRIPTION = data["propertY_DESCRIPTION"];
-            this.propertY_ORIGIN_PRICE = data["propertY_ORIGIN_PRICE"];
-            this.propertY_COMPANY_NAME = data["propertY_COMPANY_NAME"];
-            this.propertY_DEPRECIATION_STATUS = data["propertY_DEPRECIATION_STATUS"];
+            this.id = data["id"];
+            this.projecT_NAME = data["projecT_NAME"];
+            this.projecT_LOCATION = data["projecT_LOCATION"];
+            this.projecT_TYPE = data["projecT_TYPE"];
+            this.autH_STATUS = data["autH_STATUS"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
         }
     }
 
-    static fromJS(data: any): REA_PROPERTY_INFORMATION {
+    static fromJS(data: any): REA_PROJECT_SEARCH_DTO {
         data = typeof data === 'object' ? data : {};
-        let result = new REA_PROPERTY_INFORMATION();
+        let result = new REA_PROJECT_SEARCH_DTO();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["propertY_NAME"] = this.propertY_NAME;
-        data["propertY_LEVEL_1"] = this.propertY_LEVEL_1;
-        data["propertY_LEVEL_2"] = this.propertY_LEVEL_2;
-        data["propertY_DESCRIPTION"] = this.propertY_DESCRIPTION;
-        data["propertY_ORIGIN_PRICE"] = this.propertY_ORIGIN_PRICE;
-        data["propertY_COMPANY_NAME"] = this.propertY_COMPANY_NAME;
-        data["propertY_DEPRECIATION_STATUS"] = this.propertY_DEPRECIATION_STATUS;
+        data["id"] = this.id;
+        data["projecT_NAME"] = this.projecT_NAME;
+        data["projecT_LOCATION"] = this.projecT_LOCATION;
+        data["projecT_TYPE"] = this.projecT_TYPE;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
         return data; 
     }
 }
 
-export interface IREA_PROPERTY_INFORMATION {
+export interface IREA_PROJECT_SEARCH_DTO {
+    id: string | undefined;
+    projecT_NAME: string | undefined;
+    projecT_LOCATION: string | undefined;
+    projecT_TYPE: string | undefined;
+    autH_STATUS: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class REA_PROJECT_SODO_OVERALL implements IREA_PROJECT_SODO_OVERALL {
+    id!: string | undefined;
+    sodO_AREA!: number;
+
+    constructor(data?: IREA_PROJECT_SODO_OVERALL) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.sodO_AREA = data["sodO_AREA"];
+        }
+    }
+
+    static fromJS(data: any): REA_PROJECT_SODO_OVERALL {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_PROJECT_SODO_OVERALL();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sodO_AREA"] = this.sodO_AREA;
+        return data; 
+    }
+}
+
+export interface IREA_PROJECT_SODO_OVERALL {
+    id: string | undefined;
+    sodO_AREA: number;
+}
+
+export class REA_PROPERTY_GROUP_ENTITY implements IREA_PROPERTY_GROUP_ENTITY {
+    propertY_GROUP_CODE!: string | undefined;
+    propertY_TYPE_ID!: string | undefined;
+    propertY_PARENT_GROUP_ID!: string | undefined;
+    propertY_GROUP_NAME!: string | undefined;
+    depreciatE_MONTH_NUMBER!: string | undefined;
+    depreciatE_RATIO!: number;
+    notes!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    makeR_ID!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    checkeR_ID!: string | undefined;
+    approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_PROPERTY_GROUP_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.propertY_GROUP_CODE = data["propertY_GROUP_CODE"];
+            this.propertY_TYPE_ID = data["propertY_TYPE_ID"];
+            this.propertY_PARENT_GROUP_ID = data["propertY_PARENT_GROUP_ID"];
+            this.propertY_GROUP_NAME = data["propertY_GROUP_NAME"];
+            this.depreciatE_MONTH_NUMBER = data["depreciatE_MONTH_NUMBER"];
+            this.depreciatE_RATIO = data["depreciatE_RATIO"];
+            this.notes = data["notes"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.makeR_ID = data["makeR_ID"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.checkeR_ID = data["checkeR_ID"];
+            this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_PROPERTY_GROUP_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_PROPERTY_GROUP_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["propertY_GROUP_CODE"] = this.propertY_GROUP_CODE;
+        data["propertY_TYPE_ID"] = this.propertY_TYPE_ID;
+        data["propertY_PARENT_GROUP_ID"] = this.propertY_PARENT_GROUP_ID;
+        data["propertY_GROUP_NAME"] = this.propertY_GROUP_NAME;
+        data["depreciatE_MONTH_NUMBER"] = this.depreciatE_MONTH_NUMBER;
+        data["depreciatE_RATIO"] = this.depreciatE_RATIO;
+        data["notes"] = this.notes;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["makeR_ID"] = this.makeR_ID;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["checkeR_ID"] = this.checkeR_ID;
+        data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_PROPERTY_GROUP_ENTITY {
+    propertY_GROUP_CODE: string | undefined;
+    propertY_TYPE_ID: string | undefined;
+    propertY_PARENT_GROUP_ID: string | undefined;
+    propertY_GROUP_NAME: string | undefined;
+    depreciatE_MONTH_NUMBER: string | undefined;
+    depreciatE_RATIO: number;
+    notes: string | undefined;
+    recorD_STATUS: string | undefined;
+    makeR_ID: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    checkeR_ID: string | undefined;
+    approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class REA_PROPERTY_INFORMATION_ENTITY implements IREA_PROPERTY_INFORMATION_ENTITY {
+    id!: string | undefined;
+    propertY_WAREHOUSE_ID!: string | undefined;
+    propertY_TYPE_ID!: string | undefined;
+    propertY_TYPE_NAME!: string | undefined;
+    propertY_FIRST_LEVEL_GROUP_ID!: string | undefined;
+    propertY_FIRST_LEVEL_NAME!: string | undefined;
+    propertY_SECOND_LEVEL_GROUP_ID!: string | undefined;
+    propertY_SECOND_LEVEL_NAME!: string | undefined;
+    supplieR_ID!: string | undefined;
+    managemenT_COMPANY_ID!: string | undefined;
+    managemenT_COMPANY_NAME!: string | undefined;
+    khO_ID!: string | undefined;
+    depreciatioN_TYPE!: string | undefined;
+    propertY_NAME!: string | undefined;
+    seriaL_NUMBER!: string | undefined;
+    propertY_DESCRIPTION!: string | undefined;
+    iS_BATCH!: boolean;
+    numbeR_OF_ITEMS!: string | undefined;
+    propertY_LABEL_NAME!: string | undefined;
+    brand!: string | undefined;
+    sizE_OR_AREA!: string | undefined;
+    color!: string | undefined;
+    yeaR_OF_MANUFACTURE!: string | undefined;
+    licensE_PLATE_NUMBER!: string | undefined;
+    originaL_PRICE!: string | undefined;
+    taX_IN_PERCENT!: number;
+    taX_VALUE!: number;
+    shoW_NO_TAX_TOTAL_PRICE!: boolean;
+    shoW_LABEL_NAME!: boolean;
+    notes!: string | undefined;
+    attacheD_IMAGE!: REA_FILE_ENTITY;
+    additionaL_FEES!: REA_ADDITIONAL_FEE_ENTITY[] | undefined;
+    deleteD_ADDITIONAL_FEE_ID_LIST!: number[] | undefined;
+    creatE_DT!: moment.Moment | undefined;
+
+    constructor(data?: IREA_PROPERTY_INFORMATION_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.propertY_WAREHOUSE_ID = data["propertY_WAREHOUSE_ID"];
+            this.propertY_TYPE_ID = data["propertY_TYPE_ID"];
+            this.propertY_TYPE_NAME = data["propertY_TYPE_NAME"];
+            this.propertY_FIRST_LEVEL_GROUP_ID = data["propertY_FIRST_LEVEL_GROUP_ID"];
+            this.propertY_FIRST_LEVEL_NAME = data["propertY_FIRST_LEVEL_NAME"];
+            this.propertY_SECOND_LEVEL_GROUP_ID = data["propertY_SECOND_LEVEL_GROUP_ID"];
+            this.propertY_SECOND_LEVEL_NAME = data["propertY_SECOND_LEVEL_NAME"];
+            this.supplieR_ID = data["supplieR_ID"];
+            this.managemenT_COMPANY_ID = data["managemenT_COMPANY_ID"];
+            this.managemenT_COMPANY_NAME = data["managemenT_COMPANY_NAME"];
+            this.khO_ID = data["khO_ID"];
+            this.depreciatioN_TYPE = data["depreciatioN_TYPE"];
+            this.propertY_NAME = data["propertY_NAME"];
+            this.seriaL_NUMBER = data["seriaL_NUMBER"];
+            this.propertY_DESCRIPTION = data["propertY_DESCRIPTION"];
+            this.iS_BATCH = data["iS_BATCH"];
+            this.numbeR_OF_ITEMS = data["numbeR_OF_ITEMS"];
+            this.propertY_LABEL_NAME = data["propertY_LABEL_NAME"];
+            this.brand = data["brand"];
+            this.sizE_OR_AREA = data["sizE_OR_AREA"];
+            this.color = data["color"];
+            this.yeaR_OF_MANUFACTURE = data["yeaR_OF_MANUFACTURE"];
+            this.licensE_PLATE_NUMBER = data["licensE_PLATE_NUMBER"];
+            this.originaL_PRICE = data["originaL_PRICE"];
+            this.taX_IN_PERCENT = data["taX_IN_PERCENT"];
+            this.taX_VALUE = data["taX_VALUE"];
+            this.shoW_NO_TAX_TOTAL_PRICE = data["shoW_NO_TAX_TOTAL_PRICE"];
+            this.shoW_LABEL_NAME = data["shoW_LABEL_NAME"];
+            this.notes = data["notes"];
+            this.attacheD_IMAGE = data["attacheD_IMAGE"] ? REA_FILE_ENTITY.fromJS(data["attacheD_IMAGE"]) : <any>undefined;
+            if (data["additionaL_FEES"] && data["additionaL_FEES"].constructor === Array) {
+                this.additionaL_FEES = [] as any;
+                for (let item of data["additionaL_FEES"])
+                    this.additionaL_FEES!.push(REA_ADDITIONAL_FEE_ENTITY.fromJS(item));
+            }
+            if (data["deleteD_ADDITIONAL_FEE_ID_LIST"] && data["deleteD_ADDITIONAL_FEE_ID_LIST"].constructor === Array) {
+                this.deleteD_ADDITIONAL_FEE_ID_LIST = [] as any;
+                for (let item of data["deleteD_ADDITIONAL_FEE_ID_LIST"])
+                    this.deleteD_ADDITIONAL_FEE_ID_LIST!.push(item);
+            }
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): REA_PROPERTY_INFORMATION_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_PROPERTY_INFORMATION_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["propertY_WAREHOUSE_ID"] = this.propertY_WAREHOUSE_ID;
+        data["propertY_TYPE_ID"] = this.propertY_TYPE_ID;
+        data["propertY_TYPE_NAME"] = this.propertY_TYPE_NAME;
+        data["propertY_FIRST_LEVEL_GROUP_ID"] = this.propertY_FIRST_LEVEL_GROUP_ID;
+        data["propertY_FIRST_LEVEL_NAME"] = this.propertY_FIRST_LEVEL_NAME;
+        data["propertY_SECOND_LEVEL_GROUP_ID"] = this.propertY_SECOND_LEVEL_GROUP_ID;
+        data["propertY_SECOND_LEVEL_NAME"] = this.propertY_SECOND_LEVEL_NAME;
+        data["supplieR_ID"] = this.supplieR_ID;
+        data["managemenT_COMPANY_ID"] = this.managemenT_COMPANY_ID;
+        data["managemenT_COMPANY_NAME"] = this.managemenT_COMPANY_NAME;
+        data["khO_ID"] = this.khO_ID;
+        data["depreciatioN_TYPE"] = this.depreciatioN_TYPE;
+        data["propertY_NAME"] = this.propertY_NAME;
+        data["seriaL_NUMBER"] = this.seriaL_NUMBER;
+        data["propertY_DESCRIPTION"] = this.propertY_DESCRIPTION;
+        data["iS_BATCH"] = this.iS_BATCH;
+        data["numbeR_OF_ITEMS"] = this.numbeR_OF_ITEMS;
+        data["propertY_LABEL_NAME"] = this.propertY_LABEL_NAME;
+        data["brand"] = this.brand;
+        data["sizE_OR_AREA"] = this.sizE_OR_AREA;
+        data["color"] = this.color;
+        data["yeaR_OF_MANUFACTURE"] = this.yeaR_OF_MANUFACTURE;
+        data["licensE_PLATE_NUMBER"] = this.licensE_PLATE_NUMBER;
+        data["originaL_PRICE"] = this.originaL_PRICE;
+        data["taX_IN_PERCENT"] = this.taX_IN_PERCENT;
+        data["taX_VALUE"] = this.taX_VALUE;
+        data["shoW_NO_TAX_TOTAL_PRICE"] = this.shoW_NO_TAX_TOTAL_PRICE;
+        data["shoW_LABEL_NAME"] = this.shoW_LABEL_NAME;
+        data["notes"] = this.notes;
+        data["attacheD_IMAGE"] = this.attacheD_IMAGE ? this.attacheD_IMAGE.toJSON() : <any>undefined;
+        if (this.additionaL_FEES && this.additionaL_FEES.constructor === Array) {
+            data["additionaL_FEES"] = [];
+            for (let item of this.additionaL_FEES)
+                data["additionaL_FEES"].push(item.toJSON());
+        }
+        if (this.deleteD_ADDITIONAL_FEE_ID_LIST && this.deleteD_ADDITIONAL_FEE_ID_LIST.constructor === Array) {
+            data["deleteD_ADDITIONAL_FEE_ID_LIST"] = [];
+            for (let item of this.deleteD_ADDITIONAL_FEE_ID_LIST)
+                data["deleteD_ADDITIONAL_FEE_ID_LIST"].push(item);
+        }
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IREA_PROPERTY_INFORMATION_ENTITY {
+    id: string | undefined;
+    propertY_WAREHOUSE_ID: string | undefined;
+    propertY_TYPE_ID: string | undefined;
+    propertY_TYPE_NAME: string | undefined;
+    propertY_FIRST_LEVEL_GROUP_ID: string | undefined;
+    propertY_FIRST_LEVEL_NAME: string | undefined;
+    propertY_SECOND_LEVEL_GROUP_ID: string | undefined;
+    propertY_SECOND_LEVEL_NAME: string | undefined;
+    supplieR_ID: string | undefined;
+    managemenT_COMPANY_ID: string | undefined;
+    managemenT_COMPANY_NAME: string | undefined;
+    khO_ID: string | undefined;
+    depreciatioN_TYPE: string | undefined;
     propertY_NAME: string | undefined;
-    propertY_LEVEL_1: string | undefined;
-    propertY_LEVEL_2: string | undefined;
+    seriaL_NUMBER: string | undefined;
     propertY_DESCRIPTION: string | undefined;
-    propertY_ORIGIN_PRICE: string | undefined;
-    propertY_COMPANY_NAME: string | undefined;
-    propertY_DEPRECIATION_STATUS: string | undefined;
+    iS_BATCH: boolean;
+    numbeR_OF_ITEMS: string | undefined;
+    propertY_LABEL_NAME: string | undefined;
+    brand: string | undefined;
+    sizE_OR_AREA: string | undefined;
+    color: string | undefined;
+    yeaR_OF_MANUFACTURE: string | undefined;
+    licensE_PLATE_NUMBER: string | undefined;
+    originaL_PRICE: string | undefined;
+    taX_IN_PERCENT: number;
+    taX_VALUE: number;
+    shoW_NO_TAX_TOTAL_PRICE: boolean;
+    shoW_LABEL_NAME: boolean;
+    notes: string | undefined;
+    attacheD_IMAGE: REA_FILE_ENTITY;
+    additionaL_FEES: REA_ADDITIONAL_FEE_ENTITY[] | undefined;
+    deleteD_ADDITIONAL_FEE_ID_LIST: number[] | undefined;
+    creatE_DT: moment.Moment | undefined;
+}
+
+export class REA_PROPERTY_LOCATION_ENTITY implements IREA_PROPERTY_LOCATION_ENTITY {
+    propertY_LOCATION_CODE!: string | undefined;
+    provincE_ID!: string | undefined;
+    propertY_LOCATION_NAME!: string | undefined;
+    notes!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    makeR_ID!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    checkeR_ID!: string | undefined;
+    approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_PROPERTY_LOCATION_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.propertY_LOCATION_CODE = data["propertY_LOCATION_CODE"];
+            this.provincE_ID = data["provincE_ID"];
+            this.propertY_LOCATION_NAME = data["propertY_LOCATION_NAME"];
+            this.notes = data["notes"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.makeR_ID = data["makeR_ID"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.checkeR_ID = data["checkeR_ID"];
+            this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_PROPERTY_LOCATION_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_PROPERTY_LOCATION_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["propertY_LOCATION_CODE"] = this.propertY_LOCATION_CODE;
+        data["provincE_ID"] = this.provincE_ID;
+        data["propertY_LOCATION_NAME"] = this.propertY_LOCATION_NAME;
+        data["notes"] = this.notes;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["makeR_ID"] = this.makeR_ID;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["checkeR_ID"] = this.checkeR_ID;
+        data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_PROPERTY_LOCATION_ENTITY {
+    propertY_LOCATION_CODE: string | undefined;
+    provincE_ID: string | undefined;
+    propertY_LOCATION_NAME: string | undefined;
+    notes: string | undefined;
+    recorD_STATUS: string | undefined;
+    makeR_ID: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    checkeR_ID: string | undefined;
+    approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class REA_PROPERTY_TYPE_ENTITY implements IREA_PROPERTY_TYPE_ENTITY {
+    propertY_TYPE_CODE!: string | undefined;
+    propertY_TYPE_NAME!: string | undefined;
+    propertY_TYPE_SHORT_NAME!: string | undefined;
+    notes!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    makeR_ID!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    checkeR_ID!: string | undefined;
+    approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_PROPERTY_TYPE_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.propertY_TYPE_CODE = data["propertY_TYPE_CODE"];
+            this.propertY_TYPE_NAME = data["propertY_TYPE_NAME"];
+            this.propertY_TYPE_SHORT_NAME = data["propertY_TYPE_SHORT_NAME"];
+            this.notes = data["notes"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.makeR_ID = data["makeR_ID"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.checkeR_ID = data["checkeR_ID"];
+            this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_PROPERTY_TYPE_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_PROPERTY_TYPE_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["propertY_TYPE_CODE"] = this.propertY_TYPE_CODE;
+        data["propertY_TYPE_NAME"] = this.propertY_TYPE_NAME;
+        data["propertY_TYPE_SHORT_NAME"] = this.propertY_TYPE_SHORT_NAME;
+        data["notes"] = this.notes;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["makeR_ID"] = this.makeR_ID;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["checkeR_ID"] = this.checkeR_ID;
+        data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_PROPERTY_TYPE_ENTITY {
+    propertY_TYPE_CODE: string | undefined;
+    propertY_TYPE_NAME: string | undefined;
+    propertY_TYPE_SHORT_NAME: string | undefined;
+    notes: string | undefined;
+    recorD_STATUS: string | undefined;
+    makeR_ID: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    checkeR_ID: string | undefined;
+    approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class REA_PROPOSE_PURCHASE_ENTITY implements IREA_PROPOSE_PURCHASE_ENTITY {
+    id!: number;
+    tickeT_ID!: number;
+    propertY_NAME!: string | undefined;
+    propertY_DESCRIPTION!: string | undefined;
+    propertY_PRICE!: number;
+    propertY_NUMBER_OF_ITEMS!: number;
+    propertY_IS_PROVIDED_FIRST_TIME!: boolean;
+    notes!: string | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
+
+    constructor(data?: IREA_PROPOSE_PURCHASE_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.tickeT_ID = data["tickeT_ID"];
+            this.propertY_NAME = data["propertY_NAME"];
+            this.propertY_DESCRIPTION = data["propertY_DESCRIPTION"];
+            this.propertY_PRICE = data["propertY_PRICE"];
+            this.propertY_NUMBER_OF_ITEMS = data["propertY_NUMBER_OF_ITEMS"];
+            this.propertY_IS_PROVIDED_FIRST_TIME = data["propertY_IS_PROVIDED_FIRST_TIME"];
+            this.notes = data["notes"];
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
+        }
+    }
+
+    static fromJS(data: any): REA_PROPOSE_PURCHASE_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_PROPOSE_PURCHASE_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["tickeT_ID"] = this.tickeT_ID;
+        data["propertY_NAME"] = this.propertY_NAME;
+        data["propertY_DESCRIPTION"] = this.propertY_DESCRIPTION;
+        data["propertY_PRICE"] = this.propertY_PRICE;
+        data["propertY_NUMBER_OF_ITEMS"] = this.propertY_NUMBER_OF_ITEMS;
+        data["propertY_IS_PROVIDED_FIRST_TIME"] = this.propertY_IS_PROVIDED_FIRST_TIME;
+        data["notes"] = this.notes;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
+        return data; 
+    }
+}
+
+export interface IREA_PROPOSE_PURCHASE_ENTITY {
+    id: number;
+    tickeT_ID: number;
+    propertY_NAME: string | undefined;
+    propertY_DESCRIPTION: string | undefined;
+    propertY_PRICE: number;
+    propertY_NUMBER_OF_ITEMS: number;
+    propertY_IS_PROVIDED_FIRST_TIME: boolean;
+    notes: string | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
 }
 
 export class REA_SHAREHOLDER_ENTITY implements IREA_SHAREHOLDER_ENTITY {
-    shareholdeR_ID!: string | undefined;
-    company!: CM_COMPANY_ENTITY;
+    id!: string | undefined;
+    subsidiarY_COMPANY_ID!: string | undefined;
+    subsidiarY_COMPANY_TYPE_NAME!: string | undefined;
+    subsidiarY_COMPANY_PAR_VALUE_PER_SHARE!: number;
+    subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL!: number;
+    subsidiarY_COMPANY_TOTAL_SHARE_VALUE!: number;
     shareholdeR_TYPE!: string | undefined;
     shareholdeR_REF_ID!: string | undefined;
     shareholdeR_NAME!: string | undefined;
-    shareholdeR_COUNT!: number;
+    shareholdeR_SHARE!: number;
+    shareholdeR_SHARE_VALUE!: number;
     shareholdeR_VALUE!: number;
+    shareholdeR_SHARE_RATIO!: number;
+    shareholdeR_VALUE_RATIO!: number;
+    shareholdeR_SHARE_IN_MORTGAGE!: number;
+    shareholdeR_FREE_SHARE!: number;
+    shareholdeR_VALUE_IN_MORTGAGE!: number;
+    shareholdeR_FREE_VALUE!: number;
     notes!: string | undefined;
     recorD_STATUS!: string | undefined;
     makeR_ID!: string | undefined;
@@ -49668,7 +55975,12 @@ export class REA_SHAREHOLDER_ENTITY implements IREA_SHAREHOLDER_ENTITY {
     recorD_STATUS_NAME!: string | undefined;
     autH_STATUS_NAME!: string | undefined;
     shareholdeR_TYPE_NAME!: string | undefined;
-    mortgagE_LIST!: REA_MORTGAGE_SHARE_ENTITY[] | undefined;
+    mortgagE_LIST!: REA_MORTGAGE_OVERALL[] | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
 
     constructor(data?: IREA_SHAREHOLDER_ENTITY) {
         if (data) {
@@ -49681,13 +55993,24 @@ export class REA_SHAREHOLDER_ENTITY implements IREA_SHAREHOLDER_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.shareholdeR_ID = data["shareholdeR_ID"];
-            this.company = data["company"] ? CM_COMPANY_ENTITY.fromJS(data["company"]) : <any>undefined;
+            this.id = data["id"];
+            this.subsidiarY_COMPANY_ID = data["subsidiarY_COMPANY_ID"];
+            this.subsidiarY_COMPANY_TYPE_NAME = data["subsidiarY_COMPANY_TYPE_NAME"];
+            this.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE = data["subsidiarY_COMPANY_PAR_VALUE_PER_SHARE"];
+            this.subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL = data["subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL"];
+            this.subsidiarY_COMPANY_TOTAL_SHARE_VALUE = data["subsidiarY_COMPANY_TOTAL_SHARE_VALUE"];
             this.shareholdeR_TYPE = data["shareholdeR_TYPE"];
             this.shareholdeR_REF_ID = data["shareholdeR_REF_ID"];
             this.shareholdeR_NAME = data["shareholdeR_NAME"];
-            this.shareholdeR_COUNT = data["shareholdeR_COUNT"];
+            this.shareholdeR_SHARE = data["shareholdeR_SHARE"];
+            this.shareholdeR_SHARE_VALUE = data["shareholdeR_SHARE_VALUE"];
             this.shareholdeR_VALUE = data["shareholdeR_VALUE"];
+            this.shareholdeR_SHARE_RATIO = data["shareholdeR_SHARE_RATIO"];
+            this.shareholdeR_VALUE_RATIO = data["shareholdeR_VALUE_RATIO"];
+            this.shareholdeR_SHARE_IN_MORTGAGE = data["shareholdeR_SHARE_IN_MORTGAGE"];
+            this.shareholdeR_FREE_SHARE = data["shareholdeR_FREE_SHARE"];
+            this.shareholdeR_VALUE_IN_MORTGAGE = data["shareholdeR_VALUE_IN_MORTGAGE"];
+            this.shareholdeR_FREE_VALUE = data["shareholdeR_FREE_VALUE"];
             this.notes = data["notes"];
             this.recorD_STATUS = data["recorD_STATUS"];
             this.makeR_ID = data["makeR_ID"];
@@ -49701,8 +56024,13 @@ export class REA_SHAREHOLDER_ENTITY implements IREA_SHAREHOLDER_ENTITY {
             if (data["mortgagE_LIST"] && data["mortgagE_LIST"].constructor === Array) {
                 this.mortgagE_LIST = [] as any;
                 for (let item of data["mortgagE_LIST"])
-                    this.mortgagE_LIST!.push(REA_MORTGAGE_SHARE_ENTITY.fromJS(item));
+                    this.mortgagE_LIST!.push(REA_MORTGAGE_OVERALL.fromJS(item));
             }
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
         }
     }
 
@@ -49715,13 +56043,24 @@ export class REA_SHAREHOLDER_ENTITY implements IREA_SHAREHOLDER_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["shareholdeR_ID"] = this.shareholdeR_ID;
-        data["company"] = this.company ? this.company.toJSON() : <any>undefined;
+        data["id"] = this.id;
+        data["subsidiarY_COMPANY_ID"] = this.subsidiarY_COMPANY_ID;
+        data["subsidiarY_COMPANY_TYPE_NAME"] = this.subsidiarY_COMPANY_TYPE_NAME;
+        data["subsidiarY_COMPANY_PAR_VALUE_PER_SHARE"] = this.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE;
+        data["subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL"] = this.subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL;
+        data["subsidiarY_COMPANY_TOTAL_SHARE_VALUE"] = this.subsidiarY_COMPANY_TOTAL_SHARE_VALUE;
         data["shareholdeR_TYPE"] = this.shareholdeR_TYPE;
         data["shareholdeR_REF_ID"] = this.shareholdeR_REF_ID;
         data["shareholdeR_NAME"] = this.shareholdeR_NAME;
-        data["shareholdeR_COUNT"] = this.shareholdeR_COUNT;
+        data["shareholdeR_SHARE"] = this.shareholdeR_SHARE;
+        data["shareholdeR_SHARE_VALUE"] = this.shareholdeR_SHARE_VALUE;
         data["shareholdeR_VALUE"] = this.shareholdeR_VALUE;
+        data["shareholdeR_SHARE_RATIO"] = this.shareholdeR_SHARE_RATIO;
+        data["shareholdeR_VALUE_RATIO"] = this.shareholdeR_VALUE_RATIO;
+        data["shareholdeR_SHARE_IN_MORTGAGE"] = this.shareholdeR_SHARE_IN_MORTGAGE;
+        data["shareholdeR_FREE_SHARE"] = this.shareholdeR_FREE_SHARE;
+        data["shareholdeR_VALUE_IN_MORTGAGE"] = this.shareholdeR_VALUE_IN_MORTGAGE;
+        data["shareholdeR_FREE_VALUE"] = this.shareholdeR_FREE_VALUE;
         data["notes"] = this.notes;
         data["recorD_STATUS"] = this.recorD_STATUS;
         data["makeR_ID"] = this.makeR_ID;
@@ -49737,18 +56076,34 @@ export class REA_SHAREHOLDER_ENTITY implements IREA_SHAREHOLDER_ENTITY {
             for (let item of this.mortgagE_LIST)
                 data["mortgagE_LIST"].push(item.toJSON());
         }
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
         return data; 
     }
 }
 
 export interface IREA_SHAREHOLDER_ENTITY {
-    shareholdeR_ID: string | undefined;
-    company: CM_COMPANY_ENTITY;
+    id: string | undefined;
+    subsidiarY_COMPANY_ID: string | undefined;
+    subsidiarY_COMPANY_TYPE_NAME: string | undefined;
+    subsidiarY_COMPANY_PAR_VALUE_PER_SHARE: number;
+    subsidiarY_COMPANY_TOTAL_CONTRIBUTED_CAPITAL: number;
+    subsidiarY_COMPANY_TOTAL_SHARE_VALUE: number;
     shareholdeR_TYPE: string | undefined;
     shareholdeR_REF_ID: string | undefined;
     shareholdeR_NAME: string | undefined;
-    shareholdeR_COUNT: number;
+    shareholdeR_SHARE: number;
+    shareholdeR_SHARE_VALUE: number;
     shareholdeR_VALUE: number;
+    shareholdeR_SHARE_RATIO: number;
+    shareholdeR_VALUE_RATIO: number;
+    shareholdeR_SHARE_IN_MORTGAGE: number;
+    shareholdeR_FREE_SHARE: number;
+    shareholdeR_VALUE_IN_MORTGAGE: number;
+    shareholdeR_FREE_VALUE: number;
     notes: string | undefined;
     recorD_STATUS: string | undefined;
     makeR_ID: string | undefined;
@@ -49759,13 +56114,59 @@ export interface IREA_SHAREHOLDER_ENTITY {
     recorD_STATUS_NAME: string | undefined;
     autH_STATUS_NAME: string | undefined;
     shareholdeR_TYPE_NAME: string | undefined;
-    mortgagE_LIST: REA_MORTGAGE_SHARE_ENTITY[] | undefined;
+    mortgagE_LIST: REA_MORTGAGE_OVERALL[] | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
+}
+
+export class REA_SHAREHOLDER_SEARCH_RESULT implements IREA_SHAREHOLDER_SEARCH_RESULT {
+    company!: CM_SUBSIDIARY_COMPANY_ENTITY;
+    shareholdeR_LIST!: PagedResultDtoOfREA_SHAREHOLDER_ENTITY;
+
+    constructor(data?: IREA_SHAREHOLDER_SEARCH_RESULT) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.company = data["company"] ? CM_SUBSIDIARY_COMPANY_ENTITY.fromJS(data["company"]) : <any>undefined;
+            this.shareholdeR_LIST = data["shareholdeR_LIST"] ? PagedResultDtoOfREA_SHAREHOLDER_ENTITY.fromJS(data["shareholdeR_LIST"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): REA_SHAREHOLDER_SEARCH_RESULT {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_SHAREHOLDER_SEARCH_RESULT();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["company"] = this.company ? this.company.toJSON() : <any>undefined;
+        data["shareholdeR_LIST"] = this.shareholdeR_LIST ? this.shareholdeR_LIST.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IREA_SHAREHOLDER_SEARCH_RESULT {
+    company: CM_SUBSIDIARY_COMPANY_ENTITY;
+    shareholdeR_LIST: PagedResultDtoOfREA_SHAREHOLDER_ENTITY;
 }
 
 export class REA_SODO_ADVANCE_PAYMENT_ENTITY implements IREA_SODO_ADVANCE_PAYMENT_ENTITY {
-    sodO_ADVANCE_PAYMENT_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     advancE_RECIPIENT_ID!: string | undefined;
+    advancE_RECIPIENT_NAME!: string | undefined;
     sodO_ADVANCE_PAYMENT_MONEY!: number;
     sodO_ADVANCE_PAYMENT_DT!: moment.Moment | undefined;
     governmenT_COMPENSATE_MONEY!: number;
@@ -49786,9 +56187,10 @@ export class REA_SODO_ADVANCE_PAYMENT_ENTITY implements IREA_SODO_ADVANCE_PAYMEN
 
     init(data?: any) {
         if (data) {
-            this.sodO_ADVANCE_PAYMENT_ID = data["sodO_ADVANCE_PAYMENT_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.advancE_RECIPIENT_ID = data["advancE_RECIPIENT_ID"];
+            this.advancE_RECIPIENT_NAME = data["advancE_RECIPIENT_NAME"];
             this.sodO_ADVANCE_PAYMENT_MONEY = data["sodO_ADVANCE_PAYMENT_MONEY"];
             this.sodO_ADVANCE_PAYMENT_DT = data["sodO_ADVANCE_PAYMENT_DT"] ? moment(data["sodO_ADVANCE_PAYMENT_DT"].toString()) : <any>undefined;
             this.governmenT_COMPENSATE_MONEY = data["governmenT_COMPENSATE_MONEY"];
@@ -49809,9 +56211,10 @@ export class REA_SODO_ADVANCE_PAYMENT_ENTITY implements IREA_SODO_ADVANCE_PAYMEN
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_ADVANCE_PAYMENT_ID"] = this.sodO_ADVANCE_PAYMENT_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["advancE_RECIPIENT_ID"] = this.advancE_RECIPIENT_ID;
+        data["advancE_RECIPIENT_NAME"] = this.advancE_RECIPIENT_NAME;
         data["sodO_ADVANCE_PAYMENT_MONEY"] = this.sodO_ADVANCE_PAYMENT_MONEY;
         data["sodO_ADVANCE_PAYMENT_DT"] = this.sodO_ADVANCE_PAYMENT_DT ? this.sodO_ADVANCE_PAYMENT_DT.toISOString() : <any>undefined;
         data["governmenT_COMPENSATE_MONEY"] = this.governmenT_COMPENSATE_MONEY;
@@ -49825,9 +56228,10 @@ export class REA_SODO_ADVANCE_PAYMENT_ENTITY implements IREA_SODO_ADVANCE_PAYMEN
 }
 
 export interface IREA_SODO_ADVANCE_PAYMENT_ENTITY {
-    sodO_ADVANCE_PAYMENT_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     advancE_RECIPIENT_ID: string | undefined;
+    advancE_RECIPIENT_NAME: string | undefined;
     sodO_ADVANCE_PAYMENT_MONEY: number;
     sodO_ADVANCE_PAYMENT_DT: moment.Moment | undefined;
     governmenT_COMPENSATE_MONEY: number;
@@ -49839,7 +56243,7 @@ export interface IREA_SODO_ADVANCE_PAYMENT_ENTITY {
 }
 
 export class REA_SODO_BRIEF_1_ENTITY implements IREA_SODO_BRIEF_1_ENTITY {
-    sodO_BRIEF_1_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     sodO_BRIEF_1_HDCNQSDD!: boolean;
     sodO_BRIEF_1_GCQDCNST!: boolean;
@@ -49860,7 +56264,7 @@ export class REA_SODO_BRIEF_1_ENTITY implements IREA_SODO_BRIEF_1_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_BRIEF_1_ID = data["sodO_BRIEF_1_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_BRIEF_1_HDCNQSDD = data["sodO_BRIEF_1_HDCNQSDD"];
             this.sodO_BRIEF_1_GCQDCNST = data["sodO_BRIEF_1_GCQDCNST"];
@@ -49881,7 +56285,7 @@ export class REA_SODO_BRIEF_1_ENTITY implements IREA_SODO_BRIEF_1_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_BRIEF_1_ID"] = this.sodO_BRIEF_1_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_BRIEF_1_HDCNQSDD"] = this.sodO_BRIEF_1_HDCNQSDD;
         data["sodO_BRIEF_1_GCQDCNST"] = this.sodO_BRIEF_1_GCQDCNST;
@@ -49895,7 +56299,7 @@ export class REA_SODO_BRIEF_1_ENTITY implements IREA_SODO_BRIEF_1_ENTITY {
 }
 
 export interface IREA_SODO_BRIEF_1_ENTITY {
-    sodO_BRIEF_1_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     sodO_BRIEF_1_HDCNQSDD: boolean;
     sodO_BRIEF_1_GCQDCNST: boolean;
@@ -49907,7 +56311,7 @@ export interface IREA_SODO_BRIEF_1_ENTITY {
 }
 
 export class REA_SODO_BRIEF_2_ENTITY implements IREA_SODO_BRIEF_2_ENTITY {
-    sodO_BRIEF_2_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     sodO_BRIEF_2_HDUQCN!: boolean;
     sodO_BRIEF_2_HDCNVT!: boolean;
@@ -49928,7 +56332,7 @@ export class REA_SODO_BRIEF_2_ENTITY implements IREA_SODO_BRIEF_2_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_BRIEF_2_ID = data["sodO_BRIEF_2_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_BRIEF_2_HDUQCN = data["sodO_BRIEF_2_HDUQCN"];
             this.sodO_BRIEF_2_HDCNVT = data["sodO_BRIEF_2_HDCNVT"];
@@ -49949,7 +56353,7 @@ export class REA_SODO_BRIEF_2_ENTITY implements IREA_SODO_BRIEF_2_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_BRIEF_2_ID"] = this.sodO_BRIEF_2_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_BRIEF_2_HDUQCN"] = this.sodO_BRIEF_2_HDUQCN;
         data["sodO_BRIEF_2_HDCNVT"] = this.sodO_BRIEF_2_HDCNVT;
@@ -49963,7 +56367,7 @@ export class REA_SODO_BRIEF_2_ENTITY implements IREA_SODO_BRIEF_2_ENTITY {
 }
 
 export interface IREA_SODO_BRIEF_2_ENTITY {
-    sodO_BRIEF_2_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     sodO_BRIEF_2_HDUQCN: boolean;
     sodO_BRIEF_2_HDCNVT: boolean;
@@ -49975,7 +56379,7 @@ export interface IREA_SODO_BRIEF_2_ENTITY {
 }
 
 export class REA_SODO_BRIEF_3_ENTITY implements IREA_SODO_BRIEF_3_ENTITY {
-    sodO_BRIEF_3_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     sodO_BRIEF_3_GUQ!: boolean;
     sodO_BRIEF_3_BBBGD!: boolean;
@@ -49996,7 +56400,7 @@ export class REA_SODO_BRIEF_3_ENTITY implements IREA_SODO_BRIEF_3_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_BRIEF_3_ID = data["sodO_BRIEF_3_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_BRIEF_3_GUQ = data["sodO_BRIEF_3_GUQ"];
             this.sodO_BRIEF_3_BBBGD = data["sodO_BRIEF_3_BBBGD"];
@@ -50017,7 +56421,7 @@ export class REA_SODO_BRIEF_3_ENTITY implements IREA_SODO_BRIEF_3_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_BRIEF_3_ID"] = this.sodO_BRIEF_3_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_BRIEF_3_GUQ"] = this.sodO_BRIEF_3_GUQ;
         data["sodO_BRIEF_3_BBBGD"] = this.sodO_BRIEF_3_BBBGD;
@@ -50031,7 +56435,7 @@ export class REA_SODO_BRIEF_3_ENTITY implements IREA_SODO_BRIEF_3_ENTITY {
 }
 
 export interface IREA_SODO_BRIEF_3_ENTITY {
-    sodO_BRIEF_3_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     sodO_BRIEF_3_GUQ: boolean;
     sodO_BRIEF_3_BBBGD: boolean;
@@ -50043,7 +56447,7 @@ export interface IREA_SODO_BRIEF_3_ENTITY {
 }
 
 export class REA_SODO_BRIEF_4_ENTITY implements IREA_SODO_BRIEF_4_ENTITY {
-    sodO_BRIEF_4_ID!: string | undefined;
+    id!: string | undefined;
     sodO_ID!: string | undefined;
     sodO_BRIEF_4_VB!: boolean;
     sodO_BRIEF_4_BBGND!: boolean;
@@ -50064,7 +56468,7 @@ export class REA_SODO_BRIEF_4_ENTITY implements IREA_SODO_BRIEF_4_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_BRIEF_4_ID = data["sodO_BRIEF_4_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_BRIEF_4_VB = data["sodO_BRIEF_4_VB"];
             this.sodO_BRIEF_4_BBGND = data["sodO_BRIEF_4_BBGND"];
@@ -50085,7 +56489,7 @@ export class REA_SODO_BRIEF_4_ENTITY implements IREA_SODO_BRIEF_4_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_BRIEF_4_ID"] = this.sodO_BRIEF_4_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_BRIEF_4_VB"] = this.sodO_BRIEF_4_VB;
         data["sodO_BRIEF_4_BBGND"] = this.sodO_BRIEF_4_BBGND;
@@ -50099,7 +56503,7 @@ export class REA_SODO_BRIEF_4_ENTITY implements IREA_SODO_BRIEF_4_ENTITY {
 }
 
 export interface IREA_SODO_BRIEF_4_ENTITY {
-    sodO_BRIEF_4_ID: string | undefined;
+    id: string | undefined;
     sodO_ID: string | undefined;
     sodO_BRIEF_4_VB: boolean;
     sodO_BRIEF_4_BBGND: boolean;
@@ -50111,7 +56515,7 @@ export interface IREA_SODO_BRIEF_4_ENTITY {
 }
 
 export class REA_SODO_BRIEF_5_ENTITY implements IREA_SODO_BRIEF_5_ENTITY {
-    sodO_BRIEF_5_ID!: string | undefined;
+    id!: string | undefined;
     sodO_ID!: string | undefined;
     sodO_BRIEF_5_TTDTH!: boolean;
     sodO_BRIEF_5_DC!: boolean;
@@ -50133,7 +56537,7 @@ export class REA_SODO_BRIEF_5_ENTITY implements IREA_SODO_BRIEF_5_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_BRIEF_5_ID = data["sodO_BRIEF_5_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_BRIEF_5_TTDTH = data["sodO_BRIEF_5_TTDTH"];
             this.sodO_BRIEF_5_DC = data["sodO_BRIEF_5_DC"];
@@ -50155,7 +56559,7 @@ export class REA_SODO_BRIEF_5_ENTITY implements IREA_SODO_BRIEF_5_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_BRIEF_5_ID"] = this.sodO_BRIEF_5_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_BRIEF_5_TTDTH"] = this.sodO_BRIEF_5_TTDTH;
         data["sodO_BRIEF_5_DC"] = this.sodO_BRIEF_5_DC;
@@ -50170,7 +56574,7 @@ export class REA_SODO_BRIEF_5_ENTITY implements IREA_SODO_BRIEF_5_ENTITY {
 }
 
 export interface IREA_SODO_BRIEF_5_ENTITY {
-    sodO_BRIEF_5_ID: string | undefined;
+    id: string | undefined;
     sodO_ID: string | undefined;
     sodO_BRIEF_5_TTDTH: boolean;
     sodO_BRIEF_5_DC: boolean;
@@ -50183,7 +56587,7 @@ export interface IREA_SODO_BRIEF_5_ENTITY {
 }
 
 export class REA_SODO_CO_OWNER_ENTITY implements IREA_SODO_CO_OWNER_ENTITY {
-    sodO_CO_OWNER_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     sodO_CO_OWNER_NAME!: string | undefined;
     notes!: string | undefined;
@@ -50201,7 +56605,7 @@ export class REA_SODO_CO_OWNER_ENTITY implements IREA_SODO_CO_OWNER_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_CO_OWNER_ID = data["sodO_CO_OWNER_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_CO_OWNER_NAME = data["sodO_CO_OWNER_NAME"];
             this.notes = data["notes"];
@@ -50219,7 +56623,7 @@ export class REA_SODO_CO_OWNER_ENTITY implements IREA_SODO_CO_OWNER_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_CO_OWNER_ID"] = this.sodO_CO_OWNER_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_CO_OWNER_NAME"] = this.sodO_CO_OWNER_NAME;
         data["notes"] = this.notes;
@@ -50230,7 +56634,7 @@ export class REA_SODO_CO_OWNER_ENTITY implements IREA_SODO_CO_OWNER_ENTITY {
 }
 
 export interface IREA_SODO_CO_OWNER_ENTITY {
-    sodO_CO_OWNER_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     sodO_CO_OWNER_NAME: string | undefined;
     notes: string | undefined;
@@ -50239,11 +56643,13 @@ export interface IREA_SODO_CO_OWNER_ENTITY {
 }
 
 export class REA_SODO_COMPENSATION_ENTITY implements IREA_SODO_COMPENSATION_ENTITY {
-    sodO_COMPENSATION_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     olD_SODO_ID!: string | undefined;
-    sodO_LAND_PLOT_ID!: string | undefined;
-    monneY_RECEIVER_ID!: string | undefined;
+    sodO_LAND_PLOT_NO!: string | undefined;
+    sodO_LAND_PLOT_AREA!: number;
+    moneY_RECEIVER_ID!: string | undefined;
+    moneY_RECEIVER_NAME!: string | undefined;
     sodO_COMPENSATION_AREA!: number;
     sodO_COMPENSATION_TRANSFER_MONEY!: number;
     sodO_COMPENSATION_MONEY!: number;
@@ -50263,11 +56669,13 @@ export class REA_SODO_COMPENSATION_ENTITY implements IREA_SODO_COMPENSATION_ENTI
 
     init(data?: any) {
         if (data) {
-            this.sodO_COMPENSATION_ID = data["sodO_COMPENSATION_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.olD_SODO_ID = data["olD_SODO_ID"];
-            this.sodO_LAND_PLOT_ID = data["sodO_LAND_PLOT_ID"];
-            this.monneY_RECEIVER_ID = data["monneY_RECEIVER_ID"];
+            this.sodO_LAND_PLOT_NO = data["sodO_LAND_PLOT_NO"];
+            this.sodO_LAND_PLOT_AREA = data["sodO_LAND_PLOT_AREA"];
+            this.moneY_RECEIVER_ID = data["moneY_RECEIVER_ID"];
+            this.moneY_RECEIVER_NAME = data["moneY_RECEIVER_NAME"];
             this.sodO_COMPENSATION_AREA = data["sodO_COMPENSATION_AREA"];
             this.sodO_COMPENSATION_TRANSFER_MONEY = data["sodO_COMPENSATION_TRANSFER_MONEY"];
             this.sodO_COMPENSATION_MONEY = data["sodO_COMPENSATION_MONEY"];
@@ -50287,11 +56695,13 @@ export class REA_SODO_COMPENSATION_ENTITY implements IREA_SODO_COMPENSATION_ENTI
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_COMPENSATION_ID"] = this.sodO_COMPENSATION_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["olD_SODO_ID"] = this.olD_SODO_ID;
-        data["sodO_LAND_PLOT_ID"] = this.sodO_LAND_PLOT_ID;
-        data["monneY_RECEIVER_ID"] = this.monneY_RECEIVER_ID;
+        data["sodO_LAND_PLOT_NO"] = this.sodO_LAND_PLOT_NO;
+        data["sodO_LAND_PLOT_AREA"] = this.sodO_LAND_PLOT_AREA;
+        data["moneY_RECEIVER_ID"] = this.moneY_RECEIVER_ID;
+        data["moneY_RECEIVER_NAME"] = this.moneY_RECEIVER_NAME;
         data["sodO_COMPENSATION_AREA"] = this.sodO_COMPENSATION_AREA;
         data["sodO_COMPENSATION_TRANSFER_MONEY"] = this.sodO_COMPENSATION_TRANSFER_MONEY;
         data["sodO_COMPENSATION_MONEY"] = this.sodO_COMPENSATION_MONEY;
@@ -50304,11 +56714,13 @@ export class REA_SODO_COMPENSATION_ENTITY implements IREA_SODO_COMPENSATION_ENTI
 }
 
 export interface IREA_SODO_COMPENSATION_ENTITY {
-    sodO_COMPENSATION_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     olD_SODO_ID: string | undefined;
-    sodO_LAND_PLOT_ID: string | undefined;
-    monneY_RECEIVER_ID: string | undefined;
+    sodO_LAND_PLOT_NO: string | undefined;
+    sodO_LAND_PLOT_AREA: number;
+    moneY_RECEIVER_ID: string | undefined;
+    moneY_RECEIVER_NAME: string | undefined;
     sodO_COMPENSATION_AREA: number;
     sodO_COMPENSATION_TRANSFER_MONEY: number;
     sodO_COMPENSATION_MONEY: number;
@@ -50319,9 +56731,10 @@ export interface IREA_SODO_COMPENSATION_ENTITY {
 }
 
 export class REA_SODO_CONTRACT_ENTITY implements IREA_SODO_CONTRACT_ENTITY {
-    sodO_CONTRACT_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     partneR_ID!: string | undefined;
+    partneR_NAME!: string | undefined;
     sodO_CONTRACT_SIGN_DT!: moment.Moment | undefined;
     sodO_CONTRACT_CONTENT!: string | undefined;
     sodO_CONTRACT_VALUE!: number;
@@ -50341,9 +56754,10 @@ export class REA_SODO_CONTRACT_ENTITY implements IREA_SODO_CONTRACT_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_CONTRACT_ID = data["sodO_CONTRACT_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.partneR_ID = data["partneR_ID"];
+            this.partneR_NAME = data["partneR_NAME"];
             this.sodO_CONTRACT_SIGN_DT = data["sodO_CONTRACT_SIGN_DT"] ? moment(data["sodO_CONTRACT_SIGN_DT"].toString()) : <any>undefined;
             this.sodO_CONTRACT_CONTENT = data["sodO_CONTRACT_CONTENT"];
             this.sodO_CONTRACT_VALUE = data["sodO_CONTRACT_VALUE"];
@@ -50363,9 +56777,10 @@ export class REA_SODO_CONTRACT_ENTITY implements IREA_SODO_CONTRACT_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_CONTRACT_ID"] = this.sodO_CONTRACT_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["partneR_ID"] = this.partneR_ID;
+        data["partneR_NAME"] = this.partneR_NAME;
         data["sodO_CONTRACT_SIGN_DT"] = this.sodO_CONTRACT_SIGN_DT ? this.sodO_CONTRACT_SIGN_DT.toISOString() : <any>undefined;
         data["sodO_CONTRACT_CONTENT"] = this.sodO_CONTRACT_CONTENT;
         data["sodO_CONTRACT_VALUE"] = this.sodO_CONTRACT_VALUE;
@@ -50378,9 +56793,10 @@ export class REA_SODO_CONTRACT_ENTITY implements IREA_SODO_CONTRACT_ENTITY {
 }
 
 export interface IREA_SODO_CONTRACT_ENTITY {
-    sodO_CONTRACT_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     partneR_ID: string | undefined;
+    partneR_NAME: string | undefined;
     sodO_CONTRACT_SIGN_DT: moment.Moment | undefined;
     sodO_CONTRACT_CONTENT: string | undefined;
     sodO_CONTRACT_VALUE: number;
@@ -50391,11 +56807,15 @@ export interface IREA_SODO_CONTRACT_ENTITY {
 }
 
 export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
-    sodO_PUBLISH_NUMBER!: string | undefined;
+    id!: string | undefined;
     projecT_ID!: string | undefined;
+    projecT_NAME!: string | undefined;
     owneR_INFO_OR_ID!: string | undefined;
+    owneR_NAME!: string | undefined;
     authorizeD_PERSON_ID!: string | undefined;
+    authorizeD_PERSON_NAME!: string | undefined;
     areA_ID!: string | undefined;
+    areA_NAME!: string | undefined;
     sodO_TRANSFER_STATUS!: string | undefined;
     sodO_SO_VAO_SO!: string | undefined;
     sodO_BACODE_SERI!: string | undefined;
@@ -50432,6 +56852,8 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
     compensatioN_LIST!: REA_SODO_COMPENSATION_ENTITY[] | undefined;
     storE_LOCATION_LIST!: REA_SODO_STORE_LOCATION_ENTITY[] | undefined;
     advancE_PAYMENT_LIST!: REA_SODO_ADVANCE_PAYMENT_ENTITY[] | undefined;
+    usE_REGISTRATION_LIST!: REA_USE_REGISTRATION_ENTITY[] | undefined;
+    mortgagE_ITEM_LIST!: REA_MORTGAGE_OVERALL[] | undefined;
     fileS_LIST!: REA_FILE_ENTITY[] | undefined;
     contract!: REA_SODO_CONTRACT_ENTITY;
     brieF_1!: REA_SODO_BRIEF_1_ENTITY;
@@ -50439,13 +56861,19 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
     brieF_3!: REA_SODO_BRIEF_3_ENTITY;
     brieF_4!: REA_SODO_BRIEF_4_ENTITY;
     brieF_5!: REA_SODO_BRIEF_5_ENTITY;
-    deleteD_CO_OWNER_ID_LIST!: string[] | undefined;
-    deleteD_PAY_ID_LIST!: string[] | undefined;
-    deleteD_LAND_PLOT_ID_LIST!: string[] | undefined;
-    deleteD_COMPENSATION_ID_LIST!: string[] | undefined;
-    deleteD_STORE_LOCATION_ID_LIST!: string[] | undefined;
-    deleteD_ADVANCE_PAYMENT_ID_LIST!: string[] | undefined;
+    deleteD_CO_OWNER_ID_LIST!: number[] | undefined;
+    deleteD_PAY_ID_LIST!: number[] | undefined;
+    deleteD_LAND_PLOT_ID_LIST!: number[] | undefined;
+    deleteD_COMPENSATION_ID_LIST!: number[] | undefined;
+    deleteD_STORE_LOCATION_ID_LIST!: number[] | undefined;
+    deleteD_ADVANCE_PAYMENT_ID_LIST!: number[] | undefined;
     deleteD_FILE_ID_LIST!: string[] | undefined;
+    deleteD_USE_REGISTRATION_ID_LIST!: number[] | undefined;
+    modifieR_ID!: string | undefined;
+    modifieR_NAME!: string | undefined;
+    modifY_DT!: moment.Moment | undefined;
+    makeR_NAME!: string | undefined;
+    checkeR_NAME!: string | undefined;
     top!: number | undefined;
     sorting!: string | undefined;
     maxResultCount!: number;
@@ -50462,11 +56890,15 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_PUBLISH_NUMBER = data["sodO_PUBLISH_NUMBER"];
+            this.id = data["id"];
             this.projecT_ID = data["projecT_ID"];
+            this.projecT_NAME = data["projecT_NAME"];
             this.owneR_INFO_OR_ID = data["owneR_INFO_OR_ID"];
+            this.owneR_NAME = data["owneR_NAME"];
             this.authorizeD_PERSON_ID = data["authorizeD_PERSON_ID"];
+            this.authorizeD_PERSON_NAME = data["authorizeD_PERSON_NAME"];
             this.areA_ID = data["areA_ID"];
+            this.areA_NAME = data["areA_NAME"];
             this.sodO_TRANSFER_STATUS = data["sodO_TRANSFER_STATUS"];
             this.sodO_SO_VAO_SO = data["sodO_SO_VAO_SO"];
             this.sodO_BACODE_SERI = data["sodO_BACODE_SERI"];
@@ -50527,6 +56959,16 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
                 for (let item of data["advancE_PAYMENT_LIST"])
                     this.advancE_PAYMENT_LIST!.push(REA_SODO_ADVANCE_PAYMENT_ENTITY.fromJS(item));
             }
+            if (data["usE_REGISTRATION_LIST"] && data["usE_REGISTRATION_LIST"].constructor === Array) {
+                this.usE_REGISTRATION_LIST = [] as any;
+                for (let item of data["usE_REGISTRATION_LIST"])
+                    this.usE_REGISTRATION_LIST!.push(REA_USE_REGISTRATION_ENTITY.fromJS(item));
+            }
+            if (data["mortgagE_ITEM_LIST"] && data["mortgagE_ITEM_LIST"].constructor === Array) {
+                this.mortgagE_ITEM_LIST = [] as any;
+                for (let item of data["mortgagE_ITEM_LIST"])
+                    this.mortgagE_ITEM_LIST!.push(REA_MORTGAGE_OVERALL.fromJS(item));
+            }
             if (data["fileS_LIST"] && data["fileS_LIST"].constructor === Array) {
                 this.fileS_LIST = [] as any;
                 for (let item of data["fileS_LIST"])
@@ -50573,6 +57015,16 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
                 for (let item of data["deleteD_FILE_ID_LIST"])
                     this.deleteD_FILE_ID_LIST!.push(item);
             }
+            if (data["deleteD_USE_REGISTRATION_ID_LIST"] && data["deleteD_USE_REGISTRATION_ID_LIST"].constructor === Array) {
+                this.deleteD_USE_REGISTRATION_ID_LIST = [] as any;
+                for (let item of data["deleteD_USE_REGISTRATION_ID_LIST"])
+                    this.deleteD_USE_REGISTRATION_ID_LIST!.push(item);
+            }
+            this.modifieR_ID = data["modifieR_ID"];
+            this.modifieR_NAME = data["modifieR_NAME"];
+            this.modifY_DT = data["modifY_DT"] ? moment(data["modifY_DT"].toString()) : <any>undefined;
+            this.makeR_NAME = data["makeR_NAME"];
+            this.checkeR_NAME = data["checkeR_NAME"];
             this.top = data["top"];
             this.sorting = data["sorting"];
             this.maxResultCount = data["maxResultCount"];
@@ -50589,11 +57041,15 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_PUBLISH_NUMBER"] = this.sodO_PUBLISH_NUMBER;
+        data["id"] = this.id;
         data["projecT_ID"] = this.projecT_ID;
+        data["projecT_NAME"] = this.projecT_NAME;
         data["owneR_INFO_OR_ID"] = this.owneR_INFO_OR_ID;
+        data["owneR_NAME"] = this.owneR_NAME;
         data["authorizeD_PERSON_ID"] = this.authorizeD_PERSON_ID;
+        data["authorizeD_PERSON_NAME"] = this.authorizeD_PERSON_NAME;
         data["areA_ID"] = this.areA_ID;
+        data["areA_NAME"] = this.areA_NAME;
         data["sodO_TRANSFER_STATUS"] = this.sodO_TRANSFER_STATUS;
         data["sodO_SO_VAO_SO"] = this.sodO_SO_VAO_SO;
         data["sodO_BACODE_SERI"] = this.sodO_BACODE_SERI;
@@ -50654,6 +57110,16 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
             for (let item of this.advancE_PAYMENT_LIST)
                 data["advancE_PAYMENT_LIST"].push(item.toJSON());
         }
+        if (this.usE_REGISTRATION_LIST && this.usE_REGISTRATION_LIST.constructor === Array) {
+            data["usE_REGISTRATION_LIST"] = [];
+            for (let item of this.usE_REGISTRATION_LIST)
+                data["usE_REGISTRATION_LIST"].push(item.toJSON());
+        }
+        if (this.mortgagE_ITEM_LIST && this.mortgagE_ITEM_LIST.constructor === Array) {
+            data["mortgagE_ITEM_LIST"] = [];
+            for (let item of this.mortgagE_ITEM_LIST)
+                data["mortgagE_ITEM_LIST"].push(item.toJSON());
+        }
         if (this.fileS_LIST && this.fileS_LIST.constructor === Array) {
             data["fileS_LIST"] = [];
             for (let item of this.fileS_LIST)
@@ -50700,6 +57166,16 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
             for (let item of this.deleteD_FILE_ID_LIST)
                 data["deleteD_FILE_ID_LIST"].push(item);
         }
+        if (this.deleteD_USE_REGISTRATION_ID_LIST && this.deleteD_USE_REGISTRATION_ID_LIST.constructor === Array) {
+            data["deleteD_USE_REGISTRATION_ID_LIST"] = [];
+            for (let item of this.deleteD_USE_REGISTRATION_ID_LIST)
+                data["deleteD_USE_REGISTRATION_ID_LIST"].push(item);
+        }
+        data["modifieR_ID"] = this.modifieR_ID;
+        data["modifieR_NAME"] = this.modifieR_NAME;
+        data["modifY_DT"] = this.modifY_DT ? this.modifY_DT.toISOString() : <any>undefined;
+        data["makeR_NAME"] = this.makeR_NAME;
+        data["checkeR_NAME"] = this.checkeR_NAME;
         data["top"] = this.top;
         data["sorting"] = this.sorting;
         data["maxResultCount"] = this.maxResultCount;
@@ -50709,11 +57185,15 @@ export class REA_SODO_ENTITY implements IREA_SODO_ENTITY {
 }
 
 export interface IREA_SODO_ENTITY {
-    sodO_PUBLISH_NUMBER: string | undefined;
+    id: string | undefined;
     projecT_ID: string | undefined;
+    projecT_NAME: string | undefined;
     owneR_INFO_OR_ID: string | undefined;
+    owneR_NAME: string | undefined;
     authorizeD_PERSON_ID: string | undefined;
+    authorizeD_PERSON_NAME: string | undefined;
     areA_ID: string | undefined;
+    areA_NAME: string | undefined;
     sodO_TRANSFER_STATUS: string | undefined;
     sodO_SO_VAO_SO: string | undefined;
     sodO_BACODE_SERI: string | undefined;
@@ -50750,6 +57230,8 @@ export interface IREA_SODO_ENTITY {
     compensatioN_LIST: REA_SODO_COMPENSATION_ENTITY[] | undefined;
     storE_LOCATION_LIST: REA_SODO_STORE_LOCATION_ENTITY[] | undefined;
     advancE_PAYMENT_LIST: REA_SODO_ADVANCE_PAYMENT_ENTITY[] | undefined;
+    usE_REGISTRATION_LIST: REA_USE_REGISTRATION_ENTITY[] | undefined;
+    mortgagE_ITEM_LIST: REA_MORTGAGE_OVERALL[] | undefined;
     fileS_LIST: REA_FILE_ENTITY[] | undefined;
     contract: REA_SODO_CONTRACT_ENTITY;
     brieF_1: REA_SODO_BRIEF_1_ENTITY;
@@ -50757,13 +57239,19 @@ export interface IREA_SODO_ENTITY {
     brieF_3: REA_SODO_BRIEF_3_ENTITY;
     brieF_4: REA_SODO_BRIEF_4_ENTITY;
     brieF_5: REA_SODO_BRIEF_5_ENTITY;
-    deleteD_CO_OWNER_ID_LIST: string[] | undefined;
-    deleteD_PAY_ID_LIST: string[] | undefined;
-    deleteD_LAND_PLOT_ID_LIST: string[] | undefined;
-    deleteD_COMPENSATION_ID_LIST: string[] | undefined;
-    deleteD_STORE_LOCATION_ID_LIST: string[] | undefined;
-    deleteD_ADVANCE_PAYMENT_ID_LIST: string[] | undefined;
+    deleteD_CO_OWNER_ID_LIST: number[] | undefined;
+    deleteD_PAY_ID_LIST: number[] | undefined;
+    deleteD_LAND_PLOT_ID_LIST: number[] | undefined;
+    deleteD_COMPENSATION_ID_LIST: number[] | undefined;
+    deleteD_STORE_LOCATION_ID_LIST: number[] | undefined;
+    deleteD_ADVANCE_PAYMENT_ID_LIST: number[] | undefined;
     deleteD_FILE_ID_LIST: string[] | undefined;
+    deleteD_USE_REGISTRATION_ID_LIST: number[] | undefined;
+    modifieR_ID: string | undefined;
+    modifieR_NAME: string | undefined;
+    modifY_DT: moment.Moment | undefined;
+    makeR_NAME: string | undefined;
+    checkeR_NAME: string | undefined;
     top: number | undefined;
     sorting: string | undefined;
     maxResultCount: number;
@@ -50771,11 +57259,11 @@ export interface IREA_SODO_ENTITY {
 }
 
 export class REA_SODO_LAND_PLOT_ENTITY implements IREA_SODO_LAND_PLOT_ENTITY {
-    lanD_PLOT_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     lanD_PLOT_TO_BAN_DO!: string | undefined;
     lanD_PLOT_NO!: string | undefined;
-    lanD_PLOT_AREA!: string | undefined;
+    lanD_PLOT_AREA!: number;
     lanD_PLOT_USE_PURPOSE!: string | undefined;
     lanD_PLOT_USE_DT!: moment.Moment | undefined;
     lanD_PLOT_USE_EXPIRATION_DT!: moment.Moment | undefined;
@@ -50795,7 +57283,7 @@ export class REA_SODO_LAND_PLOT_ENTITY implements IREA_SODO_LAND_PLOT_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.lanD_PLOT_ID = data["lanD_PLOT_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.lanD_PLOT_TO_BAN_DO = data["lanD_PLOT_TO_BAN_DO"];
             this.lanD_PLOT_NO = data["lanD_PLOT_NO"];
@@ -50819,7 +57307,7 @@ export class REA_SODO_LAND_PLOT_ENTITY implements IREA_SODO_LAND_PLOT_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["lanD_PLOT_ID"] = this.lanD_PLOT_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["lanD_PLOT_TO_BAN_DO"] = this.lanD_PLOT_TO_BAN_DO;
         data["lanD_PLOT_NO"] = this.lanD_PLOT_NO;
@@ -50836,11 +57324,11 @@ export class REA_SODO_LAND_PLOT_ENTITY implements IREA_SODO_LAND_PLOT_ENTITY {
 }
 
 export interface IREA_SODO_LAND_PLOT_ENTITY {
-    lanD_PLOT_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     lanD_PLOT_TO_BAN_DO: string | undefined;
     lanD_PLOT_NO: string | undefined;
-    lanD_PLOT_AREA: string | undefined;
+    lanD_PLOT_AREA: number;
     lanD_PLOT_USE_PURPOSE: string | undefined;
     lanD_PLOT_USE_DT: moment.Moment | undefined;
     lanD_PLOT_USE_EXPIRATION_DT: moment.Moment | undefined;
@@ -50851,7 +57339,7 @@ export interface IREA_SODO_LAND_PLOT_ENTITY {
 }
 
 export class REA_SODO_PAY_ENTITY implements IREA_SODO_PAY_ENTITY {
-    sodO_PAY_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     sodO_PAY_BATCH_NAME!: string | undefined;
     sodO_PAY_VALUE!: number;
@@ -50870,7 +57358,7 @@ export class REA_SODO_PAY_ENTITY implements IREA_SODO_PAY_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.sodO_PAY_ID = data["sodO_PAY_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_PAY_BATCH_NAME = data["sodO_PAY_BATCH_NAME"];
             this.sodO_PAY_VALUE = data["sodO_PAY_VALUE"];
@@ -50889,7 +57377,7 @@ export class REA_SODO_PAY_ENTITY implements IREA_SODO_PAY_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_PAY_ID"] = this.sodO_PAY_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_PAY_BATCH_NAME"] = this.sodO_PAY_BATCH_NAME;
         data["sodO_PAY_VALUE"] = this.sodO_PAY_VALUE;
@@ -50901,7 +57389,7 @@ export class REA_SODO_PAY_ENTITY implements IREA_SODO_PAY_ENTITY {
 }
 
 export interface IREA_SODO_PAY_ENTITY {
-    sodO_PAY_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     sodO_PAY_BATCH_NAME: string | undefined;
     sodO_PAY_VALUE: number;
@@ -50910,8 +57398,80 @@ export interface IREA_SODO_PAY_ENTITY {
     iS_NEW: boolean;
 }
 
+export class REA_SODO_SEARCH_DTO implements IREA_SODO_SEARCH_DTO {
+    id!: string | undefined;
+    sodO_SO_VAO_SO!: string | undefined;
+    projecT_ID!: string | undefined;
+    authorizeD_PERSON_ID!: string | undefined;
+    autH_STATUS!: string | undefined;
+    mortgagE_STATUS!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
+
+    constructor(data?: IREA_SODO_SEARCH_DTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.sodO_SO_VAO_SO = data["sodO_SO_VAO_SO"];
+            this.projecT_ID = data["projecT_ID"];
+            this.authorizeD_PERSON_ID = data["authorizeD_PERSON_ID"];
+            this.autH_STATUS = data["autH_STATUS"];
+            this.mortgagE_STATUS = data["mortgagE_STATUS"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
+        }
+    }
+
+    static fromJS(data: any): REA_SODO_SEARCH_DTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_SODO_SEARCH_DTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sodO_SO_VAO_SO"] = this.sodO_SO_VAO_SO;
+        data["projecT_ID"] = this.projecT_ID;
+        data["authorizeD_PERSON_ID"] = this.authorizeD_PERSON_ID;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["mortgagE_STATUS"] = this.mortgagE_STATUS;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
+        return data; 
+    }
+}
+
+export interface IREA_SODO_SEARCH_DTO {
+    id: string | undefined;
+    sodO_SO_VAO_SO: string | undefined;
+    projecT_ID: string | undefined;
+    authorizeD_PERSON_ID: string | undefined;
+    autH_STATUS: string | undefined;
+    mortgagE_STATUS: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
 export class REA_SODO_STORE_LOCATION_ENTITY implements IREA_SODO_STORE_LOCATION_ENTITY {
-    sodO_STORE_LOCATION_ID!: string | undefined;
+    id!: number;
     sodO_ID!: string | undefined;
     sodO_STORE_LOCATION_TYPE!: string | undefined;
     sodO_STORE_LOCATION_DESCRIPTION!: string | undefined;
@@ -50932,7 +57492,7 @@ export class REA_SODO_STORE_LOCATION_ENTITY implements IREA_SODO_STORE_LOCATION_
 
     init(data?: any) {
         if (data) {
-            this.sodO_STORE_LOCATION_ID = data["sodO_STORE_LOCATION_ID"];
+            this.id = data["id"];
             this.sodO_ID = data["sodO_ID"];
             this.sodO_STORE_LOCATION_TYPE = data["sodO_STORE_LOCATION_TYPE"];
             this.sodO_STORE_LOCATION_DESCRIPTION = data["sodO_STORE_LOCATION_DESCRIPTION"];
@@ -50953,7 +57513,7 @@ export class REA_SODO_STORE_LOCATION_ENTITY implements IREA_SODO_STORE_LOCATION_
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sodO_STORE_LOCATION_ID"] = this.sodO_STORE_LOCATION_ID;
+        data["id"] = this.id;
         data["sodO_ID"] = this.sodO_ID;
         data["sodO_STORE_LOCATION_TYPE"] = this.sodO_STORE_LOCATION_TYPE;
         data["sodO_STORE_LOCATION_DESCRIPTION"] = this.sodO_STORE_LOCATION_DESCRIPTION;
@@ -50967,7 +57527,7 @@ export class REA_SODO_STORE_LOCATION_ENTITY implements IREA_SODO_STORE_LOCATION_
 }
 
 export interface IREA_SODO_STORE_LOCATION_ENTITY {
-    sodO_STORE_LOCATION_ID: string | undefined;
+    id: number;
     sodO_ID: string | undefined;
     sodO_STORE_LOCATION_TYPE: string | undefined;
     sodO_STORE_LOCATION_DESCRIPTION: string | undefined;
@@ -50978,15 +57538,157 @@ export interface IREA_SODO_STORE_LOCATION_ENTITY {
     iS_NEW: boolean;
 }
 
-export class REA_USE_REGISTRATION_ENTITY implements IREA_USE_REGISTRATION_ENTITY {
-    usE_REGISTRATION_ID!: string | undefined;
-    usE_REGISTRATION_TYPE!: string | undefined;
-    usE_REGISTRION_REF_ID!: string | undefined;
+export class REA_TICKET_ENTITY implements IREA_TICKET_ENTITY {
+    id!: number;
+    companY_ID!: string | undefined;
     departmenT_ID!: string | undefined;
+    employeE_ID!: string | undefined;
+    propertY_LOCATION_ID!: string | undefined;
+    ouT_USE_DT!: moment.Moment | undefined;
+    iS_USE_TICKET!: boolean;
+    phonE_NUMBER!: string | undefined;
+    worK_LOCATION!: string | undefined;
+    securitY_LEVEL!: string | undefined;
+    iS_CO_USE!: boolean;
+    notes!: string | undefined;
+    recorD_STATUS!: string | undefined;
+    makeR_ID!: string | undefined;
+    creatE_DT!: moment.Moment | undefined;
+    autH_STATUS!: string | undefined;
+    checkeR_ID!: string | undefined;
+    approvE_DT!: moment.Moment | undefined;
+    attacheD_FILE!: REA_FILE_ENTITY;
+    proposE_PURCHASES!: REA_PROPOSE_PURCHASE_ENTITY[] | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
+    deleteD_PROPOSE_PURCHASE_ID_LIST!: number[] | undefined;
+
+    constructor(data?: IREA_TICKET_ENTITY) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.companY_ID = data["companY_ID"];
+            this.departmenT_ID = data["departmenT_ID"];
+            this.employeE_ID = data["employeE_ID"];
+            this.propertY_LOCATION_ID = data["propertY_LOCATION_ID"];
+            this.ouT_USE_DT = data["ouT_USE_DT"] ? moment(data["ouT_USE_DT"].toString()) : <any>undefined;
+            this.iS_USE_TICKET = data["iS_USE_TICKET"];
+            this.phonE_NUMBER = data["phonE_NUMBER"];
+            this.worK_LOCATION = data["worK_LOCATION"];
+            this.securitY_LEVEL = data["securitY_LEVEL"];
+            this.iS_CO_USE = data["iS_CO_USE"];
+            this.notes = data["notes"];
+            this.recorD_STATUS = data["recorD_STATUS"];
+            this.makeR_ID = data["makeR_ID"];
+            this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
+            this.autH_STATUS = data["autH_STATUS"];
+            this.checkeR_ID = data["checkeR_ID"];
+            this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.attacheD_FILE = data["attacheD_FILE"] ? REA_FILE_ENTITY.fromJS(data["attacheD_FILE"]) : <any>undefined;
+            if (data["proposE_PURCHASES"] && data["proposE_PURCHASES"].constructor === Array) {
+                this.proposE_PURCHASES = [] as any;
+                for (let item of data["proposE_PURCHASES"])
+                    this.proposE_PURCHASES!.push(REA_PROPOSE_PURCHASE_ENTITY.fromJS(item));
+            }
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
+            if (data["deleteD_PROPOSE_PURCHASE_ID_LIST"] && data["deleteD_PROPOSE_PURCHASE_ID_LIST"].constructor === Array) {
+                this.deleteD_PROPOSE_PURCHASE_ID_LIST = [] as any;
+                for (let item of data["deleteD_PROPOSE_PURCHASE_ID_LIST"])
+                    this.deleteD_PROPOSE_PURCHASE_ID_LIST!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): REA_TICKET_ENTITY {
+        data = typeof data === 'object' ? data : {};
+        let result = new REA_TICKET_ENTITY();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["companY_ID"] = this.companY_ID;
+        data["departmenT_ID"] = this.departmenT_ID;
+        data["employeE_ID"] = this.employeE_ID;
+        data["propertY_LOCATION_ID"] = this.propertY_LOCATION_ID;
+        data["ouT_USE_DT"] = this.ouT_USE_DT ? this.ouT_USE_DT.toISOString() : <any>undefined;
+        data["iS_USE_TICKET"] = this.iS_USE_TICKET;
+        data["phonE_NUMBER"] = this.phonE_NUMBER;
+        data["worK_LOCATION"] = this.worK_LOCATION;
+        data["securitY_LEVEL"] = this.securitY_LEVEL;
+        data["iS_CO_USE"] = this.iS_CO_USE;
+        data["notes"] = this.notes;
+        data["recorD_STATUS"] = this.recorD_STATUS;
+        data["makeR_ID"] = this.makeR_ID;
+        data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
+        data["autH_STATUS"] = this.autH_STATUS;
+        data["checkeR_ID"] = this.checkeR_ID;
+        data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["attacheD_FILE"] = this.attacheD_FILE ? this.attacheD_FILE.toJSON() : <any>undefined;
+        if (this.proposE_PURCHASES && this.proposE_PURCHASES.constructor === Array) {
+            data["proposE_PURCHASES"] = [];
+            for (let item of this.proposE_PURCHASES)
+                data["proposE_PURCHASES"].push(item.toJSON());
+        }
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
+        if (this.deleteD_PROPOSE_PURCHASE_ID_LIST && this.deleteD_PROPOSE_PURCHASE_ID_LIST.constructor === Array) {
+            data["deleteD_PROPOSE_PURCHASE_ID_LIST"] = [];
+            for (let item of this.deleteD_PROPOSE_PURCHASE_ID_LIST)
+                data["deleteD_PROPOSE_PURCHASE_ID_LIST"].push(item);
+        }
+        return data; 
+    }
+}
+
+export interface IREA_TICKET_ENTITY {
+    id: number;
+    companY_ID: string | undefined;
+    departmenT_ID: string | undefined;
+    employeE_ID: string | undefined;
+    propertY_LOCATION_ID: string | undefined;
+    ouT_USE_DT: moment.Moment | undefined;
+    iS_USE_TICKET: boolean;
+    phonE_NUMBER: string | undefined;
+    worK_LOCATION: string | undefined;
+    securitY_LEVEL: string | undefined;
+    iS_CO_USE: boolean;
+    notes: string | undefined;
+    recorD_STATUS: string | undefined;
+    makeR_ID: string | undefined;
+    creatE_DT: moment.Moment | undefined;
+    autH_STATUS: string | undefined;
+    checkeR_ID: string | undefined;
+    approvE_DT: moment.Moment | undefined;
+    attacheD_FILE: REA_FILE_ENTITY;
+    proposE_PURCHASES: REA_PROPOSE_PURCHASE_ENTITY[] | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
+    deleteD_PROPOSE_PURCHASE_ID_LIST: number[] | undefined;
+}
+
+export class REA_USE_REGISTRATION_ENTITY implements IREA_USE_REGISTRATION_ENTITY {
+    id!: number;
+    usE_REGISTRATION_TYPE!: string | undefined;
+    usE_REGISTRATION_REF_ID!: string | undefined;
+    departmenT_ID!: string | undefined;
+    departmenT_NAME!: string | undefined;
     registoR_ID!: string | undefined;
+    registoR_NAME!: string | undefined;
     usE_REGISTRATION_DT!: moment.Moment | undefined;
     usE_REGISTRATION_EXPIRE_DT!: moment.Moment | undefined;
-    usE_REGISTRATION_USE_PUREPOSE!: string | undefined;
+    usE_REGISTRATION_USE_PURPOSE!: string | undefined;
     notes!: string | undefined;
     usE_REGISTRATION_TYPE_NAME!: string | undefined;
     iS_CHANGED!: boolean;
@@ -51003,14 +57705,16 @@ export class REA_USE_REGISTRATION_ENTITY implements IREA_USE_REGISTRATION_ENTITY
 
     init(data?: any) {
         if (data) {
-            this.usE_REGISTRATION_ID = data["usE_REGISTRATION_ID"];
+            this.id = data["id"];
             this.usE_REGISTRATION_TYPE = data["usE_REGISTRATION_TYPE"];
-            this.usE_REGISTRION_REF_ID = data["usE_REGISTRION_REF_ID"];
+            this.usE_REGISTRATION_REF_ID = data["usE_REGISTRATION_REF_ID"];
             this.departmenT_ID = data["departmenT_ID"];
+            this.departmenT_NAME = data["departmenT_NAME"];
             this.registoR_ID = data["registoR_ID"];
+            this.registoR_NAME = data["registoR_NAME"];
             this.usE_REGISTRATION_DT = data["usE_REGISTRATION_DT"] ? moment(data["usE_REGISTRATION_DT"].toString()) : <any>undefined;
             this.usE_REGISTRATION_EXPIRE_DT = data["usE_REGISTRATION_EXPIRE_DT"] ? moment(data["usE_REGISTRATION_EXPIRE_DT"].toString()) : <any>undefined;
-            this.usE_REGISTRATION_USE_PUREPOSE = data["usE_REGISTRATION_USE_PUREPOSE"];
+            this.usE_REGISTRATION_USE_PURPOSE = data["usE_REGISTRATION_USE_PURPOSE"];
             this.notes = data["notes"];
             this.usE_REGISTRATION_TYPE_NAME = data["usE_REGISTRATION_TYPE_NAME"];
             this.iS_CHANGED = data["iS_CHANGED"];
@@ -51027,14 +57731,16 @@ export class REA_USE_REGISTRATION_ENTITY implements IREA_USE_REGISTRATION_ENTITY
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["usE_REGISTRATION_ID"] = this.usE_REGISTRATION_ID;
+        data["id"] = this.id;
         data["usE_REGISTRATION_TYPE"] = this.usE_REGISTRATION_TYPE;
-        data["usE_REGISTRION_REF_ID"] = this.usE_REGISTRION_REF_ID;
+        data["usE_REGISTRATION_REF_ID"] = this.usE_REGISTRATION_REF_ID;
         data["departmenT_ID"] = this.departmenT_ID;
+        data["departmenT_NAME"] = this.departmenT_NAME;
         data["registoR_ID"] = this.registoR_ID;
+        data["registoR_NAME"] = this.registoR_NAME;
         data["usE_REGISTRATION_DT"] = this.usE_REGISTRATION_DT ? this.usE_REGISTRATION_DT.toISOString() : <any>undefined;
         data["usE_REGISTRATION_EXPIRE_DT"] = this.usE_REGISTRATION_EXPIRE_DT ? this.usE_REGISTRATION_EXPIRE_DT.toISOString() : <any>undefined;
-        data["usE_REGISTRATION_USE_PUREPOSE"] = this.usE_REGISTRATION_USE_PUREPOSE;
+        data["usE_REGISTRATION_USE_PURPOSE"] = this.usE_REGISTRATION_USE_PURPOSE;
         data["notes"] = this.notes;
         data["usE_REGISTRATION_TYPE_NAME"] = this.usE_REGISTRATION_TYPE_NAME;
         data["iS_CHANGED"] = this.iS_CHANGED;
@@ -51044,14 +57750,16 @@ export class REA_USE_REGISTRATION_ENTITY implements IREA_USE_REGISTRATION_ENTITY
 }
 
 export interface IREA_USE_REGISTRATION_ENTITY {
-    usE_REGISTRATION_ID: string | undefined;
+    id: number;
     usE_REGISTRATION_TYPE: string | undefined;
-    usE_REGISTRION_REF_ID: string | undefined;
+    usE_REGISTRATION_REF_ID: string | undefined;
     departmenT_ID: string | undefined;
+    departmenT_NAME: string | undefined;
     registoR_ID: string | undefined;
+    registoR_NAME: string | undefined;
     usE_REGISTRATION_DT: moment.Moment | undefined;
     usE_REGISTRATION_EXPIRE_DT: moment.Moment | undefined;
-    usE_REGISTRATION_USE_PUREPOSE: string | undefined;
+    usE_REGISTRATION_USE_PURPOSE: string | undefined;
     notes: string | undefined;
     usE_REGISTRATION_TYPE_NAME: string | undefined;
     iS_CHANGED: boolean;
@@ -51059,9 +57767,12 @@ export interface IREA_USE_REGISTRATION_ENTITY {
 }
 
 export class REA_VALUATION_ENTITY implements IREA_VALUATION_ENTITY {
-    valuatioN_ID!: string | undefined;
+    id!: number;
     valuatioN_PARTY_ID!: string | undefined;
+    valuatioN_PARTY_NAME!: string | undefined;
     propertY_ID!: string | undefined;
+    propertY_TYPE!: string | undefined;
+    propertY_NAME!: string | undefined;
     lanD_USE_FEE!: number;
     valuatioN_BEFORE_VALUE!: number | undefined;
     valuatioN_VALUE!: number;
@@ -51070,6 +57781,8 @@ export class REA_VALUATION_ENTITY implements IREA_VALUATION_ENTITY {
     valuatioN_PRODUCT_TYPE!: string | undefined;
     valuatioN_UNIT_SALE_PRICE!: number;
     valuatioN_DT!: moment.Moment | undefined;
+    iS_CHANGED!: boolean;
+    iS_NEW!: boolean;
 
     constructor(data?: IREA_VALUATION_ENTITY) {
         if (data) {
@@ -51082,9 +57795,12 @@ export class REA_VALUATION_ENTITY implements IREA_VALUATION_ENTITY {
 
     init(data?: any) {
         if (data) {
-            this.valuatioN_ID = data["valuatioN_ID"];
+            this.id = data["id"];
             this.valuatioN_PARTY_ID = data["valuatioN_PARTY_ID"];
+            this.valuatioN_PARTY_NAME = data["valuatioN_PARTY_NAME"];
             this.propertY_ID = data["propertY_ID"];
+            this.propertY_TYPE = data["propertY_TYPE"];
+            this.propertY_NAME = data["propertY_NAME"];
             this.lanD_USE_FEE = data["lanD_USE_FEE"];
             this.valuatioN_BEFORE_VALUE = data["valuatioN_BEFORE_VALUE"];
             this.valuatioN_VALUE = data["valuatioN_VALUE"];
@@ -51093,6 +57809,8 @@ export class REA_VALUATION_ENTITY implements IREA_VALUATION_ENTITY {
             this.valuatioN_PRODUCT_TYPE = data["valuatioN_PRODUCT_TYPE"];
             this.valuatioN_UNIT_SALE_PRICE = data["valuatioN_UNIT_SALE_PRICE"];
             this.valuatioN_DT = data["valuatioN_DT"] ? moment(data["valuatioN_DT"].toString()) : <any>undefined;
+            this.iS_CHANGED = data["iS_CHANGED"];
+            this.iS_NEW = data["iS_NEW"];
         }
     }
 
@@ -51105,9 +57823,12 @@ export class REA_VALUATION_ENTITY implements IREA_VALUATION_ENTITY {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["valuatioN_ID"] = this.valuatioN_ID;
+        data["id"] = this.id;
         data["valuatioN_PARTY_ID"] = this.valuatioN_PARTY_ID;
+        data["valuatioN_PARTY_NAME"] = this.valuatioN_PARTY_NAME;
         data["propertY_ID"] = this.propertY_ID;
+        data["propertY_TYPE"] = this.propertY_TYPE;
+        data["propertY_NAME"] = this.propertY_NAME;
         data["lanD_USE_FEE"] = this.lanD_USE_FEE;
         data["valuatioN_BEFORE_VALUE"] = this.valuatioN_BEFORE_VALUE;
         data["valuatioN_VALUE"] = this.valuatioN_VALUE;
@@ -51116,14 +57837,19 @@ export class REA_VALUATION_ENTITY implements IREA_VALUATION_ENTITY {
         data["valuatioN_PRODUCT_TYPE"] = this.valuatioN_PRODUCT_TYPE;
         data["valuatioN_UNIT_SALE_PRICE"] = this.valuatioN_UNIT_SALE_PRICE;
         data["valuatioN_DT"] = this.valuatioN_DT ? this.valuatioN_DT.toISOString() : <any>undefined;
+        data["iS_CHANGED"] = this.iS_CHANGED;
+        data["iS_NEW"] = this.iS_NEW;
         return data; 
     }
 }
 
 export interface IREA_VALUATION_ENTITY {
-    valuatioN_ID: string | undefined;
+    id: number;
     valuatioN_PARTY_ID: string | undefined;
+    valuatioN_PARTY_NAME: string | undefined;
     propertY_ID: string | undefined;
+    propertY_TYPE: string | undefined;
+    propertY_NAME: string | undefined;
     lanD_USE_FEE: number;
     valuatioN_BEFORE_VALUE: number | undefined;
     valuatioN_VALUE: number;
@@ -51132,6 +57858,8 @@ export interface IREA_VALUATION_ENTITY {
     valuatioN_PRODUCT_TYPE: string | undefined;
     valuatioN_UNIT_SALE_PRICE: number;
     valuatioN_DT: moment.Moment | undefined;
+    iS_CHANGED: boolean;
+    iS_NEW: boolean;
 }
 
 export class RecentTenant implements IRecentTenant {
@@ -52519,17 +59247,17 @@ export interface ISftpSettingEditDto {
     sftP2ProtocolType: string | undefined;
 }
 
-export class Stream implements IStream {
-    canRead!: boolean;
-    canSeek!: boolean;
-    canTimeout!: boolean;
-    canWrite!: boolean;
-    length!: number;
-    position!: number;
-    readTimeout!: number;
-    writeTimeout!: number;
+export class SoDoMortgageSearchDto implements ISoDoMortgageSearchDto {
+    projecT_ID!: string | undefined;
+    mortgagE_STATUS!: string | undefined;
+    id!: string | undefined;
+    sodO_SO_VAO_SO!: string | undefined;
+    top!: number | undefined;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
 
-    constructor(data?: IStream) {
+    constructor(data?: ISoDoMortgageSearchDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -52540,47 +59268,199 @@ export class Stream implements IStream {
 
     init(data?: any) {
         if (data) {
-            this.canRead = data["canRead"];
-            this.canSeek = data["canSeek"];
-            this.canTimeout = data["canTimeout"];
-            this.canWrite = data["canWrite"];
-            this.length = data["length"];
-            this.position = data["position"];
-            this.readTimeout = data["readTimeout"];
-            this.writeTimeout = data["writeTimeout"];
+            this.projecT_ID = data["projecT_ID"];
+            this.mortgagE_STATUS = data["mortgagE_STATUS"];
+            this.id = data["id"];
+            this.sodO_SO_VAO_SO = data["sodO_SO_VAO_SO"];
+            this.top = data["top"];
+            this.sorting = data["sorting"];
+            this.maxResultCount = data["maxResultCount"];
+            this.skipCount = data["skipCount"];
         }
     }
 
-    static fromJS(data: any): Stream {
+    static fromJS(data: any): SoDoMortgageSearchDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Stream();
+        let result = new SoDoMortgageSearchDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["canRead"] = this.canRead;
-        data["canSeek"] = this.canSeek;
-        data["canTimeout"] = this.canTimeout;
-        data["canWrite"] = this.canWrite;
-        data["length"] = this.length;
-        data["position"] = this.position;
-        data["readTimeout"] = this.readTimeout;
-        data["writeTimeout"] = this.writeTimeout;
+        data["projecT_ID"] = this.projecT_ID;
+        data["mortgagE_STATUS"] = this.mortgagE_STATUS;
+        data["id"] = this.id;
+        data["sodO_SO_VAO_SO"] = this.sodO_SO_VAO_SO;
+        data["top"] = this.top;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
         return data; 
     }
 }
 
-export interface IStream {
-    canRead: boolean;
-    canSeek: boolean;
-    canTimeout: boolean;
-    canWrite: boolean;
-    length: number;
-    position: number;
-    readTimeout: number;
-    writeTimeout: number;
+export interface ISoDoMortgageSearchDto {
+    projecT_ID: string | undefined;
+    mortgagE_STATUS: string | undefined;
+    id: string | undefined;
+    sodO_SO_VAO_SO: string | undefined;
+    top: number | undefined;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
+}
+
+export class SoDoMortgageSearchResultDto implements ISoDoMortgageSearchResultDto {
+    id!: string | undefined;
+    sodO_SO_VAO_SO!: string | undefined;
+    sodO_TRANSFER_STATUS!: string | undefined;
+    lanD_PLOT_LIST!: string | undefined;
+    notes!: string | undefined;
+
+    constructor(data?: ISoDoMortgageSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.sodO_SO_VAO_SO = data["sodO_SO_VAO_SO"];
+            this.sodO_TRANSFER_STATUS = data["sodO_TRANSFER_STATUS"];
+            this.lanD_PLOT_LIST = data["lanD_PLOT_LIST"];
+            this.notes = data["notes"];
+        }
+    }
+
+    static fromJS(data: any): SoDoMortgageSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SoDoMortgageSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sodO_SO_VAO_SO"] = this.sodO_SO_VAO_SO;
+        data["sodO_TRANSFER_STATUS"] = this.sodO_TRANSFER_STATUS;
+        data["lanD_PLOT_LIST"] = this.lanD_PLOT_LIST;
+        data["notes"] = this.notes;
+        return data; 
+    }
+}
+
+export interface ISoDoMortgageSearchResultDto {
+    id: string | undefined;
+    sodO_SO_VAO_SO: string | undefined;
+    sodO_TRANSFER_STATUS: string | undefined;
+    lanD_PLOT_LIST: string | undefined;
+    notes: string | undefined;
+}
+
+export class SoDoProjectDashboardDto implements ISoDoProjectDashboardDto {
+    soDoMetrics!: StatisticDateAncCountDto[] | undefined;
+    projectMetrics!: StatisticDateAncCountDto[] | undefined;
+
+    constructor(data?: ISoDoProjectDashboardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["soDoMetrics"] && data["soDoMetrics"].constructor === Array) {
+                this.soDoMetrics = [] as any;
+                for (let item of data["soDoMetrics"])
+                    this.soDoMetrics!.push(StatisticDateAncCountDto.fromJS(item));
+            }
+            if (data["projectMetrics"] && data["projectMetrics"].constructor === Array) {
+                this.projectMetrics = [] as any;
+                for (let item of data["projectMetrics"])
+                    this.projectMetrics!.push(StatisticDateAncCountDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SoDoProjectDashboardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SoDoProjectDashboardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.soDoMetrics && this.soDoMetrics.constructor === Array) {
+            data["soDoMetrics"] = [];
+            for (let item of this.soDoMetrics)
+                data["soDoMetrics"].push(item.toJSON());
+        }
+        if (this.projectMetrics && this.projectMetrics.constructor === Array) {
+            data["projectMetrics"] = [];
+            for (let item of this.projectMetrics)
+                data["projectMetrics"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface ISoDoProjectDashboardDto {
+    soDoMetrics: StatisticDateAncCountDto[] | undefined;
+    projectMetrics: StatisticDateAncCountDto[] | undefined;
+}
+
+export class StatisticDateAncCountDto implements IStatisticDateAncCountDto {
+    month!: number;
+    year!: number;
+    count!: number;
+
+    constructor(data?: IStatisticDateAncCountDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.month = data["month"];
+            this.year = data["year"];
+            this.count = data["count"];
+        }
+    }
+
+    static fromJS(data: any): StatisticDateAncCountDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new StatisticDateAncCountDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["month"] = this.month;
+        data["year"] = this.year;
+        data["count"] = this.count;
+        return data; 
+    }
+}
+
+export interface IStatisticDateAncCountDto {
+    month: number;
+    year: number;
+    count: number;
 }
 
 export class StringOutput implements IStringOutput {
@@ -53172,6 +60052,7 @@ export class SYS_PARAMETERS_ENTITY implements ISYS_PARAMETERS_ENTITY {
     description!: string | undefined;
     recorD_STATUS!: string | undefined;
     recorD_STATUS_NAME!: string | undefined;
+    autH_STATUS_NAME!: string | undefined;
     makeR_ID!: string | undefined;
     creatE_DT!: moment.Moment | undefined;
     autH_STATUS!: string | undefined;
@@ -53201,6 +60082,7 @@ export class SYS_PARAMETERS_ENTITY implements ISYS_PARAMETERS_ENTITY {
             this.description = data["description"];
             this.recorD_STATUS = data["recorD_STATUS"];
             this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
+            this.autH_STATUS_NAME = data["autH_STATUS_NAME"];
             this.makeR_ID = data["makeR_ID"];
             this.creatE_DT = data["creatE_DT"] ? moment(data["creatE_DT"].toString()) : <any>undefined;
             this.autH_STATUS = data["autH_STATUS"];
@@ -53230,6 +60112,7 @@ export class SYS_PARAMETERS_ENTITY implements ISYS_PARAMETERS_ENTITY {
         data["description"] = this.description;
         data["recorD_STATUS"] = this.recorD_STATUS;
         data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
+        data["autH_STATUS_NAME"] = this.autH_STATUS_NAME;
         data["makeR_ID"] = this.makeR_ID;
         data["creatE_DT"] = this.creatE_DT ? this.creatE_DT.toISOString() : <any>undefined;
         data["autH_STATUS"] = this.autH_STATUS;
@@ -53252,6 +60135,7 @@ export interface ISYS_PARAMETERS_ENTITY {
     description: string | undefined;
     recorD_STATUS: string | undefined;
     recorD_STATUS_NAME: string | undefined;
+    autH_STATUS_NAME: string | undefined;
     makeR_ID: string | undefined;
     creatE_DT: moment.Moment | undefined;
     autH_STATUS: string | undefined;
@@ -54393,6 +61277,7 @@ export class TL_USER_ENTITY implements ITL_USER_ENTITY {
     markeR_ID!: string | undefined;
     autH_ID!: string | undefined;
     approvE_DT!: moment.Moment | undefined;
+    recorD_STATUS_NAME!: string | undefined;
     isapprove!: string | undefined;
     birthday!: moment.Moment | undefined;
     isfirsttime!: string | undefined;
@@ -54479,6 +61364,7 @@ export class TL_USER_ENTITY implements ITL_USER_ENTITY {
             this.markeR_ID = data["markeR_ID"];
             this.autH_ID = data["autH_ID"];
             this.approvE_DT = data["approvE_DT"] ? moment(data["approvE_DT"].toString()) : <any>undefined;
+            this.recorD_STATUS_NAME = data["recorD_STATUS_NAME"];
             this.isapprove = data["isapprove"];
             this.birthday = data["birthday"] ? moment(data["birthday"].toString()) : <any>undefined;
             this.isfirsttime = data["isfirsttime"];
@@ -54569,6 +61455,7 @@ export class TL_USER_ENTITY implements ITL_USER_ENTITY {
         data["markeR_ID"] = this.markeR_ID;
         data["autH_ID"] = this.autH_ID;
         data["approvE_DT"] = this.approvE_DT ? this.approvE_DT.toISOString() : <any>undefined;
+        data["recorD_STATUS_NAME"] = this.recorD_STATUS_NAME;
         data["isapprove"] = this.isapprove;
         data["birthday"] = this.birthday ? this.birthday.toISOString() : <any>undefined;
         data["isfirsttime"] = this.isfirsttime;
@@ -54652,6 +61539,7 @@ export interface ITL_USER_ENTITY {
     markeR_ID: string | undefined;
     autH_ID: string | undefined;
     approvE_DT: moment.Moment | undefined;
+    recorD_STATUS_NAME: string | undefined;
     isapprove: string | undefined;
     birthday: moment.Moment | undefined;
     isfirsttime: string | undefined;
@@ -54912,6 +61800,50 @@ export interface ITLUSER_GETBY_BRANCHID_ENTITY {
     sorting: string | undefined;
     maxResultCount: number;
     skipCount: number;
+}
+
+export class Top10ProjectValuationDto implements ITop10ProjectValuationDto {
+    valuations!: ProjectValuationDashboardDto[] | undefined;
+
+    constructor(data?: ITop10ProjectValuationDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["valuations"] && data["valuations"].constructor === Array) {
+                this.valuations = [] as any;
+                for (let item of data["valuations"])
+                    this.valuations!.push(ProjectValuationDashboardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): Top10ProjectValuationDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new Top10ProjectValuationDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.valuations && this.valuations.constructor === Array) {
+            data["valuations"] = [];
+            for (let item of this.valuations)
+                data["valuations"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface ITop10ProjectValuationDto {
+    valuations: ProjectValuationDashboardDto[] | undefined;
 }
 
 export class TwoFactorLoginSettingsEditDto implements ITwoFactorLoginSettingsEditDto {

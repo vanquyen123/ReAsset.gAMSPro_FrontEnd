@@ -1,0 +1,794 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Danh sách phiếu nhập kho</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <h3>THÔNG TIN CHUNG</h3>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Mã phiếu nhập kho</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+                      <div class="col-md-8"></div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Số Ticket</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Người đề xuất/Người tạo phiếu</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Ngày đề xuất/ Ngày tạo phiếu</label>
+                            <date-control
+                            disabled
+                            autoFocus>
+                            </date-control>
+                        </div>
+                      </div>
+
+                      <div class="col-md-8">
+                        <div class="form-group">
+                            <label>File đính kèm</label>
+                            <file-picker></file-picker>
+                        </div>
+                      </div>
+
+                      <div class="col-md-8">
+                        <div class="form-group">
+                            <label>{{l("Note")}}</label>
+                            <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h3>THÔNG TIN TICKET ĐỀ XUẤT MUA MỚI</h3>
+                      </div>
+                      <div class="col-md-12">
+                        <h4>THÔNG TIN NGƯỜI THỤ HƯỞNG</h4>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Công ty thụ hưởng</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Khối thụ hưởng</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Phòng ban thụ hưởng</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Nhân viên thụ hưởng</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Địa điểm làm việc</label>
+                            <input disabled class="form-control" type="text"  maxlength="15">
+                        </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <h4>DANH SÁCH TÀI SẢN ĐỀ XUẤT MUA</h4>
+                      </div>
+                      
+                      <div class="primeng-datatable-container col-md-12">
+                        <editable-table #proposedAssetEditTable class="custom-table ui-table">
+                            <thead>
+                                <tr>
+                                    <th><span style="width: 40px">{{l("No")}}</span></th>
+                                    <th sortField="anneX_NAME"><span style="width: 150px">Tên tài sản</span></th>
+                                    <th sortField="anneX_SIGN_DT" style="width:50%"><span style="width: 150px">Mô tả tài sản</span></th>
+                                    <th sortField="anneX_TERM" style="width:50%" ><span style="width: 150px">Đơn giá đề xuất</span></th>
+                                    <th sortField="anneX_TERMINATE_DT"><span style="width: 150px">Số lượng đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Thành tiền đề xuất</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Cấp lần đầu/Cấp phát lại</span></th>
+                                    <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of proposedAssetEditTable.dataInPage" #editRow ng-form [hidden]="item.page != proposedAssetEditTable.currentPage">
+                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                    <td>
+                                      <span class="mo-header"></span>
+                                      <input disabled name="anneX_NAME{{item.no}}" class="form-control m-input">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </editable-table>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>HÌNH THỨC KHẤU HAO</h4>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="depreciationMethod" id="exampleRadios1" value="option1" checked>
+                        <label class="form-check-label" for="exampleRadios1">
+                          Khấu hao Fast
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="depreciationMethod" id="exampleRadios2" value="option2">
+                        <label class="form-check-label" for="exampleRadios2">
+                          Khấu hao AMS
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="depreciationMethod" id="exampleRadios3" value="option3">
+                        <label class="form-check-label" for="exampleRadios3">
+                          Không khấu hao
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>THÔNG TIN HÓA ĐƠN</h4>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Số hóa đơn</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="15">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Ngày hóa đơn</label>
+                          <date-control
+                          [disabled]="disableInput"
+                          autoFocus>
+                          </date-control>
+                      </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>THÔNG TIN TÀI SẢN</h4>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Loại tài sản</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Nhóm tài sản cấp 1</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Nhóm tài sản cấp 2</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Số tháng khấu hao</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="4">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Tỷ lệ khấu hao</label>
+                          <input disabled class="form-control" type="text">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Nhà cung cấp</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+
+                    <div class="col-md-8">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                              <label>Mã tài sản</label>
+                              <input disabled class="form-control" type="text"  maxlength="15">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                              <label>Tên tài sản</label>
+                              <input disabled class="form-control" type="text"  maxlength="15">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                              <label>Thông tin mô tả</label>
+                              <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes" maxlength="1000"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Số serial</label>
+                          <textarea class="form-control" [disabled]="disableInput" type="text" rows="8" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Nhập theo lô</label>
+                          <!-- <checkbox-control [disabled]="disableInput" (onchange)="" [checked]=""></checkbox-control> -->
+                          <div class="d-flex flex-row">
+                            <checkbox-control [disabled]="disableInput" ></checkbox-control>Có
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Số lượng</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="10">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Tổng giá trị</label>
+                          <input disabled class="form-control" type="text">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Tên trên nhãn</label>
+                          <input required [disabled]="disableInput" class="form-control" type="text"  maxlength="200">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Thương hiệu</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="200">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Kích thước/ Diện tích</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="200">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Màu sắc</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="200">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Năm sản xuất</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="4">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Biển số</label>
+                          <input [disabled]="disableInput" class="form-control" type="text"  maxlength="10">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Nguyên giá</label>
+                          <input disabled class="form-control" type="text">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Đơn giá</label>
+                          <input required [disabled]="disableInput" class="form-control" type="number">
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group required">
+                          <label>% VAT</label>
+                          <input required [disabled]="disableInput" class="form-control" type="number">
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group required">
+                          <label>VAT</label>
+                          <input required [disabled]="disableInput" class="form-control" type="number">
+                      </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>CÁC CHI PHÍ KHÁC</h4>
+                    </div>
+                    <div class="action-button col-md-12">
+                      <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewOtherCost()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                      <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="otherCostEditTable.removeAllCheckedItem()"><i
+                              class="pi pi-times"></i>{{l("Delete")}}</button>
+                    </div>
+                    <div class="primeng-datatable-container col-md-12">
+                      <editable-table #otherCostEditTable class="custom-table ui-table">
+                          <thead>
+                              <tr>
+
+                                  <th>
+                                      <span style="width: 40px">
+                                          <checkbox-control [disabled]="disableInput" (onchange)="otherCostEditTable.checkAll($event.target.checked)" [checked]="otherCostEditTable.isCheckAll"></checkbox-control>
+                                      </span>
+                                  </th>
+                                  <th><span style="width: 40px">{{l("No")}}</span></th>
+                                  <th sortField="mortgagE_RELEASE_DATE"><span style="width: 150px">Loại chi phí</span></th>
+                                  <th sortField="mortgagE_RELEASE_VALUE"><span style="width: 150px">Tên chi phí</span></th>
+                                  <th sortField="remaiN_DEBT"><span style="width: 150px">Số tiền</span></th>
+                                  <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
+                              </tr>
+
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let item of otherCostEditTable.dataInPage" #editRow ng-form [hidden]="item.page != otherCostEditTable.currentPage">
+
+                                  <td class="center">
+                                      <span class="mo-header"></span>
+                                      <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                  </td>
+
+                                  <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <select2-custom (onChangeSelect2)="onSelect($event)"
+                                      class="transparent m-input"
+                                      [disabled]="disableInput"
+                                      name="mortgagE_STATUS"
+                                      [(list)]="tempList"
+                                      [valueMember]="'value'"
+                                      [displayMember]="'value'"
+                                      >
+                                    </select2-custom> 
+                                  </td>
+                                  
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="mortgagE_RELEASE_VALUE{{item.no}}" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="mortgagE_RELEASE_VALUE{{item.no}}" class="form-control m-input">
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <input [disabled]="disableInput" name="mortgagE_RELEASE_VALUE{{item.no}}" class="form-control m-input">
+                                  </td>
+                                  
+                              </tr>
+                          </tbody>
+                      </editable-table>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                      <h4>THÔNG TIN TÀI SẢN</h4>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Tăng tài sản</label>
+                          <!-- <checkbox-control [disabled]="disableInput" (onchange)="" [checked]=""></checkbox-control> -->
+                          <div class="d-flex flex-row">
+                            <checkbox-control [disabled]="disableInput" [checked]="true"></checkbox-control>Có
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>In nhãn</label>
+                          <!-- <checkbox-control [disabled]="disableInput" (onchange)="" [checked]=""></checkbox-control> -->
+                          <div class="d-flex flex-row">
+                            <checkbox-control [disabled]="disableInput" [checked]="true"></checkbox-control>Có
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Hình ảnh tài sản</label>
+                          <image-carousel></image-carousel>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                          <label>Ghi chú</label>
+                          <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes" maxlength="1000"></textarea>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Công ty quản lý</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                              name="invested_prop"
+                              class="transparent"
+                              [disabled]="disableInput"
+                              [(list)]="tempList"
+                              [valueMember]="'value'"
+                              [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Kho nhập</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Vị trí kho</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                      <h4>THÔNG TIN BẢO HÀNH VÀ LỊCH BẢO HÀNH</h4>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Thời gian bảo hành</label>
+                          <div class="d-flex flex-row align-items-center">
+                            <input [disabled]="disableInput" class="form-control" type="text"  maxlength="10"> Tháng
+                          </div>
+                      </div>
+                    </div>
+                    <div class="action-button col-md-12">
+                      <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewGuarantee()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                      <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="guaranteeEditTable.removeAllCheckedItem()"><i
+                              class="pi pi-times"></i>{{l("Delete")}}</button>
+                    </div>
+                    <div class="primeng-datatable-container col-md-12">
+                      <editable-table #guaranteeEditTable class="custom-table ui-table">
+                          <thead>
+                              <tr>
+
+                                  <th>
+                                      <span style="width: 40px">
+                                          <checkbox-control [disabled]="disableInput" (onchange)="guaranteeEditTable.checkAll($event.target.checked)" [checked]="guaranteeEditTable.isCheckAll"></checkbox-control>
+                                      </span>
+                                  </th>
+                                  <th><span style="width: 40px">{{l("No")}}</span></th>
+                                  <th sortField="mortgagE_RELEASE_DATE"><span style="width: 150px">Ngày bảo hành</span></th>
+                                  <th sortField="mortgagE_RELEASE_VALUE"><span style="width: 150px">Ngày hết hạn</span></th>
+                                  <th sortField="remaiN_DEBT"><span style="width: 150px">Đơn vị bảo hành</span></th>
+                                  <th sortField="notes"><span style="width: 150px">Địa điểm bảo hành</span></th>
+                                  <th sortField="notes"><span style="width: 150px">Nội dung bảo hành</span></th>
+                              </tr>
+
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let item of guaranteeEditTable.dataInPage" #editRow ng-form [hidden]="item.page != guaranteeEditTable.currentPage">
+
+                                  <td class="center">
+                                      <span class="mo-header"></span>
+                                      <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                  </td>
+
+                                  <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <date-control
+                                    disabled
+                                    autoFocus>
+                                    </date-control> 
+                                  </td>
+                                  
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <date-control
+                                    disabled
+                                    autoFocus>
+                                    </date-control>
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <select2-custom (onChangeSelect2)="onSelect($event)"
+                                      class="transparent m-input"
+                                      [disabled]="disableInput"
+                                      name="mortgagE_STATUS"
+                                      [(list)]="tempList"
+                                      [valueMember]="'value'"
+                                      [displayMember]="'value'"
+                                      >
+                                    </select2-custom> 
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <textarea class="form-control m-input" [disabled]="disableInput" type="text" name="notes"></textarea>
+                                  </td>
+                                  <td>
+                                    <span class="mo-header"></span>
+                                    <textarea class="form-control m-input" [disabled]="disableInput" type="text" name="notes"></textarea>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </editable-table>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                      <h4>XUẤT SỬ DỤNG TÀI SẢN</h4>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Xuất sử dụng</label>
+                          <!-- <checkbox-control [disabled]="disableInput" (onchange)="" [checked]=""></checkbox-control> -->
+                          <div class="d-flex flex-row">
+                            <checkbox-control [disabled]="disableInput"></checkbox-control>Có
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Mã phiếu xuất sử dụng</label>
+                          <input disabled class="form-control" type="text">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Người tạo phiếu</label>
+                          <input disabled class="form-control" type="text">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Ngày xuất sử dụng</label>
+                          <date-control
+                          required
+                          [disabled]="disableInput"
+                          autoFocus>
+                          </date-control>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Công ty sử dụng</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Khối sử dụng</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Phòng ban sử dụng</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Nhân viên sử dụng</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Số điện thoại</label>
+                          <input [disabled]="disableInput" class="form-control" type="text" maxlength="20">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group required">
+                          <label>Vị trí tài sản</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          required
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Mức độ an toàn thông tin</label>
+                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                          name="invested_prop"
+                          class="transparent"
+                          [disabled]="disableInput"
+                          [(list)]="tempList"
+                          [valueMember]="'value'"
+                          [displayMember]="'value'">
+                          </select2-custom>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Sử dụng chung</label>
+                          <div class="d-flex flex-row">
+                            <checkbox-control [disabled]="disableInput"></checkbox-control> Có
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                          <label>File đính kèm</label>
+                          <file-picker></file-picker>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                          <label>Ghi chú</label>
+                          <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes" maxlength="1000"></textarea>
+                      </div>
+                    </div>
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>

@@ -38,7 +38,7 @@
                               <div class="col-md-12">
                                   <div class="form-group required">
                                       <label>Mã chủ sở hữu</label>
-                                      <input required class="form-control" disabled type="text" #owneR_ID="ngModel" name="owneR_ID" maxleght="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.owneR_ID">
+                                      <input required class="form-control" disabled type="text" #owneR_ID="ngModel" name="owneR_ID" maxlength="15" pattern="{{s('gAMSProCore.CodeNumberRegexValidation')}}" [(ngModel)]="inputModel.owneR_ID">
                                       <div class="error-message" *ngIf="owneR_ID.invalid && isShowError">
                                           <span *ngIf="owneR_ID?.errors.required">Mã chủ sở hữu
                                               {{l("ValidationRequired")}}</span>
@@ -101,5 +101,3 @@
       </div>
   </div>
 </div>
-
-<!-- <branch-modal #branchModal [multiple]="false" (onSelect)="onSelectBranch($event)"></branch-modal> -->

@@ -3,7 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">
-                    <span>{{title}}</span>
+                    <!-- <span>{{title}}</span> -->
+                    <span></span>
                 </h4>
                 <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')" [disabled]="waiting">
                     <span aria-hidden="true">&times;</span>
@@ -12,7 +13,7 @@
             <div class="modal-body">
                 <form class="horizontal-form filter-form" #editForm="ngForm" autocomplete="off">
                     <div class="form-group required">
-                        <label>{{l("Notes")}}</label>
+                        <label>{{title}}</label>
                         <textarea #rejectModalNotes="ngModel" required class="form-control" [(ngModel)]="notes" name="rejectModalNotes"></textarea>
                         <div class="error-message" *ngIf="rejectModalNotes.invalid && isShowError">
                             <span *ngIf="rejectModalNotes?.errors.required">{{l('Notes')}}

@@ -1,0 +1,157 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Danh sách cổ phần</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Công ty</label>
+                                      <input class="form-control" disabled type="text" name="companY_NAME" maxlength="15" >
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Loại hình công ty</label>
+                                      <input class="form-control" disabled type="text" name="companY_TYPE" maxlength="15" >
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Mệnh giá</label>
+                                      <input class="form-control" disabled type="text" name="companY_PAR_VALUE_PER_SHARE" maxlength="15">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Mã cổ đông</label>
+                                      <input class="form-control" disabled type="text" #id="ngModel" name="id" maxlength="15" [(ngModel)]="inputModel.id">
+                                  </div>
+                              </div>
+                              
+                              <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label>Loại cổ đông</label>
+                                    <select2-custom (onChangeSelect2)="onSelect($event)"
+                                      class="transparent"
+                                      required
+                                      [disabled]="disableInput"
+                                      #shareholdeR_TYPE="ngModel"
+                                      name="shareholdeR_TYPE"
+                                      [(ngModel)]="inputModel.shareholdeR_TYPE"
+                                      [(list)]="tempList"
+                                      [valueMember]="'value'"
+                                      [displayMember]="'value'"
+                                      >
+                                  </select2-custom>
+                                    <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                    <div class="error-message" *ngIf="shareholdeR_TYPE.invalid && isShowError">
+                                        <span *ngIf="shareholdeR_TYPE?.errors.required">Loại cổ đông
+                                            {{l("ValidationRequired")}}</span>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label>Tên cổ đông</label>
+                                    <select2-custom (onChangeSelect2)="onSelect($event)"
+                                      class="transparent"
+                                      required
+                                      [disabled]="disableInput"
+                                      #shareholdeR_NAME="ngModel"
+                                      name="shareholdeR_NAME"
+                                      [(ngModel)]="inputModel.shareholdeR_NAME"
+                                      [(list)]="tempList"
+                                      [valueMember]="'value'"
+                                      [displayMember]="'value'"
+                                      >
+                                  </select2-custom>
+                                    <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                    <div class="error-message" *ngIf="shareholdeR_NAME.invalid && isShowError">
+                                        <span *ngIf="shareholdeR_NAME?.errors.required">Tên cổ đông
+                                            {{l("ValidationRequired")}}</span>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group required">
+                                      <label>Số cổ phần</label>
+                                      <input required class="form-control" [disabled]="disableInput" type="text" #shareholdeR_SHARE="ngModel" name="shareholdeR_SHARE" [(ngModel)]="inputModel.shareholdeR_SHARE">
+                                  </div>
+                                  <div class="error-message" *ngIf="shareholdeR_SHARE.invalid && isShowError">
+                                    <span *ngIf="shareholdeR_SHARE?.errors.required">Số cổ phần
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group required">
+                                      <label>GT Vốn góp</label>
+                                      <input required class="form-control" [disabled]="disableInput" type="text" #shareholdeR_VALUE="ngModel" name="shareholdeR_VALUE" [(ngModel)]="inputModel.shareholdeR_VALUE">
+                                  </div>
+                                  <div class="error-message" *ngIf="shareholdeR_VALUE.invalid && isShowError">
+                                    <span *ngIf="shareholdeR_VALUE?.errors.required">GT Vốn góp
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                              <!-- <div class="col-md-4">
+                                  <div class="form-check form-check-inline">
+                                      <input class="form-check-input" [disabled]="disableInput" type="checkbox" #recorD_STATUS="ngModel" name="recorD_STATUS" [(ngModel)]="checkIsActive" (click)="onCheckActive()" style="width: 18px; height: 18px;">
+                                      <label class="form-check-label">{{l("IsActive")}}</label>
+                                  </div>
+                              </div> -->
+                              <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-group">
+                                    <!-- <label>Xuất sử dụng</label> -->
+                                    <div class="d-flex flex-row">
+                                      <checkbox-control [disabled]="disableInput" (onchange)="onCheckActive()" [checked]="inputModel.recorD_STATUS"></checkbox-control>
+                                      <label>{{l("IsActive")}}</label>
+                                    </div>
+                                </div>
+                              </div>
+
+                              <div class="col-md-8">
+                                  <div class="form-group">
+                                      <label>{{l("Note")}}</label>
+                                      <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>

@@ -620,6 +620,8 @@ export abstract class DefaultComponentBase extends ChangeDetectionComponent{
         }
         abp.ui.clearBusy();
         this.appToolbar.setButtonApproveEnable(false);
+        this.appToolbar.setButtonRejectEnable(false);
+        this.appToolbar.setButtonRevokeEnable(false);
         this.updateView();
     }
     approveImportWareFSuccess() {
@@ -721,7 +723,8 @@ export abstract class DefaultComponentBase extends ChangeDetectionComponent{
         this.updateView();
     }
     rejectSuccess() {
-        this.showSuccessMessage(this.l('SuccessfullyReject'));
+        // this.showSuccessMessage(this.l('SuccessfullyReject'));
+        this.showSuccessMessage('Từ chối thành công');
         let routerKey = this.activeRoute['_routerState'].snapshot.url;
         routerKey = routerKey.substr(0, routerKey.indexOf('-view;'));
         if (this.cacheRouteReuseStrategy.storedRouteHandles.get(routerKey)) {
@@ -731,7 +734,25 @@ export abstract class DefaultComponentBase extends ChangeDetectionComponent{
             this['inputModel'].autH_STATUS = AuthStatusConsts.Reject;
         }
         abp.ui.clearBusy();
-        this.appToolbar.setButtonAccessEnable(false);
+        this.appToolbar.setButtonApproveEnable(false);
+        this.appToolbar.setButtonRejectEnable(false);
+        this.appToolbar.setButtonRevokeEnable(false);
+        this.updateView();
+    }
+    revokeSuccess() {
+        this.showSuccessMessage('Hủy bỏ thành công');
+        let routerKey = this.activeRoute['_routerState'].snapshot.url;
+        routerKey = routerKey.substr(0, routerKey.indexOf('-view;'));
+        if (this.cacheRouteReuseStrategy.storedRouteHandles.get(routerKey)) {
+            this.cacheRouteReuseStrategy.storedRouteHandles.get(routerKey)['componentRef'].instance['shouldResetTable'] = true;
+        }
+        if (this['inputModel']) {
+            this['inputModel'].autH_STATUS = AuthStatusConsts.Revoke;
+        }
+        abp.ui.clearBusy();
+        this.appToolbar.setButtonApproveEnable(false);
+        this.appToolbar.setButtonRejectEnable(false);
+        this.appToolbar.setButtonRevokeEnable(false);
         this.updateView();
     }
     onChangeProperty(propertyName) {

@@ -27,13 +27,17 @@
         <i class="pi pi-eye"></i>
         <span>{{l("View")}}</span>
     </button>
+    <button *ngIf="isEdit && !buttonApproveHidden" [disabled]="enable? !buttonApproveEnable : true" (click)="approve()" class="btn btn-primary">
+        <i class="pi pi-check"></i>
+        <span>{{l("Approve")}}</span>
+    </button>
     <button *ngIf="isEdit && !buttonRejectHidden" [disabled]="enable? !buttonRejectEnable: true" (click)="reject()" class="btn btn-primary">
         <i class="bi bi-backspace"></i>
         {{l("Reject")}}
     </button>
-    <button *ngIf="isEdit && !buttonApproveHidden" [disabled]="enable? !buttonApproveEnable : true" (click)="approve()" class="btn btn-primary">
-        <i class="pi pi-check"></i>
-        <span>{{l("Approve")}}</span>
+    <button *ngIf="isEdit && !buttonRevokeHidden" [disabled]="enable? !buttonRevokeEnable: true" (click)="revoke()" class="btn btn-primary">
+        <i class="bi bi-x-lg"></i>
+        Hủy bỏ
     </button>
     <button *ngIf="isEdit && !buttonAccessHidden" [disabled]="enable? !buttonAccessEnable: true" (click)="access()" class="btn btn-primary">
         <i class="bi bi-check-circle"></i>
@@ -61,3 +65,6 @@
     </button> 
   
 </div>
+
+<reject-modal #rejectModal [title]="l('PleaseTypeReasonReturn')" (onSubmitEvent)="rejectAction($event)"></reject-modal>
+<revoke-modal #revokeModal [title]="l('PleaseTypeReasonRevoke')" (onSubmitEvent)="revokeAction($event)"></revoke-modal>

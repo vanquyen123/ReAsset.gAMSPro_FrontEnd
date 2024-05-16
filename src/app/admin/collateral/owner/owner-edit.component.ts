@@ -122,10 +122,10 @@ export class OwnerEditComponent extends DefaultComponentBase implements OnInit, 
 
   onCheckActive() {
     if(!this.checkIsActive) {
-        this.inputModel.recorD_STATUS = "1";
+        this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
     }
     else {
-        this.inputModel.recorD_STATUS = "0";
+        this.inputModel.recorD_STATUS = RecordStatusConsts.InActive;
     }
   }
 

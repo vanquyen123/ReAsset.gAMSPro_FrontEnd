@@ -1,0 +1,23 @@
+<div class="chart-container">
+    <canvas id="ExpiredMortgageChart" ></canvas>
+    <div class="d-inline-flex flex-row" style="height: 30px;">
+        <button 
+        type="button" 
+        class="btn btn-primary btn-sm h-100 d-flex justify-content-center align-items-center" 
+        style="width: 30px"
+        [style.cursor]="selectedYear==0 ? 'default' : 'pointer'"
+        (click)="setToPreviouYear()"
+        [disabled]="selectedYear==0">
+            <span class="ui-paginator-icon pi pi-caret-left"></span>
+        </button>
+        <input type="number" [(ngModel)]="selectedYear" class="h-100 mx-2" style="width: 80px; text-align: center;" (change)="changeChart()">
+        <button 
+        type="button" 
+        class="btn btn-primary btn-sm h-100 d-flex justify-content-center align-items-center" 
+        style="width: 30px"
+        (click)="setToNextYear()"
+        >
+            <span class="ui-paginator-icon pi pi-caret-right"></span>
+        </button>
+    </div>
+</div>

@@ -1,0 +1,260 @@
+<div [@routerTransition]>
+    <appToolbar #appToolbar></appToolbar>
+    <div id="page-list-area">
+        <div class="m-subheader">
+            <div class="row align-items-center">
+                <div class="mr-auto col-auto">
+                    <a
+                        [routerLink]="rootPage()"
+                        class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                    >
+                        <span>{{l("HomePage")}}</span>
+                    </a>
+                    <h3
+                        class="m-subheader__title m-subheader__title--separator"
+                    >
+                        <!-- Begin Title -->
+                        <span>Danh mục Công ty</span>
+                        <!-- End Title -->
+                    </h3>
+                </div>
+                <div class="col text-right mt-3 mt-md-0">
+                    <div class="btn-group dropdown mr-2">
+                        <button class="btn btn-outline-success"
+                        *ngIf="appToolbar.buttonSearchEnable"
+                            (click)="exportExcel()">
+                            <i class="far fa-file-excel"></i>
+                            {{l("ExcelOperations")}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content"
+            class="m-content">
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__body">
+                    <form class="horizontal-form filter-form"
+                        autocomplete="off">
+                        <div class="m-form m-form--label-align-right">
+                            <div class="row align-items-center m--margin-bottom-30">
+                                <!-- Begin Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Mã công ty</label>
+                                        <input 
+                                            [(ngModel)]="filterInput.companY_CODE"
+                                            name="companY_CODEFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Tên công ty</label>
+                                        <input 
+                                            [(ngModel)]="filterInput.companY_NAME"
+                                            name="companY_NAMEFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Loại hình công ty</label>
+                                        <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                            name="companY_TYPE"
+                                            class="transparent"
+                                            [(ngModel)]="filterInput.companY_TYPE"
+                                            [emptyText]="l('SelectAll')"
+                                            [(list)]="records"
+                                            [valueMember]="'recorD_STATUS'"
+                                            [displayMember]="'recordName'">
+                                        </select2-custom>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Mệnh giá</label>
+                                        <input 
+                                            [(ngModel)]="filterInput.companY_PAR_VALUE_PER_SHARE"
+                                            name="companY_PAR_VALUE_PER_SHAREFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="number">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Địa chỉ</label>
+                                        <input 
+                                            [(ngModel)]="filterInput.companY_ADDRESS"
+                                            name="companY_ADDRESSFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Số điện thoại</label>
+                                        <input 
+                                            [(ngModel)]="filterInput.companY_TEL"
+                                            name="companY_TELFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Mã số thuế</label>
+                                        <input 
+                                            [(ngModel)]="filterInput.companY_TEL"
+                                            name="companY_TELFilter"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
+                                    </div>
+                                </div>
+                                
+                                <!-- Khối -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Hoạt động</label>
+                                        <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                            name="recorD_STATUS"
+                                            class="transparent"
+                                            [(ngModel)]="filterInput.recorD_STATUS"
+                                            [emptyText]="l('SelectAll')"
+                                            [(list)]="records"
+                                            [valueMember]="'recorD_STATUS'"
+                                            [displayMember]="'recordName'">
+                                        </select2-custom>
+                                    </div>
+                                </div>
+
+                                <!-- Trạng thái duyệt -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{l("ApproveStatus")}}</label>
+                                        <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                            name="autH_STATUS"
+                                            class="transparent"
+                                            [(ngModel)]="filterInput.autH_STATUS"
+                                            [emptyText]="l('SelectAll')"
+                                            [(list)]="auths"
+                                            [valueMember]="'autH_STATUS'"
+                                            [displayMember]="'autH_STATUS_NAME'">
+                                        </select2-custom>
+                                    </div>
+                                </div>
+                                <!-- End Filter -->
+                                <div style="display:none;"
+                                    class="col-md-12">
+                                    <div class="form-group">
+                                        <button *ngIf="appToolbar.buttonSearchEnable"
+                                            class="btn btn-primary btn-search"
+                                            (click)="onSearch()"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row align-items-center">
+                        <div class="primeng-datatable-container">
+                            <div class="spinner-border m-5"
+                                role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <core-table #coreTable
+                                class="custom-table ui-table"
+                                (reloadPage)="search()">
+                                <thead>
+                                    <tr>
+                                        <!-- Begin Table Column -->
+                                        <!-- STT -->
+                                        <th class="center">
+                                            <span style="width: 40px">{{l("No")}}</span>
+                                        </th>
+                                        <th style="width:30%"
+                                            sortField="companY_CODE">
+                                            <span style="width: 150px">Mã công ty</span>
+                                        </th>
+                                        <th style="width:40%"
+                                            sortField="companY_NAME">
+                                            <span style="width: 150px">Tên công ty</span>
+                                        </th>
+                                        <th style="width:30%"
+                                            sortField="companY_TYPE">
+                                            <span style="width: 150px">Loại hình công ty</span>
+                                        </th>
+                                        <th style="width:30%"
+                                            sortField="companY_PAR_VALUE_PER_SHARE">
+                                            <span style="width: 150px">Mệnh giá</span>
+                                        </th>
+                                        <th style="width:30%"
+                                            sortField="companY_ADDRESS">
+                                            <span style="width: 150px">Địa chỉ</span>
+                                        </th>
+                                        <th style="width:30%"
+                                            sortField="companY_TEL">
+                                            <span style="width: 150px">Số điện thoại</span>
+                                        </th>
+                                        <th style="width:30%"
+                                            sortField="companY_TAX_NO">
+                                            <span style="width: 150px">Mã số thuế</span>
+                                        </th>
+                                        <th sortField="recorD_STATUS_NAME"
+                                            style="width:100%">
+                                            <span style="width: 200px">{{l("IsActive")}}</span>
+                                        </th>
+                                        <!-- Trạng thái duyệt -->
+                                        <th sortField="autH_STATUS_NAME">
+                                            <span style="width: 150px">{{l("ApproveStatus")}}</span>
+                                        </th>
+                                        <th sortField="notes">
+                                          <span style="width: 150px">Ghi chú</span>
+                                        </th>
+                                        <!-- End Table Column -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let record of dataTable.records"
+                                        class="selectable"
+                                        (dblclick)="onDblclick(record)"
+                                        (click)="selectRow($event,record)">
+                                        <!-- Begin Table Value -->
+                                        <!-- STT -->
+                                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
+                                            + dataTable.records.indexOf(record)) + 1}}
+                                        </td>
+                                        <td><span class="mo-header"></span>{{record.companY_CODE}}</td>
+                                        <td><span class="mo-header"></span>{{record.companY_NAME}}</td>
+                                        <td><span class="mo-header"></span>{{record.companY_TYPE}}</td>
+                                        <td><span class="mo-header"></span>{{record.companY_PAR_VALUE_PER_SHARE}}</td>
+                                        <td><span class="mo-header"></span>{{record.companY_ADDRESS}}</td>
+                                        <td><span class="mo-header"></span>{{record.companY_TEL}}</td>
+                                        <td><span class="mo-header"></span>{{record.companY_TAX_NO}}</td>
+                                        <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
+                                        <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                        <td><span class="mo-header"></span>{{record.notes}}</td>
+                                        <!-- End Table Value -->
+                                    </tr>
+                                </tbody>
+                            </core-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

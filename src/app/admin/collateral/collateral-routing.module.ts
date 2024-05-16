@@ -9,6 +9,25 @@ import { OwnerComponent } from "./owner/owner.component";
 import { OwnerEditComponent } from "./owner/owner-edit.component";
 import { ContractComponent } from "./contract/contract.component";
 import { ContractEditComponent } from "./contract/contract-edit.component";
+import { MortgageComponent } from "./mortgage/mortgage.component";
+import { MortgageEditComponent } from "./mortgage/mortgage-edit.component";
+import { ShareholderComponent } from "./shareholder/shareholder.component";
+import { ShareholderEditComponent } from "./shareholder/shareholder-edit.component";
+import { AssetLookupComponent } from "./asset-lookup/asset-lookup.component";
+import { AssetLookupEditComponent } from "./asset-lookup/asset-lookup-edit.component";
+import { GoodReceivedNoteComponent } from "./good-received-note/good-received-note.component";
+import { GoodReceivedNoteEditComponent } from "./good-received-note/good-received-note-edit.component";
+import { SodoComponent } from "./sodo/sodo.component";
+import { SodoEditComponent } from "./sodo/sodo-edit.component";
+import { LandAreaComponent } from "./land-area/land-area.component";
+import { LandAreaEditComponent } from "./land-area/land-area-edit.component";
+import { InvestmentPropertyComponent } from "./investment-property/investment-property.component";
+import { InvestmentPropertyEditComponent } from "./investment-property/investment-property-edit.component";
+import { ProjectComponent } from "./project/project.component";
+import { ProjectEditComponent } from "./project/project-edit.component";
+import { CompanyComponent } from "./company/company.component";
+import { CompanyEditComponent } from "./company/company-edit.component";
+import { ForecastComponent } from "./forecast/forecast.component";
 
 @NgModule({
     imports: [
@@ -36,7 +55,53 @@ import { ContractEditComponent } from "./contract/contract-edit.component";
                     {path: "contract-add", component: ContractEditComponent, data: { editPageState: EditPageState.add }},
                     {path: "contract-edit", component: ContractEditComponent, data: { editPageState: EditPageState.edit }},
                     {path: "contract-view", component: ContractEditComponent, data: { editPageState: EditPageState.viewDetail }},
-                    
+                    //the chap
+                    {path: "mortgage", component: MortgageComponent},
+                    {path: "mortgage-add", component: MortgageEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "mortgage-edit", component: MortgageEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "mortgage-view", component: MortgageEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //co phan
+                    {path: "shareholder", component: ShareholderComponent},
+                    {path: "shareholder-add", component: ShareholderEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "shareholder-edit", component: ShareholderEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "shareholder-view", component: ShareholderEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //tra cuu tai san
+                    {path: "asset-lookup", component: AssetLookupComponent},
+                    {path: "asset-lookup-add", component: AssetLookupEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "asset-lookup-edit", component: AssetLookupEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "asset-lookup-view", component: AssetLookupEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //phieu nhap kho
+                    {path: "good-received-note", component: GoodReceivedNoteComponent},
+                    {path: "good-received-note-add", component: GoodReceivedNoteEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "good-received-note-edit", component: GoodReceivedNoteEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "good-received-note-view", component: GoodReceivedNoteEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //so do
+                    {path: "sodo", component: SodoComponent},
+                    {path: "sodo-add", component: SodoEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "sodo-edit", component: SodoEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "sodo-view", component: SodoEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //khu dat
+                    {path: "land-area", component: LandAreaComponent},
+                    {path: "land-area-add", component: LandAreaEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "land-area-edit", component: LandAreaEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "land-area-view", component: LandAreaEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //BDS dau tu
+                    {path: "investment-property", component: InvestmentPropertyComponent},
+                    {path: "investment-property-add", component: InvestmentPropertyEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "investment-property-edit", component: InvestmentPropertyEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "investment-property-view", component: InvestmentPropertyEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //du an
+                    {path: "project", component: ProjectComponent},
+                    {path: "project-add", component: ProjectEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "project-edit", component: ProjectEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "project-view", component: ProjectEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //cong ty
+                    {path: "company", component: CompanyComponent},
+                    {path: "company-add", component: CompanyEditComponent, data: { editPageState: EditPageState.add }},
+                    {path: "company-edit", component: CompanyEditComponent, data: { editPageState: EditPageState.edit }},
+                    {path: "company-view", component: CompanyEditComponent, data: { editPageState: EditPageState.viewDetail }},
+                    //du doan
+                    {path: "forecast", component: ForecastComponent},
                 ],
             },
         ]),

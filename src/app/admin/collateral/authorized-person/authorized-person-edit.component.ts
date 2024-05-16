@@ -120,10 +120,10 @@ export class AuthorizedPersonEditComponent extends DefaultComponentBase implemen
 
   onCheckActive() {
     if(!this.checkIsActive) {
-        this.inputModel.recorD_STATUS = "1";
+        this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
     }
     else {
-        this.inputModel.recorD_STATUS = "0";
+        this.inputModel.recorD_STATUS = RecordStatusConsts.InActive;
     }
   }
 
@@ -257,8 +257,4 @@ export class AuthorizedPersonEditComponent extends DefaultComponentBase implemen
 
   onResetSearch(): void {
   }
-
-  subscriptionEndDateChange(e): void {
-    }
-  
 }

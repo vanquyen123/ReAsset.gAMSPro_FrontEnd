@@ -1,0 +1,1313 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div class="m-subheader">
+      <div class="row align-items-center">
+          <div class="mr-auto col-auto">
+              <!-- Begin Title -->
+              <a [routerLink]="rootPage()" class="m-subheader__title m-subheader__title--separator link-to-list-page home-page">
+                  <span>{{l("HomePage")}}</span>
+              </a>
+              <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
+                  <span>Danh sách sổ</span>
+              </h3>
+              <span [ngSwitch]="editPageState" class="m-section__sub">
+                  <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
+                  <span *ngSwitchCase="EditPageState.edit">{{l("Toolbar_Update")}}</span>
+                  <span *ngSwitchCase="EditPageState.viewDetail">{{l("Toolbar_ViewDetail")}}</span>
+              </span>
+              <!-- End Title -->
+          </div>
+          <div class="col text-right mt-3 mt-md-0">
+          </div>
+      </div>
+  </div>
+
+  <div id="content" class="m-content">
+      <div class="m-portlet m-portlet--mobile">
+          <div class="m-portlet__body">
+              <!-- Begin Form -->
+              <form #editForm="ngForm" id="editForm" novalidate (ngSubmit)="saveInput()" autocomplete="off">
+                  <div class="modal-body row">
+                      <div class="col-md-12 align-right">
+                          <div class="form-group">
+                              <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <h3>THÔNG TIN CHUNG</h3>
+                            </div>
+                            
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Người tạo</label>
+                                  <input disabled class="form-control" type="text" #makeR_ID="ngModel" name="makeR_ID" [(ngModel)]="inputModel.makeR_ID">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Ngày tạo</label>
+                                <date-control
+                                [disabled] = "true"
+                                #creatE_DT="ngModel"
+                                name="creatE_DT"
+                                [(ngModel)]="inputModel.creatE_DT"
+                                autoFocus>
+                                </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-12">
+                              <h4>THÔNG TIN SỔ</h4>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Dự án</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #projecT_ID="ngModel"
+                                    name="projecT_ID"
+                                    [(ngModel)]="inputModel.projecT_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                  <label>Tình trạng sang tên</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    required
+                                    [disabled]="disableInput"
+                                    #sodO_TRANSFER_STATUS="ngModel"
+                                    name="sodO_TRANSFER_STATUS"
+                                    [(ngModel)]="inputModel.sodO_TRANSFER_STATUS"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <div class="error-message" *ngIf="sodO_TRANSFER_STATUS.invalid && isShowError">
+                                      <span *ngIf="sodO_TRANSFER_STATUS?.errors.required">Tình trạng sang tên
+                                          {{l("ValidationRequired")}}</span>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Chủ sở hữu</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #owneR_INFO_OR_ID="ngModel"
+                                    name="owneR_INFO_OR_ID"
+                                    [(ngModel)]="inputModel.owneR_INFO_OR_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                                  <!-- Input khi chon type -->
+                                  <!-- <input disabled class="form-control" type="text" #mortgagE_ID="ngModel" name="mortgagE_ID" [(ngModel)]="inputModel.mortgagE_ID"> -->
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Số vào sổ</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_SO_VAO_SO="ngModel" name="sodO_SO_VAO_SO" [(ngModel)]="inputModel.sodO_SO_VAO_SO">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Mã vạch</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_BACODE_SERI="ngModel" name="sodO_BACODE_SERI" [(ngModel)]="inputModel.sodO_BACODE_SERI">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Số phát hành</label>
+                                  <!-- <input [disabled]="disableInput" class="form-control" type="text" #sodO_PUBLISH_NUMBER="ngModel" name="sodO_PUBLISH_NUMBER" [(ngModel)]="inputModel.sodO_PUBLISH_NUMBER"> -->
+                                  <input [disabled]="disableInput" class="form-control" type="text">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Diện tích trong ranh (m2)</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_INSIDE_AREA="ngModel" name="sodO_INSIDE_AREA" [(ngModel)]="inputModel.sodO_INSIDE_AREA">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Diện tích ngoài ranh</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_OUTSIDE_AREA="ngModel" name="sodO_OUTSIDE_AREA" [(ngModel)]="inputModel.sodO_OUTSIDE_AREA">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Người được ủy quyền</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #authorizeD_PERSON_ID="ngModel"
+                                    name="authorizeD_PERSON_ID"
+                                    [(ngModel)]="inputModel.authorizeD_PERSON_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Loại sổ</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #sodO_TYPE="ngModel"
+                                    name="sodO_TYPE"
+                                    [(ngModel)]="inputModel.sodO_TYPE"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Hình thức sử dụng</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #sodO_USE_TYPE="ngModel"
+                                    name="sodO_USE_TYPE"
+                                    [(ngModel)]="inputModel.sodO_USE_TYPE"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Thời gian ủy quyền</label>
+                                <date-control
+                                [disabled]="true"
+                                #sodO_AUTHORIZE_DT="ngModel"
+                                name="sodO_AUTHORIZE_DT"
+                                [(ngModel)]="inputModel.sodO_AUTHORIZE_DT"
+                                autoFocus>
+                                </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Nguồn gốc đất</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_ORIGIN_INFORMATION="ngModel" name="sodO_ORIGIN_INFORMATION" [(ngModel)]="inputModel.sodO_ORIGIN_INFORMATION">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group required">
+                                <label>Ngày cấp</label>
+                                <date-control
+                                required
+                                #sodO_PROVIDE_DT="ngModel"
+                                name="sodO_PROVIDE_DT"
+                                [(ngModel)]="inputModel.sodO_PROVIDE_DT"
+                                autoFocus>
+                                </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Địa chỉ</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_ADDRESS="ngModel" name="sodO_ADDRESS" [(ngModel)]="inputModel.sodO_ADDRESS">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Tình trạng sổ</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #sodO_PHYSIC_STATUS="ngModel"
+                                    name="sodO_PHYSIC_STATUS"
+                                    [(ngModel)]="inputModel.sodO_PHYSIC_STATUS"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Thời hạn sử dụng</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #sodO_USE_STATUS="ngModel"
+                                    name="sodO_USE_STATUS"
+                                    [(ngModel)]="inputModel.sodO_USE_STATUS"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Nơi cấp</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_PROVIDE_LOCATION="ngModel" name="sodO_PROVIDE_LOCATION" [(ngModel)]="inputModel.sodO_PROVIDE_LOCATION">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Khu đất</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #areA_ID="ngModel"
+                                    name="areA_ID"
+                                    [(ngModel)]="inputModel.areA_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Diện tích thực tế</label>
+                                  <input disabled class="form-control" type="text" #sodO_TOTAL_AREA="ngModel" name="sodO_TOTAL_AREA" [(ngModel)]="inputModel.sodO_TOTAL_AREA">
+                              </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                              <div class="form-group">
+                                  <!-- <label>Xuất sử dụng</label> -->
+                                  <div class="d-flex flex-row">
+                                    <checkbox-control [disabled]="disableInput" (onchange)="onCheckActive()" [checked]="inputModel.sodO_COMPENSATE_CONFIRMATION"></checkbox-control>
+                                    <label>Đã xác nhận bồi thường</label>
+                                  </div>
+                              </div>
+                            </div>
+                            <!-- <div class="col-md-8">
+                              <div class="form-group">
+                                  <label>{{l("Note")}}</label>
+                                  <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                              </div>
+                            </div> -->
+
+                            <div class="col-md-12 mt-3">
+                              <h4>DANH SÁCH ĐỒNG SỞ HỮU</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewCoOwner()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="coOwnerEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #coOwnerEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="coOwnerEditTable.checkAll($event.target.checked)" [checked]="coOwnerEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Tên</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of coOwnerEditTable.dataInPage" #editRow ng-form [hidden]="item.page != coOwnerEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_CO_OWNER_NAME{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_CO_OWNER_NAME">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>DANH SÁCH THỬA ĐẤT TRONG SỔ</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addLandPlotInside()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="landPlotInsideEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #landPlotInsideEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="landPlotInsideEditTable.checkAll($event.target.checked)" [checked]="landPlotInsideEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Tờ bản đồ</span></th>
+                                          <th><span style="width: 150px">Số thửa đất</span></th>
+                                          <th><span style="width: 150px">Diện tích thửa</span></th>
+                                          <th><span style="width: 150px">Mục đích sử dụng</span></th>
+                                          <th><span style="width: 150px">Thời hạn sử dụng</span></th>
+                                          <th><span style="width: 150px">Ngày hết hạn sử dụng</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of landPlotInsideEditTable.dataInPage" #editRow ng-form [hidden]="item.page != landPlotInsideEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_TO_BAN_DO{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_TO_BAN_DO">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_NO{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_NO">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_AREA">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_USE_PURPOSE{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_USE_PURPOSE">
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            [disabled]="disableInput"
+                                            name="lanD_PLOT_USE_DT{{item.no}}"
+                                            [(ngModel)]="item.crealanD_PLOT_USE_DTtE_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            [disabled]="disableInput"
+                                            name="lanD_PLOT_USE_EXPIRATION_DT{{item.no}}"
+                                            [(ngModel)]="item.lanD_PLOT_USE_EXPIRATION_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>DANH SÁCH THỬA ĐẤT NGOÀI SỔ</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addLandPlotOutside()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="landPlotOutsideEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #landPlotOutsideEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="landPlotOutsideEditTable.checkAll($event.target.checked)" [checked]="landPlotOutsideEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Tờ bản đồ</span></th>
+                                          <th><span style="width: 150px">Số thửa đất</span></th>
+                                          <th><span style="width: 150px">Diện tích thửa</span></th>
+                                          <th><span style="width: 150px">Mục đích sử dụng</span></th>
+                                          <th><span style="width: 150px">Thời hạn sử dụng</span></th>
+                                          <th><span style="width: 150px">Ngày hết hạn sử dụng</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of landPlotOutsideEditTable.dataInPage" #editRow ng-form [hidden]="item.page != landPlotOutsideEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_TO_BAN_DO{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_TO_BAN_DO">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_NO{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_NO">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_AREA">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="lanD_PLOT_USE_PURPOSE{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_USE_PURPOSE">
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            name="lanD_PLOT_USE_DT{{item.no}}"
+                                            [(ngModel)]="item.crealanD_PLOT_USE_DTtE_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            [disabled]="disableInput"
+                                            name="lanD_PLOT_USE_EXPIRATION_DT{{item.no}}"
+                                            [(ngModel)]="item.lanD_PLOT_USE_EXPIRATION_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>ĐÍNH KÈM FILE</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewFile()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="fileEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #fileEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="fileEditTable.checkAll($event.target.checked)" [checked]="fileEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Tên file đính kèm</span></th>
+                                          <th><span style="width: 150px">Nội dung</span></th>
+                                          <th><span style="width: 150px">Ngày đính kèm</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of fileEditTable.dataInPage" #editRow ng-form [hidden]="item.page != fileEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <file-picker [disabled]="disableInput"></file-picker>
+                                            <!-- <input [disabled]="disableInput" name="lanD_PLOT_TO_BAN_DO{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_TO_BAN_DO"> -->
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="filE_DESCRIPTION{{item.no}}" class="form-control m-input" [(ngModel)]="item.filE_DESCRIPTION">
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            name="filE_ATTACH_DT{{item.no}}"
+                                            [(ngModel)]="item.filE_ATTACH_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+                            
+                            <div class="col-md-12 mt-3">
+                              <h4>THÔNG TIN HỢP ĐỒNG</h4>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Ngày ký hợp đồng</label>
+                                <date-control
+                                [disabled]="disableInput"
+                                #sodO_CONTRACT_SIGN_DT="ngModel"
+                                name="sodO_CONTRACT_SIGN_DT"
+                                [(ngModel)]="inputModel.contract.sodO_CONTRACT_SIGN_DT"
+                                autoFocus>
+                                </date-control>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Đối tác ký hợp đồng</label>
+                                  <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    class="transparent"
+                                    [disabled]="disableInput"
+                                    #partneR_ID="ngModel"
+                                    name="partneR_ID"
+                                    [(ngModel)]="inputModel.contract.partneR_ID"
+                                    [(list)]="tempList"
+                                    [valueMember]="'value'"
+                                    [displayMember]="'value'"
+                                    >
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Nội dung hợp đồng</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_CONTRACT_CONTENT="ngModel" name="sodO_CONTRACT_CONTENT" [(ngModel)]="inputModel.contract.sodO_CONTRACT_CONTENT">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Giá trị hợp đồng</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_CONTRACT_VALUE="ngModel" name="sodO_CONTRACT_VALUE" [(ngModel)]="inputModel.contract.sodO_CONTRACT_VALUE">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Đã thanh toán</label>
+                                  <input [disabled]="disableInput" class="form-control" type="text" #sodO_CONTRACT_RELEASED_VALUE="ngModel" name="sodO_CONTRACT_RELEASED_VALUE" [(ngModel)]="inputModel.contract.sodO_CONTRACT_RELEASED_VALUE">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Giá trị thanh toán còn lại</label>
+                                  <input disabled class="form-control" type="text" #sodO_REMAIN_DEBT="ngModel" name="sodO_REMAIN_DEBT" [(ngModel)]="inputModel.contract.sodO_REMAIN_DEBT">
+                              </div>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>THANH TOÁN</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewPay()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="payEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #payEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="payEditTable.checkAll($event.target.checked)" [checked]="payEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Tên đợt</span></th>
+                                          <th><span style="width: 150px">Giá trị</span></th>
+                                          <th><span style="width: 150px">Điều kiện</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of payEditTable.dataInPage" #editRow ng-form [hidden]="item.page != payEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_PAY_BATCH_NAME{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_PAY_BATCH_NAME">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_PAY_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_PAY_VALUE">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_PAY_CONDITION{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_PAY_CONDITION">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>NƠI LƯU TRỮ</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewStoreLocation()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="storeLocationEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #storeLocationEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="storeLocationEditTable.checkAll($event.target.checked)" [checked]="storeLocationEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Nơi lưu trữ</span></th>
+                                          <th><span style="width: 150px">Mô tả</span></th>
+                                          <th><span style="width: 150px">Ngày thay đổi</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of storeLocationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != storeLocationEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <select2-custom (onChangeSelect2)="onSelect($event)"
+                                              class="transparent m-input"
+                                              [disabled]="disableInput"
+                                              #sodO_STORE_LOCATION_ID="ngModel"
+                                              name="sodO_STORE_LOCATION_ID{{item.no}}"
+                                              [(ngModel)]="item.sodO_STORE_LOCATION_ID"
+                                              [(list)]="tempList"
+                                              [valueMember]="'value'"
+                                              [displayMember]="'value'"
+                                              >
+                                            </select2-custom> 
+                                            <!-- <input [disabled]="disableInput" name="sodO_PAY_BATCH_NAME{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_PAY_BATCH_NAME"> -->
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_STORE_LOCATION_DESCRIPTION{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_STORE_LOCATION_DESCRIPTION">
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            [disabled]="disableInput"
+                                            name="sodO_STORE_LOCATION_CHANGE_DT{{item.no}}"
+                                            [(ngModel)]="item.sodO_STORE_LOCATION_CHANGE_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>BỒI THƯỜNG</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewCompensation()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="compensationEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #compensationEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="compensationEditTable.checkAll($event.target.checked)" [checked]="compensationEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Thửa đất</span></th>
+                                          <th><span style="width: 150px">Diện tích thực tế (m2)</span></th>
+                                          <th><span style="width: 150px">Diện tích bồi thường</span></th>
+                                          <th><span style="width: 150px">Diện tích còn lại</span></th>
+                                          <th><span style="width: 150px">Số tiền chuyển nhượng</span></th>
+                                          <th><span style="width: 150px">Số tiền bồi thường</span></th>
+                                          <th><span style="width: 150px">Số tiền chênh lệch</span></th>
+                                          <th><span style="width: 150px">Người nhận tiền</span></th>
+                                          <th><span style="width: 150px">Sổ cũ</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of compensationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != compensationEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <select2-custom (onChangeSelect2)="onSelect($event)"
+                                              class="transparent m-input"
+                                              [disabled]="disableInput"
+                                              #sodO_LAND_PLOT_ID="ngModel"
+                                              name="sodO_LAND_PLOT_ID{{item.no}}"
+                                              [(ngModel)]="item.sodO_LAND_PLOT_ID"
+                                              [(list)]="tempList"
+                                              [valueMember]="'value'"
+                                              [displayMember]="'value'"
+                                              >
+                                            </select2-custom> 
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="{{item.no}}" class="form-control m-input">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_COMPENSATION_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_COMPENSATION_AREA">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="sodO_COMPENSATION_REMAIN_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_COMPENSATION_REMAIN_AREA">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_COMPENSATION_TRANSFER_MONEY{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_COMPENSATION_TRANSFER_MONEY">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_COMPENSATION_MONEY{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_COMPENSATION_MONEY">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="sodO_COMPENSATION_MONEY_DIFFERENCE{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_COMPENSATION_MONEY_DIFFERENCE">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <!-- <input [disabled]="disableInput" name="sodO_COMPENSATION_AREA{{item.no}}" class="form-control m-input"> -->
+                                            <div class="input-group">
+                                              <input [readOnly]="true" class="form-control m-input" name="sodO_COMPENSATION_AREA{{item.no}}" />
+                                              <button [disabled]="disableInput" type="button" class="btn btn-primary" style="padding: 0 5px;" (click)="employeeModal.show()">...</button>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <!-- <input [disabled]="disableInput" name="sodO_COMPENSATION_AREA{{item.no}}" class="form-control m-input"> -->
+                                            <div class="input-group">
+                                              <input [readOnly]="true" class="form-control m-input" name="sodO_COMPENSATION_AREA{{item.no}}" />
+                                              <button [disabled]="disableInput" type="button" class="btn btn-primary" style="padding: 0 5px;" (click)="sodoModal.show()">...</button>
+                                            </div>
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>TẠM ỨNG & HOÀN ỨNG</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewAdvancePayment()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="advancePaymentEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #advancePaymentEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="advancePaymentEditTable.checkAll($event.target.checked)" [checked]="advancePaymentEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Người tạm ứng</span></th>
+                                          <th><span style="width: 150px">Số tiền tạm ứng</span></th>
+                                          <th><span style="width: 150px">Ngày tạm ứng</span></th>
+                                          <th><span style="width: 150px">Đã nhận số tiền bồi thường từ nhà nước</span></th>
+                                          <th><span style="width: 150px">Hoàn ứng</span></th>
+                                          <th><span style="width: 150px">Còn lại</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of advancePaymentEditTable.dataInPage" #editRow ng-form [hidden]="item.page != advancePaymentEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <!-- <input disabled name="advancE_RECIPIENT_ID{{item.no}}" class="form-control m-input" [(ngModel)]="item.advancE_RECIPIENT_ID"> -->
+                                            <div class="input-group">
+                                              <input [readOnly]="true" class="form-control m-input" name="advancE_RECIPIENT_ID{{item.no}}" [(ngModel)]="item.advancE_RECIPIENT_ID" />
+                                              <button [disabled]="disableInput" type="button" class="btn btn-primary" style="padding: 0 5px;" (click)="employeeModal.show()">...</button>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_ADVANCE_PAYMENT_MONEY{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_ADVANCE_PAYMENT_MONEY">
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            name="sodO_ADVANCE_PAYMENT_DT{{item.no}}"
+                                            [(ngModel)]="item.sodO_ADVANCE_PAYMENT_DT"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="governmenT_COMPENSATE_MONEY{{item.no}}" class="form-control m-input" [(ngModel)]="item.governmenT_COMPENSATE_MONEY">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_ADVANCE_PAYMENT_RETURN{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_ADVANCE_PAYMENT_RETURN">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input disabled name="sodO_ADVANCE_PAYMENT_REMAIN_MONEY{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_ADVANCE_PAYMENT_REMAIN_MONEY">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="item.notes">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+                            
+                            <div class="col-md-12 mt-3">
+                              <h4>THÀNH PHẦN HỒ SƠ</h4>
+                            </div>
+                            <div class="primeng-datatable-container col-md-6">
+                              <table class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+                                          <th><span style="width: 40px"></span></th>
+                                          <th><span>Trường hợp đủ điều kiện chuyển nhượng quyền sử dụng đất</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD = $event.target.checked" [checked]="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Hợp đồng chuyển nhượng quyền sử dụng đất – Công chứng</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_GCQDCNST = $event.target.checked" [checked]="inputModel.brieF_1.sodO_BRIEF_1_GCQDCNST"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Giấy chủ quyền đất cập nhật sang tên</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_BBTTDTH = $event.target.checked" [checked]="inputModel.brieF_1.sodO_BRIEF_1_BBTTDTH"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Biên bản thỏa thuận đứng tên hộ (nội bộ) – Văn phòng luật sư làm chứng</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_DC = $event.target.checked" [checked]="inputModel.brieF_1.sodO_BRIEF_1_DC"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Di chúc – Văn phòng luật sư làm chứng</td>
+                                      </tr>
+                                      <!-- <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                        </td>
+                                        <td>
+                                          <span class="mo-header"></span>
+                                          <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD">
+                                        </td>
+                                      </tr> -->
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Khác</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                            </div>
+
+                            <div class="primeng-datatable-container col-md-6">
+                              <table class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+                                          <th><span style="width: 40px"></span></th>
+                                          <th><span>Trường hợp chưa đủ điều kiện chuyển nhượng</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_2.sodO_BRIEF_2_HDUQCN = $event.target.checked" [checked]="inputModel.brieF_2.sodO_BRIEF_2_HDUQCN"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Hợp đồng ủy quyền chuyển nhượng – Công chứng</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_2.sodO_BRIEF_2_HDCNVT = $event.target.checked" [checked]="inputModel.brieF_2.sodO_BRIEF_2_HDCNVT"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Hợp đồng chuyển nhượng viết tay – Có người làm chứng</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_2.sodO_BRIEF_2_GCQVDTCC = $event.target.checked" [checked]="inputModel.brieF_2.sodO_BRIEF_2_GCQVDTCC"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Giấy chủ quyền vẫn đứng tên chủ cũ</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_2.sodO_BRIEF_2_DC = $event.target.checked" [checked]="inputModel.brieF_2.sodO_BRIEF_2_DC"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Di chúc – Văn phòng luật sư làm chứng</td>
+                                      </tr>
+                                      <!-- <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                        </td>
+                                        <td>
+                                          <span class="mo-header"></span>
+                                          <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD">
+                                        </td>
+                                      </tr> -->
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Khác</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                            </div>
+
+                            <div class="primeng-datatable-container col-md-6 mt-3">
+                              <table class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+                                          <th><span style="width: 40px"></span></th>
+                                          <th><span>Trường hợp không có GCN QSDD nhưng có xác nhận nguồn gốc của Xã/ Phường</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_3.sodO_BRIEF_3_GUQ = $event.target.checked" [checked]="inputModel.brieF_3.sodO_BRIEF_3_GUQ"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Giấy ủy quyền – Công chứng</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_3.sodO_BRIEF_3_BBBGD = $event.target.checked" [checked]="inputModel.brieF_3.sodO_BRIEF_3_BBBGD"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Biên bản bàn giao đất</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_3.sodO_BRIEF_3_DC = $event.target.checked" [checked]="inputModel.brieF_3.sodO_BRIEF_3_DC"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Di chúc – Văn phòng luật sư làm chứng</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_3.sodO_BRIEF_3_BBTTDTH = $event.target.checked" [checked]="inputModel.brieF_3.sodO_BRIEF_3_BBTTDTH"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Biên bản thỏa thuận đứng tên hộ (Nội bộ) – Văn phòng luật sư làm chứng</td>
+                                      </tr>
+                                      <!-- <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                        </td>
+                                        <td>
+                                          <span class="mo-header"></span>
+                                          <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD">
+                                        </td>
+                                      </tr> -->
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Khác</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                            </div>
+
+                            <div class="primeng-datatable-container col-md-6 mt-3">
+                              <table class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+                                          <th><span style="width: 40px"></span></th>
+                                          <th><span>Trường hợp không có GCN QSDD và không có xác nhận nguồn gốc</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_4.sodO_BRIEF_4_VB = $event.target.checked" [checked]="inputModel.brieF_4.sodO_BRIEF_4_VB"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Vi bằng: Văn phòng thỏa thuận chuyển nhượng – Thừa phát lại</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_4.sodO_BRIEF_4_BBGND = $event.target.checked" [checked]="inputModel.brieF_4.sodO_BRIEF_4_BBGND"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Biên bản giao nhận đất</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_4.sodO_BRIEF_4_DI_CHUC = $event.target.checked" [checked]="inputModel.brieF_4.sodO_BRIEF_4_DI_CHUC"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Di chúc – Văn phòng luật sư làm chứng</td>
+                                      </tr>
+                                      <!-- <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                        </td>
+                                        <td>
+                                          <span class="mo-header"></span>
+                                          <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD">
+                                        </td>
+                                      </tr> -->
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Khác</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                            </div>
+
+                            <div class="primeng-datatable-container col-md-6 mt-3">
+                              <table class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+                                          <th><span style="width: 40px"></span></th>
+                                          <th><span style="width: 300px">Pháp lý của cá nhân đối với công ty</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_5.sodO_BRIEF_5_TTDTH = $event.target.checked" [checked]="inputModel.brieF_5.sodO_BRIEF_5_TTDTH"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Thỏa thuận đứng tên hộ/ Ủy quyền (Chưa sang tên)</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_5.sodO_BRIEF_5_DC = $event.target.checked" [checked]="inputModel.brieF_5.sodO_BRIEF_5_DC"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Di chúc</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_5.sodO_BRIEF_5_BBCKTT = $event.target.checked" [checked]="inputModel.brieF_5.sodO_BRIEF_5_BBCKTT"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Biên bản cam kết thông tin</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_5.sodO_BRIEF_5_BBMTTN = $event.target.checked" [checked]="inputModel.brieF_5.sodO_BRIEF_5_BBMTTN"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Biên bản miễn trừ trách nhiệm</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_5.sodO_BRIEF_5_HDCNTS = $event.target.checked" [checked]="inputModel.brieF_5.sodO_BRIEF_5_HDCNTS"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Hợp đồng chuyển nhượng tài sản</td>
+                                      </tr>
+                                      <!-- <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput" (onchange)="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                        </td>
+                                        <td>
+                                          <span class="mo-header"></span>
+                                          <input [disabled]="disableInput" name="notes{{item.no}}" class="form-control m-input" [(ngModel)]="inputModel.brieF_1.sodO_BRIEF_1_HDCNQSDD">
+                                        </td>
+                                      </tr> -->
+                                      <tr>
+                                        <td class="center">
+                                          <span class="mo-header"></span>
+                                          <checkbox-control [disabled]="disableInput"></checkbox-control>
+                                        </td>
+                                        <td><span class="mo-header"></span>Khác</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                              <h4>TÌNH TRẠNG ĐĂNG KÝ SỬ DỤNG TÀI SẢN</h4>
+                            </div>
+                            <div class="action-button col-md-12">
+                              <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewUseRegistration()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="useRegistrationEditTable.removeAllCheckedItem()"><i
+                                      class="pi pi-times"></i>{{l("Delete")}}</button>
+                            </div>
+                            <div class="primeng-datatable-container col-md-12">
+                              <editable-table #useRegistrationEditTable class="custom-table ui-table">
+                                  <thead>
+                                      <tr>
+        
+                                          <th>
+                                              <span style="width: 40px">
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="useRegistrationEditTable.checkAll($event.target.checked)" [checked]="useRegistrationEditTable.isCheckAll"></checkbox-control>
+                                              </span>
+                                          </th>
+                                          <th><span style="width: 40px">{{l("No")}}</span></th>
+                                          <th><span style="width: 150px">Đơn vị đăng ký</span></th>
+                                          <th><span style="width: 150px">Người đăng ký</span></th>
+                                          <th><span style="width: 150px">Ngày đăng ký</span></th>
+                                          <th><span style="width: 150px">Thời gian đăng ký (ngày)</span></th>
+                                          <th><span style="width: 150px">Ngày hết hạn giữ</span></th>
+                                          <th><span style="width: 150px">Mục đích sử dụng</span></th>
+                                          <th><span style="width: 150px">{{l("Note")}}</span></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr *ngFor="let item of useRegistrationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != useRegistrationEditTable.currentPage">
+        
+                                          <td class="center">
+                                              <span class="mo-header"></span>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                          </td>
+                                          <td class="center"><span class="mo-header"></span>{{item.no}}</td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <select2-custom (onChangeSelect2)="onSelect($event)"
+                                              class="transparent m-input"
+                                              [disabled]="disableInput"
+                                              [(list)]="tempList"
+                                              [valueMember]="'value'"
+                                              [displayMember]="'value'"
+                                              >
+                                            </select2-custom> 
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <select2-custom (onChangeSelect2)="onSelect($event)"
+                                              class="transparent m-input"
+                                              [disabled]="disableInput"
+                                              [(list)]="tempList"
+                                              [valueMember]="'value'"
+                                              [displayMember]="'value'"
+                                              >
+                                            </select2-custom> 
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            [disabled]="disableInput"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="{{item.no}}" class="form-control m-input">
+                                          </td>
+                                          <td class="center">
+                                            <span class="mo-header"></span>
+                                            <date-control 
+                                            [disabled]="true"
+                                            name="lanD_PLOT_USE_EXPIRATION_DT{{item.no}}"
+                                            autoFocus>
+                                            </date-control>
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_COMPENSATION_AREA{{item.no}}" class="form-control m-input">
+                                          </td>
+                                          <td>
+                                            <span class="mo-header"></span>
+                                            <input [disabled]="disableInput" name="sodO_COMPENSATION_AREA{{item.no}}" class="form-control m-input">
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </editable-table>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+              <!-- Begin Form -->
+          </div>
+      </div>
+  </div>
+</div>
+
+<employee-modal #employeeModal [multiple]="false" (onSelect)="onSelect($event)"></employee-modal>
+<sodo-modal #sodoModal [multiple]="false" (onSelect)="onSelect($event)"></sodo-modal>

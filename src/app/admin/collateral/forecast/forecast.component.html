@@ -1,0 +1,155 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div id="page-list-area">
+      <div class="m-subheader">
+          <div class="row align-items-center">
+              <div class="mr-auto col-auto">
+                  <a
+                      [routerLink]="rootPage()"
+                      class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                  >
+                      <span>{{l("HomePage")}}</span>
+                  </a>
+                  <h3
+                      class="m-subheader__title m-subheader__title--separator"
+                  >
+                      <!-- Begin Title -->
+                      <span>Dự đoán định giá</span>
+                      <!-- End Title -->
+                  </h3>
+              </div>
+              <div class="col text-right mt-3 mt-md-0">
+                  <div class="btn-group dropdown mr-2">
+                      <button class="btn btn-outline-success"
+                      *ngIf="appToolbar.buttonSearchEnable"
+                          (click)="exportExcel()">
+                          <i class="far fa-file-excel"></i>
+                          {{l("ExcelOperations")}}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="content"
+          class="m-content">
+          <div class="m-portlet m-portlet--mobile">
+              <div class="m-portlet__body">
+                  <form class="horizontal-form filter-form"
+                      autocomplete="off">
+                      <div class="m-form m-form--label-align-right">
+                          <div class="row align-items-center m--margin-bottom-30">
+                              <!-- Begin Filter -->
+                              <!-- Mã cổ đông ngoài -->
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Mã dự án</label>
+                                    <input 
+                                        name="lanD_AREA_IDFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tên dự án</label>
+                                    <input 
+                                        name="lanD_AREA_NAMEFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Địa điểm</label>
+                                    <input 
+                                        name="lanD_AREA_LOCATIONFilter"
+                                        autoFocus
+                                        class="form-control m-input"
+                                        type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Loại dự án</label>
+                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                      name="projecT_ID"
+                                      class="transparent"
+                                      [emptyText]="l('SelectAll')"
+                                      [(list)]="records"
+                                      [valueMember]="'recorD_STATUS'"
+                                      [displayMember]="'recordName'">
+                                  </select2-custom>
+                              </div>
+                            </div>
+                            <div class="col-md-12" style="height: 10vh;"></div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Giá trị chính xác</label>
+                                            <input 
+                                                name="lanD_AREA_LOCATIONFilter"
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <label>Sai số</label>
+                                            <input 
+                                                name="lanD_AREA_LOCATIONFilter"
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6 mt-3">
+                                        <button type="button" class="btn btn-primary w-100">Gửi phản hồi</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6" style="height: 50px;">
+                                        <button type="button" class="btn btn-primary w-100 h-100">Dự đoán</button>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="d-flex flex-column align-items-center border mt-3 py-3 w-100">
+                                            <p class="font-weight-bold">Giá trị dự đoán</p>
+                                            <div class="form-group w-75">
+                                                <input 
+                                                    name="lanD_AREA_LOCATIONFilter"
+                                                    disabled
+                                                    autoFocus
+                                                    class="form-control m-input"
+                                                    type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                              <!-- End Filter -->
+                              <div style="display:none;"
+                                  class="col-md-12">
+                                  <div class="form-group">
+                                      <button *ngIf="appToolbar.buttonSearchEnable"
+                                          class="btn btn-primary btn-search"
+                                          (click)="onSearch()"></button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </form>
+                  
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

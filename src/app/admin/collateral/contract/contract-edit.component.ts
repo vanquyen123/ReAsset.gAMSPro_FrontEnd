@@ -30,7 +30,7 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
     super(injector);
     this.editPageState = this.getRouteData('editPageState');
     this.contract_ID = this.getRouteParam('contract');
-    this.inputModel.contracT_ID = this.contract_ID;
+    this.inputModel.id = this.contract_ID;
     this.initFilter();
     this.initCombobox();
     this.initIsApproveFunct();
@@ -189,7 +189,7 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
   }
   
   getContract() {
-      this.contractService.rEA_CONTRACT_ById(this.inputModel.contracT_ID).subscribe(response => {
+      this.contractService.rEA_CONTRACT_ById(this.inputModel.id).subscribe(response => {
           this.inputModel = response;
           if(response.recorD_STATUS === "1") {
             this.checkIsActive = true;
@@ -220,10 +220,10 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
 
   onCheckActive() {
     if(!this.checkIsActive) {
-        this.inputModel.recorD_STATUS = "1";
+        this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
     }
     else {
-        this.inputModel.recorD_STATUS = "0";
+        this.inputModel.recorD_STATUS = RecordStatusConsts.InActive;
     }
   }
 
@@ -251,7 +251,7 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
                       else {
                           this.addNewSuccess();
                           if (!this.isApproveFunct) {
-                              this.contractService.rEA_CONTRACT_App(response.id, this.appSession.user.userName)
+                              this.contractService.rEA_CONTRACT_App(response.id, this.appSession.user.userName, this.inputModel.rejecT_REASON)
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
@@ -271,7 +271,7 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
                       else {
                           this.updateSuccess();
                           if (!this.isApproveFunct) {
-                              this.contractService.rEA_CONTRACT_App(this.inputModel.contracT_ID, this.appSession.user.userName)
+                              this.contractService.rEA_CONTRACT_App(this.inputModel.id, this.appSession.user.userName, "")
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
@@ -308,7 +308,7 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
   }
 
   onApprove(item: REA_CONTRACT_ENTITY): void {
-      if (!this.inputModel.contracT_ID) {
+      if (!this.inputModel.id) {
           return;
       }
       var currentUserName = this.appSession.user.userName;
@@ -317,12 +317,12 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
         return;
     }
       this.message.confirm(
-          this.l('ApproveWarningMessage', this.l(this.inputModel.contracT_ID)),
+          this.l('ApproveWarningMessage', this.l(this.inputModel.id)),
           this.l('AreYouSure'),
           (isConfirmed) => {
               if (isConfirmed) {
                   this.saving = true;
-                  this.contractService.rEA_CONTRACT_App(this.inputModel.contracT_ID, currentUserName)
+                  this.contractService.rEA_CONTRACT_App(this.inputModel.id, currentUserName, "")
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
                           if (response.result != '0') {

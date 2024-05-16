@@ -1,0 +1,246 @@
+<div [@routerTransition]>
+  <appToolbar #appToolbar></appToolbar>
+  <div id="page-list-area">
+      <div class="m-subheader">
+          <div class="row align-items-center">
+              <div class="mr-auto col-auto">
+                  <a
+                      [routerLink]="rootPage()"
+                      class="m-subheader__title m-subheader__title--separator link-to-list-page home-page"
+                  >
+                      <span>{{l("HomePage")}}</span>
+                  </a>
+                  <h3
+                      class="m-subheader__title m-subheader__title--separator"
+                  >
+                      <!-- Begin Title -->
+                      <span>Danh sách sổ</span>
+                      <!-- End Title -->
+                  </h3>
+              </div>
+              <div class="col text-right mt-3 mt-md-0">
+                  <div class="btn-group dropdown mr-2">
+                      <button class="btn btn-outline-success"
+                      *ngIf="appToolbar.buttonSearchEnable"
+                          (click)="exportExcel()">
+                          <i class="far fa-file-excel"></i>
+                          {{l("ExcelOperations")}}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="content"
+          class="m-content">
+          <div class="m-portlet m-portlet--mobile">
+              <div class="m-portlet__body">
+                  <form class="horizontal-form filter-form"
+                      autocomplete="off">
+                      <div class="m-form m-form--label-align-right">
+                          <div class="row align-items-center m--margin-bottom-30">
+                              <!-- Begin Filter -->
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Số phát hành</label>
+                                      <input 
+                                          [(ngModel)]="filterInput.id"
+                                          name="idFilter"
+                                          autoFocus
+                                          class="form-control m-input"
+                                          type="text">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>Số vào sổ</label>
+                                      <input 
+                                          [(ngModel)]="filterInput.sodO_SO_VAO_SO"
+                                          name="sodO_SO_VAO_SOFilter"
+                                          autoFocus
+                                          class="form-control m-input"
+                                          type="text">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Dự án</label>
+                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                        name="projecT_ID"
+                                        class="transparent"
+                                        [(ngModel)]="filterInput.projecT_ID"
+                                        [emptyText]="l('SelectAll')"
+                                        [(list)]="records"
+                                        [valueMember]="'recorD_STATUS'"
+                                        [displayMember]="'recordName'">
+                                    </select2-custom>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Người được ủy quyền</label>
+                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                        name="authorizeD_PERSON_ID"
+                                        class="transparent"
+                                        [(ngModel)]="filterInput.authorizeD_PERSON_ID"
+                                        [emptyText]="l('SelectAll')"
+                                        [(list)]="records"
+                                        [valueMember]="'recorD_STATUS'"
+                                        [displayMember]="'recordName'">
+                                    </select2-custom>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                      <label>{{l("ApproveStatus")}}</label>
+                                      <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                          name="autH_STATUS"
+                                          class="transparent"
+                                          [(ngModel)]="filterInput.autH_STATUS"
+                                          [emptyText]="l('SelectAll')"
+                                          [(list)]="auths"
+                                          [valueMember]="'autH_STATUS'"
+                                          [displayMember]="'autH_STATUS_NAME'">
+                                      </select2-custom>
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tình trạng thế chấp</label>
+                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                        class="transparent"
+                                        [emptyText]="l('SelectAll')"
+                                        [(list)]="records"
+                                        [valueMember]="'recorD_STATUS'"
+                                        [displayMember]="'recordName'">
+                                    </select2-custom>
+                                </div>
+                              </div>
+                          </div>
+                      </div>
+                  </form>
+                  <div class="row align-items-center">
+                      <div class="primeng-datatable-container">
+                          <div class="spinner-border m-5"
+                              role="status">
+                              <span class="sr-only">Loading...</span>
+                          </div>
+                          <core-table #coreTable
+                              class="custom-table ui-table"
+                              (reloadPage)="search()">
+                              <thead>
+                                  <tr>
+                                      <!-- Begin Table Column -->
+                                      <!-- STT -->
+                                      <th class="center">
+                                          <span style="width: 40px">{{l("No")}}</span>
+                                      </th>
+                                      <th style="width:30%"
+                                          sortField="">
+                                          <span style="width: 150px">Tình trạng sở hữu</span>
+                                      </th>
+                                      <th style="width:40%"
+                                          sortField="sodO_TYPE">
+                                          <span style="width: 150px">Loại sổ</span>
+                                      </th>
+                                      <th style="width:30%"
+                                          sortField="">
+                                          <span style="width: 200px">Người được ủy quyền</span>
+                                      </th>
+                                      <th sortField=""
+                                          style="width:100%">
+                                          <span style="width: 200px">Tình trạng thế chấp</span>
+                                      </th>
+                                      <!-- Trạng thái duyệt -->
+                                      <th sortField="id">
+                                          <span style="width: 150px">Số phát hành</span>
+                                      </th>
+                                      <th sortField="sodO_SO_VAO_SO">
+                                        <span style="width: 150px">Số vào sổ</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Dự án</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">SL thửa trong sổ</span>
+                                      </th>
+                                      <th sortField="sodO_INSIDE_AREA">
+                                        <span style="width: 200px">Diện tích thửa trong sổ</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">SL thửa ngoài sổ</span>
+                                      </th>
+                                      <th sortField="sodO_OUTSIDE_AREA">
+                                        <span style="width: 200px">Diện tích thửa ngoài sổ</span>
+                                      </th>
+                                      <th sortField="sodO_TOTAL_AREA">
+                                        <span style="width: 150px">Diện tích thực tế</span>
+                                      </th>
+                                      <th sortField="creatE_DT">
+                                        <span style="width: 150px">Ngày tạo</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Người tạo</span>
+                                      </th>
+                                      <th sortField="approvE_DT">
+                                        <span style="width: 150px">Ngày duyệt</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Người duyệt</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 150px">Ngày chỉnh sửa cuối</span>
+                                      </th>
+                                      <th sortField="">
+                                        <span style="width: 200px">Người chỉnh sửa cuối</span>
+                                      </th>
+                                      <th sortField="autH_STATUS">
+                                        <span style="width: 150px">{{l("ApproveStatus")}}</span>
+                                      </th>
+                                      <th sortField="notes">
+                                        <span style="width: 150px">Ghi chú</span>
+                                      </th>
+                                      <!-- End Table Column -->
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let record of dataTable.records"
+                                      class="selectable"
+                                      (dblclick)="onDblclick(record)"
+                                      (click)="selectRow($event,record)">
+                                      <!-- Begin Table Value -->
+                                      <!-- STT -->
+                                      <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
+                                          + dataTable.records.indexOf(record)) + 1}}
+                                      </td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.sodO_TYPE_NAME}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.id}}</td>
+                                      <td><span class="mo-header"></span>{{record.sodO_SO_VAO_SO}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.sodO_INSIDE_AREA}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.sodO_OUTSIDE_AREA}}</td>
+                                      <td><span class="mo-header"></span>{{record.sodO_TOTAL_AREA}}</td>
+                                      <td><span class="mo-header"></span>{{ record.creatE_DT ? (record.creatE_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{ record.approvE_DT ? (record.approvE_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
+                                      <td><span class="mo-header"></span></td>
+                                      <!-- End Table Value -->
+                                  </tr>
+                              </tbody>
+                          </core-table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
