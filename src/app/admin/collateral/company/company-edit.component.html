@@ -8,7 +8,7 @@
                     <span>{{l("HomePage")}}</span>
                 </a>
                 <h3 (click)="goBack()" class="m-subheader__title m-subheader__title--separator link-to-list-page">
-                    <span>Danh mục Công ty</span>
+                    <span>Danh mục Công ty thành viên</span>
                 </h3>
                 <span [ngSwitch]="editPageState" class="m-section__sub">
                     <span *ngSwitchCase="EditPageState.add">{{l("Toolbar_Create")}}</span>
@@ -17,8 +17,16 @@
                 </span>
                 <!-- End Title -->
             </div>
-            <div class="col text-right mt-3 mt-md-0">
-            </div>
+            <div class="col text-right mt-3 mt-md-0 mr-4">
+                <div class="btn-group dropdown">
+                    <button class="btn btn-outline-success"
+                    *ngIf="editPageState=='ViewDetail'"
+                        (click)="exportToExcel()">
+                        <i class="far fa-file-excel"></i>
+                        {{l("ExcelOperations")}}
+                    </button>
+                </div>
+              </div>
         </div>
     </div>
 
@@ -43,6 +51,7 @@
                                         <label>Mã công ty</label>
                                         <input 
                                             [disabled]="disableInput"
+                                            [(ngModel)]="inputModel.id"
                                             name="companY_IDFilter"
                                             autoFocus
                                             class="form-control m-input"
@@ -54,18 +63,8 @@
                                         <label>Tên công ty</label>
                                         <input 
                                             [disabled]="disableInput"
-                                            name="companY_NAMEFilter"
-                                            autoFocus
-                                            class="form-control m-input"
-                                            type="text">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Loại hình công ty</label>
-                                        <input 
-                                            [disabled]="disableInput"
-                                            name="companY_TYPE"
+                                            [(ngModel)]="inputModel.subsidiarY_NAME"
+                                            name="subsidiarY_NAME"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -76,6 +75,7 @@
                                         <label>Mệnh giá</label>
                                         <input 
                                             [disabled]="disableInput"
+                                            [(ngModel)]="inputModel.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE"
                                             name="companY_PAR_VALUE_PER_SHAREFilter"
                                             autoFocus
                                             class="form-control m-input"
@@ -85,23 +85,33 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Tên vùng miền</label>
-                                        <input 
-                                            [disabled]="disableInput"
-                                            name="o_SHAREHOLDER_IDFilter"
-                                            autoFocus
-                                            class="form-control m-input"
-                                            type="text">
+                                        <select2-custom
+                                        class="transparent"
+                                        [disabled]="disableInput"
+                                        #regioN_ID="ngModel"
+                                        name="regioN_ID"
+                                        [(ngModel)]="inputModel.regioN_ID"
+                                        [(list)]="regionList"
+                                        [valueMember]="'id'"
+                                        [displayMember]="'name'"
+                                        >
+                                        </select2-custom>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Tên tỉnh/ thành</label>
-                                        <input 
-                                            [disabled]="disableInput"
-                                            name="o_SHAREHOLDER_IDFilter"
-                                            autoFocus
-                                            class="form-control m-input"
-                                            type="text">
+                                        <select2-custom
+                                        class="transparent"
+                                        [disabled]="disableInput"
+                                        #provincE_ID="ngModel"
+                                        name="provincE_ID"
+                                        [(ngModel)]="inputModel.provincE_ID"
+                                        [(list)]="provinceList"
+                                        [valueMember]="'id'"
+                                        [displayMember]="'name'"
+                                        >
+                                        </select2-custom>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -109,7 +119,8 @@
                                         <label>Địa chỉ</label>
                                         <input 
                                             [disabled]="disableInput"
-                                            name="companY_ADDRESSFilter"
+                                            [(ngModel)]="inputModel.subsidiarY_ADDRESS"
+                                            name="subsidiarY_ADDRESSFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -120,7 +131,8 @@
                                         <label>Số điện thoại</label>
                                         <input 
                                             [disabled]="disableInput"
-                                            name="companY_TELFilter"
+                                            [(ngModel)]="inputModel.subsidiarY_TEL"
+                                            name="subsidiarY_TELFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -131,7 +143,8 @@
                                         <label>Mã số thuế</label>
                                         <input 
                                             [disabled]="disableInput"
-                                            name="companY_TAX_NOFilter"
+                                            [(ngModel)]="inputModel.subsidiarY_TAX_CODE"
+                                            name="subsidiarY_TAX_CODEFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -141,41 +154,47 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{l("Note")}}</label>
-                                        <textarea class="form-control" [disabled]="disableInput" type="text" #notes="ngModel" name="notes" [(ngModel)]="inputModel.notes"></textarea>
+                                        <input 
+                                            [disabled]="disableInput"
+                                            [(ngModel)]="inputModel.notes"
+                                            name="notes"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-3">
+                          <div class="col-md-12 mt-3" [hidden]="editPageState == 'Add'">
                             <h4>DANH SÁCH CỔ PHẦN</h4>
                           </div>
-                          <div class="action-button col-md-12">
-                            <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewAsset()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                            <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="shareEditTable.removeAllCheckedItem()"><i
+                          <div class="action-button col-md-12" [hidden]="editPageState == 'Add'">
+                            <button type="button" [disabled]="!disableInput" class="btn btn-primary" (click)="addNewShareholder()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
+                            <button type="button" [disabled]="!disableInput" class="btn btn-danger" (click)="removeShareholder()"><i
                                     class="pi pi-times"></i>{{l("Delete")}}</button>
                           </div>
-                          <div class="primeng-datatable-container col-md-12">
+                          <div class="primeng-datatable-container col-md-12" [hidden]="editPageState == 'Add'">
                             <editable-table #shareEditTable class="custom-table ui-table">
                                 <thead>
                                     <tr>
       
                                         <th>
                                             <span style="width: 40px">
-                                                <checkbox-control [disabled]="disableInput" (onchange)="shareEditTable.checkAll($event.target.checked)" [checked]="shareEditTable.isCheckAll"></checkbox-control>
+                                                <checkbox-control [disabled]="disableInput" (onchange)="checkAllShareholder($event.target.checked)" [checked]="shareEditTable.isCheckAll"></checkbox-control>
                                             </span>
                                         </th>
                                         <th><span style="width: 40px">{{l("No")}}</span></th>
       
-                                        <th sortField="propertY_ID"><span style="width: 150px">Mã cổ đông</span></th>
+                                        <th><span style="width: 150px">Mã cổ đông</span></th>
                                         <th style="width:50%"><span style="width: 150px">Tên cổ đông</span></th>
                                         <th style="width:50%" ><span style="width: 150px">Loại cổ đông</span></th>
                                         <th><span style="width: 150px">Số cổ phần</span></th>
-                                        <th sortField="valuatioN_VALUE"><span style="width: 150px">Giá trị vốn góp</span></th>
-                                        <th sortField="valuatioN_PARTY_ID"><span style="width: 150px">Hoạt động</span></th>
-                                        <th sortField="valuatioN_DT"><span style="width: 150px">{{l("ApproveStatus")}}</span></th>
-                                        <th sortField="mortgagE_ITEM_STATUS"><span style="width: 150px">Ghi chú</span></th>
-                                        <th sortField="mortagE_ITEM_IS_SHARED"><span style="width: 150px">Thao tác</span></th>
+                                        <th><span style="width: 150px">Giá trị vốn góp</span></th>
+                                        <th><span style="width: 150px">Hoạt động</span></th>
+                                        <th><span style="width: 150px">{{l("ApproveStatus")}}</span></th>
+                                        <th><span style="width: 150px">Ghi chú</span></th>
+                                        <th><span style="width: 150px">Thao tác</span></th>
                                         
                                     </tr>
       
@@ -185,41 +204,56 @@
       
                                         <td class="center">
                                             <span class="mo-header"></span>
-                                            <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                            <checkbox-control [disabled]="!disableInput" (onchange)="checkedShareholder(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                         </td>
       
                                         <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                         <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
+                                            <span class="mo-header"></span>{{ item.id }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.shareholdeR_NAME }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.shareholdeR_TYPE }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.shareholdeR_SHARE }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.shareholdeR_VALUE }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.recorD_STATUS_NAME }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.autH_STATUS_NAME }}
+                                        </td>
+                                        <td>
+                                            <span class="mo-header"></span>{{ item.notes }}
                                         </td>
                                         <td>
                                             <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
-                                        </td>
-                                        <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
-                                        </td>
-                                        <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
-                                        </td>
-                                        <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
-                                        </td>
-                                        <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
-                                        </td>
-                                        <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
-                                        </td>
-                                        <td>
-                                            <span class="mo-header"></span>
-                                            <input disabled name="" class="form-control m-input">
+                                            <div class="width-100 d-flex flex-row d-flex justify-content-around">
+                                                <i *ngIf="disableInput"
+                                                class="bi bi-eye" 
+                                                style="font-size: 20px;cursor: pointer;" 
+                                                (click)="viewShareholder(item)"
+                                                ></i>
+                                                <i *ngIf="disableInput"
+                                                class="bi bi-pencil-square" 
+                                                style="font-size: 20px;cursor: pointer;" 
+                                                (click)="editShareholder(item)"
+                                                ></i>
+                                                <i *ngIf="!disableInput"
+                                                class="bi bi-eye" 
+                                                style="font-size: 20px;" 
+                                                ></i>
+                                                <i *ngIf="!disableInput"
+                                                class="bi bi-pencil-square" 
+                                                style="font-size: 20px;" 
+                                                ></i>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>

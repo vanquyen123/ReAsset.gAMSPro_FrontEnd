@@ -17,7 +17,15 @@
               </span>
               <!-- End Title -->
           </div>
-          <div class="col text-right mt-3 mt-md-0">
+          <div class="col text-right mt-3 mt-md-0 mr-4">
+            <div class="btn-group dropdown">
+                <button class="btn btn-outline-success"
+                *ngIf="editPageState=='ViewDetail'"
+                    (click)="exportToExcel()">
+                    <i class="far fa-file-excel"></i>
+                    {{l("ExcelOperations")}}
+                </button>
+            </div>
           </div>
       </div>
   </div>
@@ -427,65 +435,6 @@
                         </editable-table>
                       </div>
 
-                      <div class="col-md-12 mt-3" *ngIf="mortgageEditTable">
-                        <h4>TÌNH TRẠNG THẾ CHẤP</h4>
-                      </div>
-                      <div class="primeng-datatable-container col-md-12" *ngIf="mortgageEditTable">
-                        <editable-table #mortgageEditTable class="custom-table ui-table">
-                            <thead>
-                                <tr>
-                                    <th><span style="width: 40px">{{l("No")}}</span></th>
-                                    <th sortField="propertY_ID"><span style="width: 150px">Mã TP/ Khoản vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Tên TP/ Khoản vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Kỳ hạn</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày đáo hạn</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Đơn vị định giá</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày định giá</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Tình trạng thế chấp</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Chia sẻ thế chấp</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Trạng thái</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let item of mortgageEditTable.dataInPage" #editRow ng-form [hidden]="item.page != mortgageEditTable.currentPage">
-                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
-                                    <td>
-                                      <a href="/app/admin/mortgage-view;mortgage={{ item.id }}">
-                                        <span class="mo-header"></span>{{ item.id }}
-                                      </a>
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_TERM }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_DUE_DATE ? (item.mortgagE_DUE_DATE | momentFormat:'L') : '-'}}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.valuatioN_PARTY_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.valuatioN_DT ? (item.valuatioN_DT | momentFormat:'L') : '-'}}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_STATUS_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_IS_SHARED ? 'Có chia sẻ' : 'Không chia sẻ' }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_STATUS_NAME }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </editable-table>
-                      </div>
                   </div>
               </form>
               <!-- Begin Form -->

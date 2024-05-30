@@ -7,13 +7,15 @@ import {
 } from "@angular/core";
 import { InvestorField, ProjectField } from "@app/admin/core/ultils/consts/ComboboxConsts";
 import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts";
+import { base64ToBlob, saveFile } from "@app/ultilities/blob-exec";
 import { ListComponentBase } from "@app/ultilities/list-component-base";
 import { ListComponentBase2 } from "@app/ultilities/list-component-base2";
 import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { AsposeServiceProxy, CM_ALLCODE_ENTITY, ComboboxServiceProxy, LandAreaServiceProxy, REA_LAND_AREA_ENTITY, REA_LAND_AREA_SEARCH_DTO, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
   templateUrl: "./land-area.component.html",
@@ -83,27 +85,15 @@ export class LandAreaComponent extends ListComponentBase2<REA_LAND_AREA_ENTITY, 
   }
 
   exportToExcel() {
-    let reportInfo = new ReportInfo();
-    reportInfo.typeExport = ReportTypeConsts.Excel;
-
-    let reportFilter = { ...this.filterInputSearch };
-
-    // reportFilter.maxResultCount = -1;
-
-    reportInfo.parameters = this.GetParamsFromFilter(reportFilter)
-
-    reportInfo.values = this.GetParamsFromFilter({
-        A1 : this.l('CompanyReportHeader')
+    let reportInfo = new REA_LAND_AREA_SEARCH_DTO(this.filterInput)
+    reportInfo.maxResultCount = 999;
+    reportInfo.skipCount = 0;
+    this._landAreaService.getExcelLandArea(reportInfo).subscribe(response=>{
+        let base64String = response.fileContent;
+        let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        saveFile(blob, "BC_KHU_DAT.xlsx")
     });
-
-    reportInfo.pathName = "/COMMON/BC_CODONGNGOAI.xlsx";
-    //reportInfo.storeName = "rpt_BC_PHONGBAN";
-    reportInfo.storeName = "REA_LANDAREA_Search";
-
-    this.asposeService.getReport(reportInfo).subscribe(x => {
-        this.fileDownloadService.downloadTempFile(x);
-    });
-}
+  }
 
   search(): void {
       this.showTableLoading();
@@ -150,17 +140,18 @@ export class LandAreaComponent extends ListComponentBase2<REA_LAND_AREA_ENTITY, 
               if (isConfirmed) {
                   this.saving = true;
                   this._landAreaService.rEA_LAND_AREA_Del(item.id)
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0' && response.result!=null) {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                              // this.filterInputSearch.totalCount = 0;
-                              this.reloadPage();
-                          }
-                      });
+                  .pipe(
+                    catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                    }),
+                    finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                  this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                  // this.filterInputSearch.totalCount = 0;
+                  this.reloadPage();
+                });
               }
           }
       );

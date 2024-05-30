@@ -1,5 +1,5 @@
 <div [@routerTransition]>
-  <appToolbar #appToolbar></appToolbar>
+  <appToolbar_re #appToolbar></appToolbar_re>
   <div class="m-subheader">
       <div class="row align-items-center">
           <div class="mr-auto col-auto">
@@ -17,7 +17,15 @@
               </span>
               <!-- End Title -->
           </div>
-          <div class="col text-right mt-3 mt-md-0">
+          <div class="col text-right mt-3 mt-md-0 mr-4">
+            <div class="btn-group dropdown">
+                <button class="btn btn-outline-success"
+                *ngIf="editPageState=='ViewDetail'"
+                    (click)="exportToExcel()">
+                    <i class="far fa-file-excel"></i>
+                    {{l("ExcelOperations")}}
+                </button>
+            </div>
           </div>
       </div>
   </div>
@@ -32,6 +40,45 @@
                           <div class="form-group">
                               <auth-status-2-input-page [authStatus]="inputModel.autH_STATUS"></auth-status-2-input-page>
                           </div>
+                      </div>
+                      <div class="col-md-12" *ngIf="inputModel.autH_STATUS == 'R' && (editPageState == 'Edit' || editPageState == 'ViewDetail')">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>NỘI DUNG TRẢ VỀ</h4>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Người trả về</label>
+                                    <input disabled class="form-control" name="checkeR_NAME" type="text" [(ngModel)]="inputModel.checkeR_NAME">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Lý do trả về</label>
+                                    <textarea disabled class="form-control" name="rejecT_REASON" type="text" [(ngModel)]="inputModel.rejecT_REASON"></textarea>
+                                </div>
+                              </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" *ngIf="inputModel.autH_STATUS == 'C' && (editPageState == 'Edit' || editPageState == 'ViewDetail')">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>NỘI DUNG HỦY</h4>
+                            </div>
+      
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Người hủy</label>
+                                    <input disabled class="form-control" name="checkeR_NAME" type="text" [(ngModel)]="inputModel.checkeR_NAME">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Lý do hủy</label>
+                                    <textarea disabled class="form-control" name="rejecT_REASON" type="text" [(ngModel)]="inputModel.rejecT_REASON"></textarea>
+                                </div>
+                              </div>
+                        </div>
                       </div>
                       <div class="col-md-12">
                           <div class="row">
@@ -62,19 +109,24 @@
                             </div>
 
                             <div class="col-md-4">
-                              <div class="form-group">
+                              <div class="form-group required">
                                   <label>Dự án</label>
                                   <select2-custom (onChangeSelect2)="onSelect($event)"
                                     class="transparent"
+                                    required
                                     [disabled]="disableInput"
                                     #projecT_ID="ngModel"
                                     name="projecT_ID"
                                     [(ngModel)]="inputModel.projecT_ID"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="projectList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
                                     >
                                   </select2-custom>
+                                  <div class="error-message" *ngIf="projecT_ID.invalid && isShowError">
+                                    <span *ngIf="projecT_ID?.errors.required">Dự án
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
                               </div>
                             </div>
                             <div class="col-md-4">
@@ -87,9 +139,9 @@
                                     #sodO_TRANSFER_STATUS="ngModel"
                                     name="sodO_TRANSFER_STATUS"
                                     [(ngModel)]="inputModel.sodO_TRANSFER_STATUS"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="transferStatus"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
                                     >
                                   </select2-custom>
                                   <div class="error-message" *ngIf="sodO_TRANSFER_STATUS.invalid && isShowError">
@@ -99,19 +151,24 @@
                               </div>
                             </div>
                             <div class="col-md-4">
-                              <div class="form-group">
+                              <div class="form-group required">
                                   <label>Chủ sở hữu</label>
                                   <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    required
                                     class="transparent"
                                     [disabled]="disableInput"
                                     #owneR_INFO_OR_ID="ngModel"
                                     name="owneR_INFO_OR_ID"
                                     [(ngModel)]="inputModel.owneR_INFO_OR_ID"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="ownerList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
                                     >
                                   </select2-custom>
+                                  <div class="error-message" *ngIf="owneR_INFO_OR_ID.invalid && isShowError">
+                                    <span *ngIf="owneR_INFO_OR_ID?.errors.required">Chủ sở hữu
+                                        {{l("ValidationRequired")}}</span>
+                                </div>
                                   <!-- Input khi chon type -->
                                   <!-- <input disabled class="form-control" type="text" #mortgagE_ID="ngModel" name="mortgagE_ID" [(ngModel)]="inputModel.mortgagE_ID"> -->
                               </div>
@@ -130,10 +187,14 @@
                               </div>
                             </div>
                             <div class="col-md-4">
-                              <div class="form-group">
+                              <div class="form-group required">
                                   <label>Số phát hành</label>
                                   <!-- <input [disabled]="disableInput" class="form-control" type="text" #sodO_PUBLISH_NUMBER="ngModel" name="sodO_PUBLISH_NUMBER" [(ngModel)]="inputModel.sodO_PUBLISH_NUMBER"> -->
-                                  <input [disabled]="disableInput" class="form-control" type="text">
+                                  <input [disabled]="disableInput" class="form-control" type="text" #id="ngModel" name="id" [(ngModel)]="inputModel.id">
+                                  <div class="error-message" *ngIf="id.invalid && isShowError">
+                                    <span *ngIf="id?.errors.required">Số phát hành
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
                               </div>
                             </div>
                             <div class="col-md-4">
@@ -149,19 +210,24 @@
                               </div>
                             </div>
                             <div class="col-md-4">
-                              <div class="form-group">
+                              <div class="form-group required">
                                   <label>Người được ủy quyền</label>
                                   <select2-custom (onChangeSelect2)="onSelect($event)"
                                     class="transparent"
+                                    required
                                     [disabled]="disableInput"
                                     #authorizeD_PERSON_ID="ngModel"
                                     name="authorizeD_PERSON_ID"
                                     [(ngModel)]="inputModel.authorizeD_PERSON_ID"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="authList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
                                     >
                                   </select2-custom>
+                                  <div class="error-message" *ngIf="authorizeD_PERSON_ID.invalid && isShowError">
+                                    <span *ngIf="authorizeD_PERSON_ID?.errors.required">Người được ủy quyền
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
                               </div>
                             </div>
                             <div class="col-md-4">
@@ -173,9 +239,9 @@
                                     #sodO_TYPE="ngModel"
                                     name="sodO_TYPE"
                                     [(ngModel)]="inputModel.sodO_TYPE"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="sodoTypes"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
                                     >
                                   </select2-custom>
                               </div>
@@ -189,9 +255,9 @@
                                     #sodO_USE_TYPE="ngModel"
                                     name="sodO_USE_TYPE"
                                     [(ngModel)]="inputModel.sodO_USE_TYPE"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="useTypes"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
                                     >
                                   </select2-custom>
                               </div>
@@ -200,7 +266,7 @@
                               <div class="form-group">
                                 <label>Thời gian ủy quyền</label>
                                 <date-control
-                                [disabled]="true"
+                                [disabled]="disableInput"
                                 #sodO_AUTHORIZE_DT="ngModel"
                                 name="sodO_AUTHORIZE_DT"
                                 [(ngModel)]="inputModel.sodO_AUTHORIZE_DT"
@@ -219,6 +285,7 @@
                                 <label>Ngày cấp</label>
                                 <date-control
                                 required
+                                [disabled]="disableInput"
                                 #sodO_PROVIDE_DT="ngModel"
                                 name="sodO_PROVIDE_DT"
                                 [(ngModel)]="inputModel.sodO_PROVIDE_DT"
@@ -241,9 +308,9 @@
                                     #sodO_PHYSIC_STATUS="ngModel"
                                     name="sodO_PHYSIC_STATUS"
                                     [(ngModel)]="inputModel.sodO_PHYSIC_STATUS"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="physicStatus"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
                                     >
                                   </select2-custom>
                               </div>
@@ -257,9 +324,9 @@
                                     #sodO_USE_STATUS="ngModel"
                                     name="sodO_USE_STATUS"
                                     [(ngModel)]="inputModel.sodO_USE_STATUS"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="useStatus"
+                                    [valueMember]="'cdval'"
+                                    [displayMember]="'content'"
                                     >
                                   </select2-custom>
                               </div>
@@ -271,19 +338,24 @@
                               </div>
                             </div>
                             <div class="col-md-4">
-                              <div class="form-group">
+                              <div class="form-group required">
                                   <label>Khu đất</label>
                                   <select2-custom (onChangeSelect2)="onSelect($event)"
                                     class="transparent"
+                                    required
                                     [disabled]="disableInput"
                                     #areA_ID="ngModel"
                                     name="areA_ID"
                                     [(ngModel)]="inputModel.areA_ID"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="landAreaList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
                                     >
                                   </select2-custom>
+                                  <div class="error-message" *ngIf="areA_ID.invalid && isShowError">
+                                    <span *ngIf="areA_ID?.errors.required">Khu đất
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
                               </div>
                             </div>
                             <div class="col-md-4">
@@ -296,7 +368,7 @@
                               <div class="form-group">
                                   <!-- <label>Xuất sử dụng</label> -->
                                   <div class="d-flex flex-row">
-                                    <checkbox-control [disabled]="disableInput" (onchange)="onCheckActive()" [checked]="inputModel.sodO_COMPENSATE_CONFIRMATION"></checkbox-control>
+                                    <checkbox-control [disabled]="disableInput" (onchange)="inputModel.sodO_COMPENSATE_CONFIRMATION = $event.target.checked" [checked]="inputModel.sodO_COMPENSATE_CONFIRMATION"></checkbox-control>
                                     <label>Đã xác nhận bồi thường</label>
                                   </div>
                               </div>
@@ -313,7 +385,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewCoOwner()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="coOwnerEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeCoOwner()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -323,7 +395,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="coOwnerEditTable.checkAll($event.target.checked)" [checked]="coOwnerEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllCoOwner($event.target.checked)" [checked]="coOwnerEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -336,7 +408,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedCoOwner(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -357,7 +429,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addLandPlotInside()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="landPlotInsideEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeLandPlotInside()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -367,7 +439,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="landPlotInsideEditTable.checkAll($event.target.checked)" [checked]="landPlotInsideEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllLandPlotInside($event.target.checked)" [checked]="landPlotInsideEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -385,7 +457,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedLandPlotInside(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -398,7 +470,7 @@
                                           </td>
                                           <td>
                                             <span class="mo-header"></span>
-                                            <input [disabled]="disableInput" name="lanD_PLOT_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_AREA">
+                                            <input type="number" [disabled]="disableInput" name="lanD_PLOT_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_AREA" (change)="onChangeArea()">
                                           </td>
                                           <td>
                                             <span class="mo-header"></span>
@@ -436,7 +508,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addLandPlotOutside()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="landPlotOutsideEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeLandPlotOutside()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -446,7 +518,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="landPlotOutsideEditTable.checkAll($event.target.checked)" [checked]="landPlotOutsideEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllLandPlotOutside($event.target.checked)" [checked]="landPlotOutsideEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -464,7 +536,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedLandPlotOutside(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -477,7 +549,7 @@
                                           </td>
                                           <td>
                                             <span class="mo-header"></span>
-                                            <input [disabled]="disableInput" name="lanD_PLOT_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_AREA">
+                                            <input type="number" [disabled]="disableInput" name="lanD_PLOT_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_AREA" (change)="onChangeArea()">
                                           </td>
                                           <td>
                                             <span class="mo-header"></span>
@@ -514,7 +586,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewFile()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="fileEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeFile()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -524,7 +596,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="fileEditTable.checkAll($event.target.checked)" [checked]="fileEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllFile($event.target.checked)" [checked]="fileEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -539,13 +611,15 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedFile(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
                                             <span class="mo-header"></span>
-                                            <file-picker [disabled]="disableInput"></file-picker>
-                                            <!-- <input [disabled]="disableInput" name="lanD_PLOT_TO_BAN_DO{{item.no}}" class="form-control m-input" [(ngModel)]="item.lanD_PLOT_TO_BAN_DO"> -->
+                                            <file-selector 
+                                            [disabled]="disableInput"
+                                            [uploadedFile]="item"
+                                            ></file-selector>
                                           </td>
                                           <td>
                                             <span class="mo-header"></span>
@@ -584,19 +658,24 @@
                               </div>
                             </div>
                             <div class="col-md-4">
-                              <div class="form-group">
+                              <div class="form-group required">
                                   <label>Đối tác ký hợp đồng</label>
                                   <select2-custom (onChangeSelect2)="onSelect($event)"
                                     class="transparent"
+                                    required
                                     [disabled]="disableInput"
                                     #partneR_ID="ngModel"
                                     name="partneR_ID"
                                     [(ngModel)]="inputModel.contract.partneR_ID"
-                                    [(list)]="tempList"
-                                    [valueMember]="'value'"
-                                    [displayMember]="'value'"
+                                    [(list)]="partnerList"
+                                    [valueMember]="'id'"
+                                    [displayMember]="'name'"
                                     >
                                   </select2-custom>
+                                  <div class="error-message" *ngIf="partneR_ID.invalid && isShowError">
+                                    <span *ngIf="partneR_ID?.errors.required">Đối tác ký hợp đồng
+                                        {{l("ValidationRequired")}}</span>
+                                  </div>
                               </div>
                             </div>
                             <div class="col-md-4">
@@ -629,7 +708,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewPay()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="payEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removePay()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -639,7 +718,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="payEditTable.checkAll($event.target.checked)" [checked]="payEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllPay($event.target.checked)" [checked]="payEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -653,7 +732,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedPay(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -678,7 +757,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewStoreLocation()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="storeLocationEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeStoreLocation()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -688,7 +767,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="storeLocationEditTable.checkAll($event.target.checked)" [checked]="storeLocationEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllStoreLocation($event.target.checked)" [checked]="storeLocationEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -703,7 +782,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedStoreLocation($event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -714,9 +793,9 @@
                                               #sodO_STORE_LOCATION_ID="ngModel"
                                               name="sodO_STORE_LOCATION_ID{{item.no}}"
                                               [(ngModel)]="item.sodO_STORE_LOCATION_ID"
-                                              [(list)]="tempList"
-                                              [valueMember]="'value'"
-                                              [displayMember]="'value'"
+                                              [(list)]="storageLocations"
+                                              [valueMember]="'cdval'"
+                                              [displayMember]="'content'"
                                               >
                                             </select2-custom> 
                                             <!-- <input [disabled]="disableInput" name="sodO_PAY_BATCH_NAME{{item.no}}" class="form-control m-input" [(ngModel)]="item.sodO_PAY_BATCH_NAME"> -->
@@ -748,7 +827,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewCompensation()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="compensationEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeCompensation()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -758,7 +837,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="compensationEditTable.checkAll($event.target.checked)" [checked]="compensationEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllCompensation($event.target.checked)" [checked]="compensationEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -778,7 +857,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedCompensation(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -845,7 +924,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewAdvancePayment()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="advancePaymentEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeAdvancePayment()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -855,7 +934,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="advancePaymentEditTable.checkAll($event.target.checked)" [checked]="advancePaymentEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllAdvancePayment($event.target.checked)" [checked]="advancePaymentEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -873,7 +952,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedAdvancePayment(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -1215,7 +1294,7 @@
                             </div>
                             <div class="action-button col-md-12">
                               <button type="button" [disabled]="disableInput" class="btn btn-primary" (click)="addNewUseRegistration()"><i class="pi pi-plus"></i>{{l("Add")}}</button>
-                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="useRegistrationEditTable.removeAllCheckedItem()"><i
+                              <button type="button" [disabled]="disableInput" class="btn btn-danger" (click)="removeUseRegistration()"><i
                                       class="pi pi-times"></i>{{l("Delete")}}</button>
                             </div>
                             <div class="primeng-datatable-container col-md-12">
@@ -1225,7 +1304,7 @@
         
                                           <th>
                                               <span style="width: 40px">
-                                                  <checkbox-control [disabled]="disableInput" (onchange)="useRegistrationEditTable.checkAll($event.target.checked)" [checked]="useRegistrationEditTable.isCheckAll"></checkbox-control>
+                                                  <checkbox-control [disabled]="disableInput" (onchange)="checkAllUseRegistration($event.target.checked)" [checked]="useRegistrationEditTable.isCheckAll"></checkbox-control>
                                               </span>
                                           </th>
                                           <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -1243,7 +1322,7 @@
         
                                           <td class="center">
                                               <span class="mo-header"></span>
-                                              <checkbox-control [disabled]="disableInput" (onchange)="item.isChecked = $event.target.checked" [checked]="item['isChecked']"></checkbox-control>
+                                              <checkbox-control [disabled]="disableInput" (onchange)="checkedUseRegistration(item, $event.target.checked)" [checked]="item['isChecked']"></checkbox-control>
                                           </td>
                                           <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                           <td>
@@ -1251,9 +1330,9 @@
                                             <select2-custom (onChangeSelect2)="onSelect($event)"
                                               class="transparent m-input"
                                               [disabled]="disableInput"
-                                              [(list)]="tempList"
-                                              [valueMember]="'value'"
-                                              [displayMember]="'value'"
+                                              [(list)]="departmentList"
+                                              [valueMember]="'id'"
+                                              [displayMember]="'name'"
                                               >
                                             </select2-custom> 
                                           </td>
@@ -1262,9 +1341,9 @@
                                             <select2-custom (onChangeSelect2)="onSelect($event)"
                                               class="transparent m-input"
                                               [disabled]="disableInput"
-                                              [(list)]="tempList"
-                                              [valueMember]="'value'"
-                                              [displayMember]="'value'"
+                                              [(list)]="employeeList"
+                                              [valueMember]="'id'"
+                                              [displayMember]="'name'"
                                               >
                                             </select2-custom> 
                                           </td>

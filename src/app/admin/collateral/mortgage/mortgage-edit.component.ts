@@ -39,6 +39,8 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
   @ViewChild('assetEditTable') assetEditTable: EditableTableComponent<REA_MORTGAGE_ITEM_ENTITY>;
   @ViewChild('shareEditTable') shareEditTable: EditableTableComponent<REA_MORTGAGE_SHARE_ENTITY>;
   @ViewChild('releaseHistoryEditTable') releaseHistoryEditTable: EditableTableComponent<REA_MORTGAGE_RELEASE_HISTORY_ENTITY>;
+  @ViewChild('projectModal') projectModal;
+  @ViewChild('landAreaModal') landAreaModal;
 
     EditPageState = EditPageState;
     AllCodes = AllCodes;
@@ -104,6 +106,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
     item.valuation = new REA_VALUATION_ENTITY();
     item.iS_NEW = true;
     item.iS_CHANGED = false;
+    this.projectModal.show()
     this.projectEditTable.pushItem(item);
     this.updateView();
   }
@@ -113,6 +116,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
     item.valuation = new REA_VALUATION_ENTITY();
     item.iS_NEW = true;
     item.iS_CHANGED = false;
+    this.landAreaModal.show()
     this.landEditTable.pushItem(item);
     this.updateView();
   }
@@ -188,7 +192,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
               this.mortgageService.rEA_MORTGAGE_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
+                          this.showErrorMessage("Lỗi");
                       }
                       else {
                           this.addNewSuccess();
@@ -197,7 +201,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
+                                          this.showErrorMessage("Lỗi");
                                       }
                                   });
                           }
@@ -208,7 +212,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
               this.mortgageService.rEA_MORTGAGE_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
+                          this.showErrorMessage("Lỗi");
                       }
                       else {
                           this.updateSuccess();
@@ -217,7 +221,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
+                                          this.showErrorMessage("Lỗi");
                                       }
                                       else {
                                           this.inputModel.autH_STATUS = AuthStatusConsts.Approve;
@@ -268,7 +272,7 @@ export class MortgageEditComponent extends DefaultComponentBase implements OnIni
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
                           if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
+                              this.showErrorMessage("Lỗi");
                           }
                           else {
                               this.approveSuccess();

@@ -1,6 +1,6 @@
 <div class="file-input-group file-group">
-    <input class="form-control" readonly type="text" [(ngModel)]="uploadedFile.filE_NAME" name="attacheD_IMAGE" />
-    <input class="form-control" hidden type="file" #attachFile (change)="onUploadImage($event)" accept="image/x-png,image/gif,image/jpeg" />
+    <input class="form-control" readonly type="text" [ngStyle]="{cursor: (!uploadedFile.filE_NAME) ? 'default' : 'pointer' }" [(ngModel)]="uploadedFile.filE_NAME" name="attacheD_IMAGE" (click)="downloadFile()" />
+    <input class="form-control" hidden type="file" #attachFile (change)="onUploadImage($event)" accept="image/png,image/gif,image/jpeg,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
     <button style="margin:0px !important;" *ngIf="!uploadedFile.filE_NAME" type="button" class="btn btn-primary" [disabled]="disabled" (click)="selectFile()"><i class="fa fa-plus mx-auto"></i></button>
     <button *ngIf="uploadedFile.filE_NAME" type="button" class="btn btn-primary" [disabled]="disabled" (click)="selectFile()"><i class="fa fa-pen"></i></button>
     <button style="margin:0px !important;" *ngIf="uploadedFile.filE_NAME" type="button" class="btn btn-danger" [disabled]="disabled" (click)="removeFile()"><i class="fa fa-eraser"></i></button>

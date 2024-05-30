@@ -25,122 +25,28 @@ export class DashboardComponent extends DefaultComponentBase implements OnInit{
         super(injector);
     }
 
-    mockData = {
-        soDoProjectDashboard: {
-            soDoMetrics: [
-                {
-                    month: 1,
-                    year: 2024,
-                    count: 100
-                },
-                {
-                    month: 3,
-                    year: 2024,
-                    count: 300
-                },
-                {
-                    month: 10,
-                    year: 2023,
-                    count: 1000
-                }
-            ],
-            projectMetrics: [
-                {
-                    month: 1,
-                    year: 2024,
-                    count: 100
-                },
-                {
-                    month: 3,
-                    year: 2024,
-                    count: 300
-                },
-                {
-                    month: 10,
-                    year: 2023,
-                    count: 1000
-                }
-            ]
-          },
-          dueDateContractAndMortgage: {
-            dueDateContractMetrics: [
-                {
-                    month: 1,
-                    year: 2024,
-                    count: 100
-                },
-                {
-                    month: 3,
-                    year: 2024,
-                    count: 300
-                },
-                {
-                    month: 10,
-                    year: 2023,
-                    count: 1000
-                }
-            ],
-            dueDateMortgageMetrics: [
-                {
-                    month: 1,
-                    year: 2024,
-                    count: 100
-                },
-                {
-                    month: 3,
-                    year: 2024,
-                    count: 300
-                },
-                {
-                    month: 10,
-                    year: 2023,
-                    count: 1000
-                }
-            ]
-          },
-          mortgageItemDashboard: {
-            projectInMortgage: 15,
-            totalProject: 20,
-            landAreaInMortgage: 5,
-            totalLandArea: 10,
-            soDoInMortgage: 5,
-            totalSoDo: 10
-          },
-          projectTypeDashboard: {
-            dtProject: 10,
-            tmProject: 10,
-            rlProject: 10,
-            totalProject: 30
-          },
-    }
-
     projectData: any[];
     sodoData: any[];
-    expiredMortgageData: any[];
     expiredContractData: any[];
-    mortgageProgressData;
     projectTypeData;
+    top10projects: any[];
+    revenueData: any[];
     
     
     ngOnInit(): void {
         this.setDashBoardData()
+        this.updateView()
 	}
 
     setDashBoardData() {
-        // this._DashboardServiceProxy.getDataForDashboard().subscribe(response=>{
-        //     this.projectData = response.soDoProjectDashboard.projectMetrics
-        //     this.sodoData = response.soDoProjectDashboard.soDoMetrics
-        //     this.expiredMortgageData = response.dueDateContractAndMortgage.dueDateMortgageMetrics
-        //     this.expiredContractData = response.dueDateContractAndMortgage.dueDateContractMetrics
-        //     this.mortgageProgressData = response.mortgageItemDashboard
-        //     this.projectTypeData = response.projectTypeDashboard
-        // })
-        this.projectData = this.mockData.soDoProjectDashboard.projectMetrics
-        this.sodoData = this.mockData.soDoProjectDashboard.soDoMetrics
-        this.expiredMortgageData = this.mockData.dueDateContractAndMortgage.dueDateMortgageMetrics
-        this.expiredContractData = this.mockData.dueDateContractAndMortgage.dueDateContractMetrics
-        this.mortgageProgressData = this.mockData.mortgageItemDashboard
-        this.projectTypeData = this.mockData.projectTypeDashboard
-
+        this._DashboardServiceProxy.getDataForDashboard().subscribe(response=>{
+            this.projectData = response.soDoProjectDashboard.projectMetrics
+            this.sodoData = response.soDoProjectDashboard.soDoMetrics
+            this.expiredContractData = response.dueDateContractAndMortgage.dueDateContractMetrics
+            this.projectTypeData = response.projectTypeDashboard
+            this.top10projects = response.top10ProjectValuation.valuations;
+            this.revenueData = response.totalRevenuePerMonth.totalRevenueMetrics;
+            this.updateView()
+        })
     }
 }

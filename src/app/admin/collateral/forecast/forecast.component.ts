@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, Injector, OnInit, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Injector, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ReportTypeConsts } from '@app/admin/core/ultils/consts/ReportTypeConsts';
+import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { ListComponentBase } from '@app/ultilities/list-component-base';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
-import { AsposeServiceProxy, AuthorizedPersonServiceProxy, REA_AUTHORIZED_PERSON_ENTITY, ReportInfo } from '@shared/service-proxies/service-proxies';
+import { AsposeServiceProxy, AuthorizedPersonServiceProxy, PredictRequestDto, PredictionServiceProxy, REA_AUTHORIZED_PERSON_ENTITY, REA_VALUATION_RESPONSE_ENTITY, ReportInfo } from '@shared/service-proxies/service-proxies';
 import { FileDownloadService } from '@shared/utils/file-download.service';
 import { finalize } from 'rxjs/operators';
 
@@ -13,10 +14,23 @@ import { finalize } from 'rxjs/operators';
   animations: [appModuleAnimation()],
   encapsulation: ViewEncapsulation.None,
 })
-export class ForecastComponent extends ListComponentBase<REA_AUTHORIZED_PERSON_ENTITY> implements IUiAction<REA_AUTHORIZED_PERSON_ENTITY>, OnInit, AfterViewInit {
+export class ForecastComponent extends DefaultComponentBase implements OnInit, AfterViewInit {
 
-    filterInput: REA_AUTHORIZED_PERSON_ENTITY =new REA_AUTHORIZED_PERSON_ENTITY();
-    authorized_persons: REA_AUTHORIZED_PERSON_ENTITY[];
+    
+
+    constructor(
+        injector: Injector,
+        private predictionService: PredictionServiceProxy,
+        private fileDownloadService: FileDownloadService,
+        private asposeService: AsposeServiceProxy,
+    ) {
+        super(injector);
+        this.getInputField()
+        this.initFilter();
+    }
+    @ViewChild('editForm') editForm: ElementRef;
+    filterInput: PredictRequestDto =new PredictRequestDto();
+    filterInput2: REA_VALUATION_RESPONSE_ENTITY = new REA_VALUATION_RESPONSE_ENTITY()
     records = [
         {
             recorD_STATUS: '0',
@@ -37,41 +51,23 @@ export class ForecastComponent extends ListComponentBase<REA_AUTHORIZED_PERSON_E
             autH_STATUS_NAME: "Đã duyệt"
         }
     ]
+    
+    districtList;
+    wardList;
+    locationList;
 
-    format = 'dd/MM/yyyy';
+    selectedDate;
+    predictionResult = 0;
+    numberOfBedrooms = '0';
+    area = '0';
 
-    constructor(
-        injector: Injector,
-        private fileDownloadService: FileDownloadService,
-        private asposeService: AsposeServiceProxy,
-        private _authorizedPersonService: AuthorizedPersonServiceProxy,
-        private pageResultService: AuthorizedPersonServiceProxy,
-        // private branchService: BranchServiceProxy
-    ) {
-        super(injector);
-        this.initFilter();
-    }
+    isShowError = false;
 
     initDefaultFilter() {
-        this.filterInput.top = 200;
+        // this.filterInput.top = 200;
     }
 
     ngOnInit() {
-      this.appToolbar.setUiAction(this);
-      // set role toolbar
-      this.appToolbar.setRole('AuthorizedPeople', false, false, false, false, false, false, false, false);
-      this.appToolbar.setEnableForListPage();
-
-      this._authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Search(this.getFillterForCombobox()).subscribe(response => {
-          this.authorized_persons = response.items;
-          this.updateView();
-      });
-      var filterCombobox=this.getFillterForCombobox();
-    //   this.branchService.cM_BRANCH_Search(filterCombobox).subscribe(response => {
-    //       this.branchs = response.items;
-    //       this.updateView();
-    //   });
-      setTimeout(()=>{this.filterInputSearch=this.filterInput,this.search()}, 1000);
     }
 
     ngAfterViewInit(): void {
@@ -81,12 +77,6 @@ export class ForecastComponent extends ListComponentBase<REA_AUTHORIZED_PERSON_E
     exportToExcel() {
       let reportInfo = new ReportInfo();
       reportInfo.typeExport = ReportTypeConsts.Excel;
-
-      let reportFilter = { ...this.filterInputSearch };
-
-      reportFilter.maxResultCount = -1;
-
-      reportInfo.parameters = this.GetParamsFromFilter(reportFilter)
 
       reportInfo.values = this.GetParamsFromFilter({
           A1 : this.l('CompanyReportHeader')
@@ -99,75 +89,73 @@ export class ForecastComponent extends ListComponentBase<REA_AUTHORIZED_PERSON_E
       this.asposeService.getReport(reportInfo).subscribe(x => {
           this.fileDownloadService.downloadTempFile(x);
       });
-  }
+    }
 
-  search(): void {
-        this.showTableLoading();
-
-        this.setSortingForFilterModel(this.filterInputSearch);
-
-        this._authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Search(this.filterInputSearch)
-            .pipe(finalize(() => this.hideTableLoading()))
-            .subscribe(result => {
-                this.dataTable.records = result.items;
-                this.dataTable.totalRecordsCount = result.totalCount;
-                // this.filterInputSearch.totalCounT = result.totalCount; 
-                this.appToolbar.setEnableForListPage();
-                this.updateView();
+    getInputField(){
+        this.predictionService.getComboBoxData().subscribe(response=>{
+            var rawDistrict = []
+            var rawWard = []
+            var rawLocation = []
+            response.districts.forEach(e => {
+                rawDistrict.push({value: e})
             });
-        console.log('Running');
+            response.wards.forEach(e => {
+                rawWard.push({value: e})
+            });
+            response.locationTypes.forEach(e => {
+                rawLocation.push({value: e})
+            });
+
+            this.districtList = rawDistrict.reduce((acc, curr, index) => {
+                acc[index] = curr;
+                return acc;
+            }, []);
+            this.wardList = rawWard.reduce((acc, curr, index) => {
+                acc[index] = curr;
+                return acc;
+            }, []);
+            this.locationList = rawLocation.reduce((acc, curr, index) => {
+                acc[index] = curr;
+                return acc;
+            }, []);
+
+            this.updateView()
+        })
     }
 
-    onAdd(): void {
-        this.navigatePassParam('/app/admin/authorized-people-add', null, { filterInput: JSON.stringify(this.filterInputSearch) });
+    onPredict() {
+        if ((this.editForm as any).form.invalid) {
+            this.isShowError = true;
+            this.showErrorMessage(this.l('FormInvalid'));
+            this.updateView();
+            return;
+        }
+        this.filterInput.date = this.selectedDate.format('MM/DD/YYYY').toString()
+        this.filterInput.numberOfBedrooms = Number.parseFloat(this.numberOfBedrooms)
+        this.filterInput.area = Number.parseFloat(this.area)
+        this.predictionService.getPredictValuationByMLP(this.filterInput).subscribe(response=>{
+            this.predictionResult = response
+            this.updateView()
+        })
     }
 
-    onUpdate(item: REA_AUTHORIZED_PERSON_ENTITY): void {
-        this.navigatePassParam('/app/admin/authorized-people-edit', { a_person: item.a_PERSON_ID }, { filterInput: JSON.stringify(this.filterInputSearch) });
-    }
+    onValuationResponse() {
+        this.filterInput2.address = this.filterInput.address
+        this.filterInput2.area = this.filterInput.area
+        this.filterInput2.date = this.selectedDate.format('MM/DD/YYYY').toString()
+        this.filterInput2.district = this.filterInput.district
+        this.filterInput2.locationType = this.filterInput.locationType
+        this.filterInput2.numberOfBedrooms = this.filterInput.numberOfBedrooms
+        this.filterInput2.ward = this.filterInput.ward
+        this.filterInput2.predictedPrice = this.predictionResult
+        if(this.predictionResult!=0) {
+            this.predictionService.getValuationResponse(this.filterInput2).subscribe(response=>{
 
-    onDelete(item: REA_AUTHORIZED_PERSON_ENTITY): void {
-        this.message.confirm(
-            this.l('DeleteWarningMessage', item.a_PERSON_NAME),
-            this.l('AreYouSure'),
-            (isConfirmed) => {
-                if (isConfirmed) {
-                    this.saving = true;
-                    this._authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Del(item.a_PERSON_ID)
-                        .pipe(finalize(() => { this.saving = false; }))
-                        .subscribe((response) => {
-                            if (response.result != '0') {
-                                this.showErrorMessage(response.errorDesc);
-                            }
-                            else {
-                                this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                                // this.filterInputSearch.totalCount = 0;
-                                this.reloadPage();
-                            }
-                        });
-                }
-            }
-        );
-    }
-
-    onApprove(item: REA_AUTHORIZED_PERSON_ENTITY): void {
-
-    }
-
-    onViewDetail(item: REA_AUTHORIZED_PERSON_ENTITY): void {
-        this.navigatePassParam('/app/admin/authorized-people-view', { a_person: item.a_PERSON_ID }, { filterInput: JSON.stringify(this.filterInputSearch) });
-    }
-
-    onSave(): void {
-
-    }
-
-    onResetSearch(): void {
-        this.filterInput = new REA_AUTHORIZED_PERSON_ENTITY();
-        this.changePage(0);
+            })
+        }
     }
 
     onSelectRecord(record: REA_AUTHORIZED_PERSON_ENTITY) {
-        this.appToolbar.search();
+        // this.appToolbar.search();
     }
 }

@@ -4,17 +4,18 @@ import { Chart } from "chart.js";
 import * as moment from "moment";
 
 @Component({
-    selector: 'expired-contract-chart',
-    templateUrl: './expired-contract-chart.component.html',
+    selector: 'revenue-chart',
+    templateUrl: './revenue-chart.component.html',
 })
-export class ExpiredContractChart extends DefaultComponentBase implements OnInit, OnChanges {
+export class RevenueChart extends DefaultComponentBase implements OnInit, OnChanges {
     constructor(
         injector: Injector
         ) {
         super(injector);
 	}
-    @Input() contractData;
+    @Input() revenueData;;
     selectedYear = moment().year()
+    yearNow = moment().year()
 
     chart: any;
     chartLabels = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"]
@@ -25,7 +26,7 @@ export class ExpiredContractChart extends DefaultComponentBase implements OnInit
             }
         },
         title: {
-            text: 'Số lượng hợp đồng tới ngày đáo hạn năm ' + this.selectedYear,
+            text: 'Doanh thu các tháng của năm ' + this.selectedYear,
             display: true
         },
         responsive: true,
@@ -52,7 +53,7 @@ export class ExpiredContractChart extends DefaultComponentBase implements OnInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['contractData']) {
+        if (changes['revenueData']) {
             if(this.chart) {
                 this.changeChart();
             }
@@ -60,7 +61,7 @@ export class ExpiredContractChart extends DefaultComponentBase implements OnInit
     }
     
     createChart(){
-        this.chart = new Chart("ExpiredContractChart", {
+        this.chart = new Chart("RevenueChart", {
           type: 'bar', //this denotes tha type of chart
     
           data: {// values on X-Axis
@@ -79,19 +80,19 @@ export class ExpiredContractChart extends DefaultComponentBase implements OnInit
     }
     
     changeChart() {
-        var contractCounts = [];
+        var revenueCounts = [];
         for(let i=1; i<=12; i++) {
-            let contract = this.contractData ? this.contractData.find(e=> e.month==i && e.year==this.selectedYear) : null;
+            let contract = this.revenueData ? this.revenueData.find(e=> e.month==i && e.year==this.selectedYear) : null;
             if(contract){
-                contractCounts.push(contract.count)
+                revenueCounts.push(contract.count)
             }
             else {
-                contractCounts.push(0)
+                revenueCounts.push(0)
             }
         }
 
-        this.chart.data.datasets[0].data = contractCounts
-        this.chart.options.title.text = 'Số lượng hợp đồng tới ngày đáo hạn năm ' + this.selectedYear
+        this.chart.data.datasets[0].data = revenueCounts
+        this.chart.options.title.text = 'Doanh thu các tháng của năm ' + this.selectedYear
         this.chart.update()
         this.updateView()
     }

@@ -110,7 +110,7 @@
                                   <label>Mã BĐS đầu tư</label>
                                   <div class="input-group">
                                       <input [readOnly]="true" class="form-control" name="invesT_PROP_ID" #invesT_PROP_ID="ngModel" [(ngModel)]="inputModel.id" />
-                                      <button type="button" class="btn btn-primary" (click)="reaModal.show()">...</button>
+                                      <button [disabled]="disableInput" type="button" class="btn btn-primary" (click)="reaModal.show()">...</button>
                                   </div>
                               </div>
                             </div>
@@ -345,13 +345,13 @@
                                 class="pi pi-times"></i>{{l("Delete")}}</button>
                       </div>
                       <div class="primeng-datatable-container col-md-12" [hidden]="editPageState == 'Add'">
-                        <editable-table #useRegistrationEditTable class="custom-table ui-table">
+                        <editable-table #floorEditTable class="custom-table ui-table">
                             <thead>
                                 <tr>
   
                                     <th>
                                         <span style="width: 40px">
-                                            <checkbox-control [disabled]="disableInput" (onchange)="checkAllFloor($event.target.checked)" [checked]="useRegistrationEditTable.isCheckAll"></checkbox-control>
+                                            <checkbox-control [disabled]="disableInput" (onchange)="checkAllFloor($event.target.checked)" [checked]="floorEditTable.isCheckAll"></checkbox-control>
                                         </span>
                                     </th>
                                     <th><span style="width: 40px">{{l("No")}}</span></th>
@@ -364,7 +364,7 @@
   
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of useRegistrationEditTable.dataInPage" #editRow ng-form [hidden]="item.page != useRegistrationEditTable.currentPage">
+                                <tr *ngFor="let item of floorEditTable.dataInPage" #editRow ng-form [hidden]="item.page != floorEditTable.currentPage">
   
                                     <td class="center">
                                         <span class="mo-header"></span>
@@ -388,10 +388,10 @@
                             </tbody>
                         </editable-table>
                       </div>
-                      <div class="col-md-12 mt-3" *ngIf="contractEditTable">
+                      <div class="col-md-12 mt-3" [hidden]="contractEditTable">
                         <h4>HỢP ĐỒNG THUÊ CỦA BĐS</h4>
                       </div>
-                      <div class="primeng-datatable-container col-md-12" *ngIf="contractEditTable">
+                      <div class="primeng-datatable-container col-md-12" [hidden]="contractEditTable">
                         <editable-table #contractEditTable class="custom-table ui-table">
                             <thead>
                                 <tr>
@@ -430,65 +430,6 @@
                                     </td>
                                     <td>
                                       <span class="mo-header"></span>{{ item.contracT_ITEM_RENTAL_PRICE.rentaL_PRICE_UNIT_PRICE_VND }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </editable-table>
-                      </div>
-                      <div class="col-md-12 mt-3" *ngIf="mortgageEditTable">
-                        <h4>TÌNH TRẠNG THẾ CHẤP</h4>
-                      </div>
-                      <div class="primeng-datatable-container col-md-12" *ngIf="mortgageEditTable">
-                        <editable-table #mortgageEditTable class="custom-table ui-table">
-                            <thead>
-                                <tr>
-                                    <th><span style="width: 40px">{{l("No")}}</span></th>
-                                    <th sortField="propertY_ID"><span style="width: 150px">Mã TP/ Khoản vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Tên TP/ Khoản vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Kỳ hạn</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày đáo hạn</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Đơn vị định giá</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày định giá</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Tình trạng thế chấp</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Chia sẻ thế chấp</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Trạng thái</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let item of mortgageEditTable.dataInPage" #editRow ng-form [hidden]="item.page != mortgageEditTable.currentPage">
-                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
-                                    <td>
-                                      <a href="/app/admin/mortgage-view;mortgage={{ item.id }}">
-                                        <span class="mo-header"></span>{{ item.id }}
-                                      </a>
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_TERM }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_DUE_DATE ? (item.mortgagE_DUE_DATE | momentFormat:'L') : '-'}}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.valuatioN_PARTY_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.valuatioN_DT ? (item.valuatioN_DT | momentFormat:'L') : '-'}}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_STATUS_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_IS_SHARED ? 'Có chia sẻ' : 'Không chia sẻ' }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_STATUS_NAME }}
                                     </td>
                                 </tr>
                             </tbody>

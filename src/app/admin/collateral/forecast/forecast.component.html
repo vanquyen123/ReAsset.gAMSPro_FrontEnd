@@ -1,5 +1,4 @@
 <div [@routerTransition]>
-  <appToolbar #appToolbar></appToolbar>
   <div id="page-list-area">
       <div class="m-subheader">
           <div class="row align-items-center">
@@ -18,7 +17,7 @@
                       <!-- End Title -->
                   </h3>
               </div>
-              <div class="col text-right mt-3 mt-md-0">
+              <!-- <div class="col text-right mt-3 mt-md-0">
                   <div class="btn-group dropdown mr-2">
                       <button class="btn btn-outline-success"
                       *ngIf="appToolbar.buttonSearchEnable"
@@ -27,7 +26,7 @@
                           {{l("ExcelOperations")}}
                       </button>
                   </div>
-              </div>
+              </div> -->
           </div>
       </div>
 
@@ -35,7 +34,7 @@
           class="m-content">
           <div class="m-portlet m-portlet--mobile">
               <div class="m-portlet__body">
-                  <form class="horizontal-form filter-form"
+                  <form class="horizontal-form filter-form" #editForm="ngForm" id="editForm"
                       autocomplete="off">
                       <div class="m-form m-form--label-align-right">
                           <div class="row align-items-center m--margin-bottom-30">
@@ -43,47 +42,97 @@
                               <!-- Mã cổ đông ngoài -->
                               <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Mã dự án</label>
-                                    <input 
-                                        name="lanD_AREA_IDFilter"
-                                        autoFocus
-                                        class="form-control m-input"
-                                        type="text">
+                                    <label>Địa chỉ</label>
+                                    <input class="form-control" type="text" name="address" [(ngModel)]="filterInput.address">
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Tên dự án</label>
-                                    <input 
-                                        name="lanD_AREA_NAMEFilter"
-                                        autoFocus
-                                        class="form-control m-input"
-                                        type="text">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Địa điểm</label>
-                                    <input 
-                                        name="lanD_AREA_LOCATIONFilter"
-                                        autoFocus
-                                        class="form-control m-input"
-                                        type="text">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                              <div class="form-group">
-                                  <label>Loại dự án</label>
-                                  <select2-custom (onChangeSelect2)="onSelectRecord($event)"
-                                      name="projecT_ID"
-                                      class="transparent"
-                                      [emptyText]="l('SelectAll')"
-                                      [(list)]="records"
-                                      [valueMember]="'recorD_STATUS'"
-                                      [displayMember]="'recordName'">
-                                  </select2-custom>
                               </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Quận/huyện</label>
+                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                        name="district"
+                                        class="transparent"
+                                        [(ngModel)]="filterInput.district"
+                                        [(list)]="districtList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'">
+                                    </select2-custom>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Phường</label>
+                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                        name="ward"
+                                        class="transparent"
+                                        [(ngModel)]="filterInput.ward"
+                                        [(list)]="wardList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'">
+                                    </select2-custom>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Vị trí</label>
+                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                        name="locationType"
+                                        class="transparent"
+                                        [(ngModel)]="filterInput.locationType"
+                                        [(list)]="locationList"
+                                        [valueMember]="'value'"
+                                        [displayMember]="'value'">
+                                    </select2-custom>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Số phòng ngủ</label>
+                                    <input 
+                                    type="text"
+                                    inputmode="decimal"
+                                    pattern="[0-9]*"
+                                    #numBed="ngModel"
+                                    [(ngModel)]="numberOfBedrooms"
+                                    name="numberOfBedrooms"
+                                    autoFocus
+                                    class="form-control m-input"
+                                    >
+                                    <div class="error-message" *ngIf="numBed && numBed.invalid && isShowError">
+                                        <span *ngIf="numBed?.errors.pattern">
+                                            Số phòng ngủ không hợp lệ</span>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Diện tích</label>
+                                    <input 
+                                    type="text"
+                                    inputmode="decimal"
+                                    pattern="[0-9]*[.,]?[0-9]*"
+                                    [(ngModel)]="area"
+                                    name="area"
+                                    autoFocus
+                                    class="form-control m-input"
+                                    >
+                                    <!-- <div class="error-message" *ngIf="area && area.invalid && isShowError">
+                                        <span *ngIf="area?.errors.pattern">
+                                            Diện tích không hợp lệ</span>
+                                    </div> -->
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Ngày định giá</label>
+                                  <date-control
+                                    name="selectedDate"
+                                    [(ngModel)]="selectedDate"
+                                    autoFocus>
+                                    </date-control>
+                                </div>
+                              </div>
+                            
                             <div class="col-md-12" style="height: 10vh;"></div>
                             <div class="col-md-4">
                                 <div class="row">
@@ -91,10 +140,11 @@
                                         <div class="form-group">
                                             <label>Giá trị chính xác</label>
                                             <input 
-                                                name="lanD_AREA_LOCATIONFilter"
+                                                name="actualPrice"
+                                                [(ngModel)]="filterInput2.actualPrice"
                                                 autoFocus
                                                 class="form-control m-input"
-                                                type="text">
+                                                type="number">
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-3">
@@ -109,7 +159,7 @@
                                     </div>
                                     <div class="col-md-3"></div>
                                     <div class="col-md-6 mt-3">
-                                        <button type="button" class="btn btn-primary w-100">Gửi phản hồi</button>
+                                        <button type="button" class="btn btn-primary w-100" (click)="onValuationResponse()">Gửi phản hồi</button>
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +168,7 @@
                                 <div class="row">
                                     <div class="col-md-6"></div>
                                     <div class="col-md-6" style="height: 50px;">
-                                        <button type="button" class="btn btn-primary w-100 h-100">Dự đoán</button>
+                                        <button type="button" class="btn btn-primary w-100 h-100" (click)="onPredict()">Dự đoán</button>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column align-items-center border mt-3 py-3 w-100">
@@ -126,6 +176,7 @@
                                             <div class="form-group w-75">
                                                 <input 
                                                     name="lanD_AREA_LOCATIONFilter"
+                                                    [(ngModel)]="predictionResult"
                                                     disabled
                                                     autoFocus
                                                     class="form-control m-input"
@@ -136,14 +187,14 @@
                                 </div>
                             </div>
                               <!-- End Filter -->
-                              <div style="display:none;"
+                              <!-- <div style="display:none;"
                                   class="col-md-12">
                                   <div class="form-group">
                                       <button *ngIf="appToolbar.buttonSearchEnable"
                                           class="btn btn-primary btn-search"
                                           (click)="onSearch()"></button>
                                   </div>
-                              </div>
+                              </div> -->
                           </div>
                       </div>
                   </form>

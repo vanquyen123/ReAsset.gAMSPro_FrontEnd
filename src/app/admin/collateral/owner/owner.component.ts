@@ -11,7 +11,8 @@ import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { AsposeServiceProxy, CM_ALLCODE_ENTITY, OwnerServiceProxy, REA_OWNER_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
   templateUrl: "./owner.component.html",
@@ -136,17 +137,18 @@ search(): void {
               if (isConfirmed) {
                   this.saving = true;
                   this._ownerService.rEA_OWNER_Del(item.owneR_ID)
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                              // this.filterInputSearch.totalCount = 0;
-                              this.reloadPage();
-                          }
-                      });
+                  .pipe(
+                    catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                    }),
+                    finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                  this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                  // this.filterInputSearch.totalCount = 0;
+                  this.reloadPage();
+                });
               }
           }
       );

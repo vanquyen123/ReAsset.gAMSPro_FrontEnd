@@ -1,5 +1,5 @@
 <div class="chart-container">
-    <canvas id="ProjectSodoChart" ></canvas>
+    <canvas id="RevenueChart" ></canvas>
     <div class="d-inline-flex flex-row" style="height: 30px;">
         <button 
         type="button" 
@@ -15,9 +15,9 @@
         type="button" 
         class="btn btn-primary btn-sm h-100 d-flex justify-content-center align-items-center" 
         style="width: 30px"
-        [style.cursor]="selectedYear==yearNow ? 'default' : 'pointer'"
         (click)="setToNextYear()"
-        [disabled]="selectedYear>=yearNow">
+        [disabled]="selectedYear>=yearNow"
+        >
             <span class="ui-paginator-icon pi pi-caret-right"></span>
         </button>
     </div>

@@ -3,13 +3,16 @@ import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { EditPageState } from '@app/ultilities/enum/edit-page-state';
 import { AllCodes } from '@app/ultilities/enum/all-codes';
-import { BranchServiceProxy, CM_BRANCH_ENTITY, CM_COMPANY_ENTITY, UltilityServiceProxy, CompanyServiceProxy, REA_SHAREHOLDER_ENTITY } from '@shared/service-proxies/service-proxies';
+import { BranchServiceProxy, CM_BRANCH_ENTITY, UltilityServiceProxy, REA_SHAREHOLDER_ENTITY, SubsidiaryCompanyServiceProxy, CM_SUBSIDIARY_COMPANY_ENTITY, ShareholderServiceProxy, ComboboxServiceProxy } from '@shared/service-proxies/service-proxies';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { IUiActionRejectExt } from '@app/ultilities/ui-action-re';
 import { EditableTableComponent } from '@app/admin/core/controls/editable-table/editable-table.component';
+import { throwError } from 'rxjs';
+import { ProvinceField, RegionField } from '@app/admin/core/ultils/consts/ComboboxConsts';
+import { base64ToBlob, saveFile } from '@app/ultilities/blob-exec';
 
 @Component({
   // selector: 'app-outside-shareholder-edit',
@@ -17,17 +20,18 @@ import { EditableTableComponent } from '@app/admin/core/controls/editable-table/
   animations: [appModuleAnimation()],
   encapsulation: ViewEncapsulation.None,
 })
-export class CompanyEditComponent extends DefaultComponentBase implements OnInit, IUiAction<CM_COMPANY_ENTITY>, AfterViewInit {
+export class CompanyEditComponent extends DefaultComponentBase implements OnInit, IUiAction<CM_SUBSIDIARY_COMPANY_ENTITY>, AfterViewInit {
 
   constructor(
     injector: Injector,
     private ultilityService: UltilityServiceProxy,
-    private companyService: CompanyServiceProxy,
-    private branchService: BranchServiceProxy,
+    private subsidiaryCompanyService: SubsidiaryCompanyServiceProxy,
+    private shareholderService: ShareholderServiceProxy,
+    private _comboboxService: ComboboxServiceProxy,
     ) { 
     super(injector);
     this.editPageState = this.getRouteData('editPageState');
-    this.company_ID = this.getRouteParam('osh');
+    this.company_ID = this.getRouteParam('company');
     this.inputModel.id = this.company_ID;
     this.initFilter();
     this.initCombobox();
@@ -36,13 +40,14 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
   
   @ViewChild('editForm') editForm: ElementRef;
   @ViewChild('shareEditTable') shareEditTable: EditableTableComponent<REA_SHAREHOLDER_ENTITY>;
+  shareholderCheckList = [];
 
     EditPageState = EditPageState;
     AllCodes = AllCodes;
     editPageState: EditPageState;
 
-    inputModel: CM_COMPANY_ENTITY = new CM_COMPANY_ENTITY();
-    filterInput: CM_COMPANY_ENTITY;
+    inputModel: CM_SUBSIDIARY_COMPANY_ENTITY = new CM_SUBSIDIARY_COMPANY_ENTITY();
+    filterInput: CM_SUBSIDIARY_COMPANY_ENTITY;
     isApproveFunct: boolean;
     company_ID: string;
     checkIsActive = false;
@@ -51,25 +56,27 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
     return this.editPageState == EditPageState.viewDetail;
   }
   isShowError = false;
-  branchs: CM_BRANCH_ENTITY[];
+  regionList;
+  provinceList;
 
   ngOnInit() {
+    this.getInputField();
     switch (this.editPageState) {
       case EditPageState.add:
           this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
-          this.appToolbar.setRole('OutsideShareholder', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('SubsidiaryCompany', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
-          this.getNextId();
+          this.getInitInformation();
           break;
       case EditPageState.edit:
-          this.appToolbar.setRole('OutsideShareholder', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('SubsidiaryCompany', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
-          this.getOutsideShareholder();
+          this.getsubsidiaryCompany();
           break;
       case EditPageState.viewDetail:
-          this.appToolbar.setRole('OutsideShareholder', false, false, false, false, false, false, true, false);
+          this.appToolbar.setRole('SubsidiaryCompany', false, false, false, false, false, false, true, false);
           this.appToolbar.setEnableForViewDetailPage();
-          this.getOutsideShareholder();
+          this.getsubsidiaryCompany();
           break;
     }
     this.appToolbar.setUiAction(this);
@@ -78,6 +85,15 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
   ngAfterViewInit(): void {
     // COMMENT: this.stopAutoUpdateView();
     this.setupValidationMessage();
+  }
+
+  exportToExcel() {
+    this.shareholderService.getExcelShareholder(this.company_ID).subscribe(response=>{
+      let base64String = response.fileContent;
+      let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      let name = "BC_CO_PHAN_CTY_" + this.company_ID + ".xlsx"
+      saveFile(blob, name)
+    });
   }
 
   initIsApproveFunct() {
@@ -96,16 +112,55 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
       //     this.updateView();
       // });
   }
-  addNewAsset(){
-    this.navigatePassParam('/app/admin/shareholder-add', null, undefined);
+  addNewShareholder(){
+    this.navigatePassParam('/app/admin/shareholder-add', { company: this.company_ID }, undefined);
   }
 
-  getNextId() {
-    
+  checkedShareholder(item, checked: boolean) {
+    item.isChecked = checked;
+    if(checked) {
+      this.shareholderCheckList.push(item.id)
+    }
+    else {
+      this.shareholderCheckList = this.shareholderCheckList.filter(e=>e != item.id)
+    }
   }
 
-  getOutsideShareholder() {
-      this.companyService.cM_COMPANY_ById(this.inputModel.id).subscribe(response => {
+  removeShareholder() {
+    this.shareholderCheckList.forEach(e=> {
+      this.shareholderService.rEA_SHAREHOLDER_Del(e).subscribe(response=>{
+        this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+      });
+    })
+
+    this.shareholderCheckList = []
+    this.shareEditTable.removeAllCheckedItem()
+  }
+
+  checkAllShareholder(checked: boolean) {
+    this.shareholderCheckList = []
+    if(checked) {
+      this.shareEditTable.allData.forEach(e=>{
+        this.shareholderCheckList.push(e.id)
+      })
+    }
+    this.shareEditTable.checkAll(checked)
+  }
+
+  editShareholder(item) {
+    this.navigatePassParam('/app/admin/shareholder-edit', { company: this.company_ID, shareholder: item.id }, undefined);
+  }
+
+  viewShareholder(item) {
+    this.navigatePassParam('/app/admin/shareholder-view', { company: this.company_ID, shareholder: item.id }, undefined);
+  }
+
+  getInitInformation() {
+    this.inputModel.subsidiarY_COMPANY_TYPE = 'CP';
+  }
+
+  getsubsidiaryCompany() {
+      this.subsidiaryCompanyService.cM_SUBSIDIARY_COMPANY_ById(this.inputModel.id).subscribe(response => {
           this.inputModel = response;
           if(response.recorD_STATUS === "1") {
             this.checkIsActive = true;
@@ -115,6 +170,20 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
           }
           this.updateView();
       });
+      this.shareholderService.rEA_SHAREHOLDER_Search(this.inputModel.id).subscribe(response=>{
+        this.shareEditTable.setList(response.shareholdeR_LIST.items)
+      })
+  }
+
+  getInputField() {
+    this._comboboxService.getComboboxData(RegionField.class, RegionField.attribute).subscribe(response=>{
+        this.regionList = response
+        this.updateView()
+    })
+    this._comboboxService.getComboboxData(ProvinceField.class, ProvinceField.attribute).subscribe(response=>{
+        this.provinceList = response
+        this.updateView()
+    })
   }
 
   onCheckActive() {
@@ -141,51 +210,26 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
           this.saving = true;
           this.inputModel.makeR_ID = this.appSession.user.userName;
           if (!this.company_ID) {
-              this.companyService.cM_COMPANY_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
+              this.subsidiaryCompanyService.cM_SUBSIDIARY_COMPANY_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
                           this.showErrorMessage(response.errorDesc);
                       }
                       else {
                           this.addNewSuccess();
-                          if (!this.isApproveFunct) {
-                              this.companyService.cM_COMPANY_App(response.id, this.appSession.user.userName)
-                                  .pipe(finalize(() => { this.saving = false; }))
-                                  .subscribe((response) => {
-                                      if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
-                                      }
-                                  });
-                          }
                       }
                   });
           }
           else {
-              this.companyService.cM_COMPANY_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
+              this.subsidiaryCompanyService.cM_SUBSIDIARY_COMPANY_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
                           this.showErrorMessage(response.errorDesc);
                       }
                       else {
                           this.updateSuccess();
-                          if (!this.isApproveFunct) {
-                              this.companyService.cM_COMPANY_App(this.inputModel.id, this.appSession.user.userName)
-                                  .pipe(finalize(() => { this.saving = false; }))
-                                  .subscribe((response) => {
-                                      if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
-                                      }
-                                      else {
-                                          this.inputModel.autH_STATUS = AuthStatusConsts.Approve;
-                                          this.appToolbar.setButtonApproveEnable(false);
-                                          this.updateView();
-                                      }
-                                  });
-                          }
-                          else {
-                              this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
-                              this.updateView();
-                          }
+                          this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
+                          this.updateView();
                       }
                   });
           }
@@ -193,19 +237,19 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
   }
 
   goBack() {
-      this.navigatePassParam('/app/admin/company', null, undefined);
+      this.navigatePassParam('/app/admin/subsidiary-company', null, undefined);
   }
 
   onAdd(): void {
   }
 
-  onUpdate(item: CM_COMPANY_ENTITY): void {
+  onUpdate(item: CM_SUBSIDIARY_COMPANY_ENTITY): void {
   }
 
-  onDelete(item: CM_COMPANY_ENTITY): void {
+  onDelete(item: CM_SUBSIDIARY_COMPANY_ENTITY): void {
   }
 
-  onApprove(item: CM_COMPANY_ENTITY): void {
+  onApprove(item: CM_SUBSIDIARY_COMPANY_ENTITY): void {
       if (!this.inputModel.id) {
           return;
       }
@@ -215,35 +259,28 @@ export class CompanyEditComponent extends DefaultComponentBase implements OnInit
         return;
     }
       this.message.confirm(
-          this.l('ApproveWarningMessage', this.l(this.inputModel.companY_NAME)),
+          this.l('ApproveWarningMessage', this.l(this.inputModel.subsidiarY_NAME)),
           this.l('AreYouSure'),
           (isConfirmed) => {
               if (isConfirmed) {
                   this.saving = true;
-                  this.companyService.cM_COMPANY_App(this.inputModel.id, currentUserName)
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.approveSuccess();
-                          }
-                      });
+                  this.subsidiaryCompanyService.cM_SUBSIDIARY_COMPANY_App(this.inputModel.id, currentUserName)
+                    .pipe(
+                        catchError(e=>{
+                        this.showErrorMessage("Lỗi");
+                        return throwError("Lỗi")
+                        }),
+                        finalize(() => { this.saving = false; })
+                    )
+                    .subscribe((response) => {
+                        this.approveSuccess();
+                    });
               }
           }
       );
   }
 
-  onSelectBranch(branch : CM_BRANCH_ENTITY){
-      // this.inputModel.brancH_ID = branch.brancH_ID;
-      // this.inputModel.brancH_NAME = branch.brancH_NAME;
-      // setTimeout(()=>{
-      //     this.updateView();
-      // })
-  }
-
-  onViewDetail(item: CM_COMPANY_ENTITY): void {
+  onViewDetail(item: CM_SUBSIDIARY_COMPANY_ENTITY): void {
   }
 
   onSave(): void {

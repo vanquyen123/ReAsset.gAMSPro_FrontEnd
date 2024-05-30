@@ -163,6 +163,8 @@ import { MortgageProgressChart } from '@app/admin/common/dashboard/mortgage-prog
 import { ProjectTypeChart } from '@app/admin/common/dashboard/project-type-chart/project-type-chart.component';
 import { Top10Project } from '@app/admin/common/dashboard/top10-project/top10-project.component';
 import { FileSelectorComponent } from '../controls/file-selector/file-selector.component';
+import { InvestPropModalComponent } from '../controls/invest-prop-modal/invest-prop-modal.component';
+import { RevenueChart } from '@app/admin/common/dashboard/revenue-chart/revenue-chart.component';
 
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
@@ -251,6 +253,7 @@ export const commonDeclarationDeclarations = [
     AssetModalComponent,
     RevokeModalComponent,
     FileSelectorComponent,
+    InvestPropModalComponent,
     // dashboard chart
     ProjectSodoChart,
     ExpiredContractChart,
@@ -258,6 +261,7 @@ export const commonDeclarationDeclarations = [
     MortgageProgressChart,
     ProjectTypeChart,
     Top10Project,
+    RevenueChart,
 ];
 
 @NgModule({

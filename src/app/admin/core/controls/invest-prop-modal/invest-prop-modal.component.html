@@ -1,0 +1,160 @@
+<popup-frame [title]="'TÌM KIẾM BẤT ĐỘNG SẢN'" (onSearchEvent)="buttonSearch()" (onSelectEvent)="accept()" #popupFrame>
+    <div class="horizontal-form filter-form" autocomplete="off">
+        <div class="m-form m-form--label-align-right">
+            <div class="row align-items-center m--margin-bottom-30">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Mã bất động sản</label>
+                        <input 
+                            [(ngModel)]="filterInput.id"
+                            name="invesT_PROP_IDFilter"
+                            autoFocus
+                            class="form-control m-input"
+                            type="text">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Tên bất động sản</label>
+                        <input 
+                            [(ngModel)]="filterInput.invesT_PROP_NAME"
+                            name="invesT_PROP_NAMEFilter"
+                            autoFocus
+                            class="form-control m-input"
+                            type="text">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Địa điểm</label>
+                        <input 
+                            [(ngModel)]="filterInput.invesT_PROP_LOCATION"
+                            name="invesT_PROP_LOCATIONFilter"
+                            autoFocus
+                            class="form-control m-input"
+                            type="text">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Dự án</label>
+                      <select2-custom
+                          name="projecT_ID"
+                          class="transparent"
+                          [(ngModel)]="filterInput.projecT_ID"
+                          [emptyText]="l('SelectAll')"
+                          [(list)]="projectList"
+                          [valueMember]="'id'"
+                          [displayMember]="'name'">
+                      </select2-custom>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Hiện trạng BĐS</label>
+                      <select2-custom 
+                          name="invesT_PROP_STATUS"
+                          class="transparent"
+                          [(ngModel)]="filterInput.invesT_PROP_STATUS"
+                          [emptyText]="l('SelectAll')"
+                          [(list)]="propertyStatus"
+                          [valueMember]="'cdval'"
+                          [displayMember]="'content'">
+                      </select2-custom>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Tình trạng pháp lý</label>
+                      <select2-custom 
+                          name="invesT_PROP_LEGAL_STATUS"
+                          class="transparent"
+                          [(ngModel)]="filterInput.invesT_PROP_LEGAL_STATUS"
+                          [emptyText]="l('SelectAll')"
+                          [(list)]="legalStatus"
+                          [valueMember]="'cdval'"
+                          [displayMember]="'content'">
+                      </select2-custom>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Ngày tạo BĐS từ</label>
+                      <date-control 
+                      [(ngModel)]="filterInput.creatE_DT_FROM"
+                      name="contracT_SIGN_DT"
+                      autoFocus>
+                      </date-control>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Ngày tạo BĐS đến</label>
+                      <date-control 
+                      [(ngModel)]="filterInput.creatE_DT_TO"
+                      name="contracT_SIGN_DT"
+                      autoFocus>
+                      </date-control>
+                  </div>
+                </div>
+                <!-- End Filter -->
+                <button hidden (click)="search()"></button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row align-items-center">
+        <div isLoading="dataTable.isLoading" class="primeng-datatable-container">
+            <h5 class="popup-title col-md-12">DANH SÁCH BẤT ĐỘNG SẢN ĐẦU TƯ</h5>
+
+            <core-table #coreTable class="custom-table ui-table" (reloadPage)="search()">
+                <thead>
+                    <tr>
+                        <!-- Begin Table Column -->
+                        <th class="center" *ngIf="multiple">
+                            <checkbox-control #checkAllElement (change)="onCheckAll(checkAllElement.inputRef.nativeElement)" [checked]="checkAll">
+                            </checkbox-control>
+                        </th>
+                        <th class="center">
+                            <span style="width: 40px">{{l("No")}}</span>
+                        </th>
+                        <th style="width:30%"
+                            sortField="id">
+                            <span style="width: 150px">Mã BĐS</span>
+                        </th>
+                        <th style="width:40%"
+                            sortField="invesT_PROP_NAME">
+                            <span style="width: 150px">Tên BĐS</span>
+                        </th>
+                        <th style="width:30%"
+                            sortField="invesT_PROP_LOCATION">
+                            <span style="width: 150px">Địa điểm</span>
+                        </th>
+                        <th sortField="invesT_PROP_STATUS_NAME">
+                            <span style="width: 150px">Hiện trạng BĐS</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let record of dataTable.records" class="selectable" (click)="selectRow($event,record)" (dblclick)="onDoubleClick(record)">
+                        <!-- Begin Table Value -->
+                        <td class="center" *ngIf="multiple">
+                            <span class="mo-header"></span>
+                            <checkbox-control (onchange)="setChecked($event.target.checked, record)" [checked]="record['isChecked']"></checkbox-control>
+                        </td>
+                        <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount + dataTable.records.indexOf(record)) + 1}}
+                        </td>
+                        <td><span class="mo-header"></span>{{record.id}}</td>
+                        <td><span class="mo-header"></span>{{record.invesT_PROP_NAME}}</td>
+                        <td><span class="mo-header"></span>{{record.invesT_PROP_LOCATION}}</td>
+                        <td><span class="mo-header"></span>{{record.invesT_PROP_STATUS_NAME}}</td>
+                        <!-- <td [hidden]="!showColPotential"><span class="mo-header"></span>{{record.iS_POTENTIAL}}</td>
+                        <td [hidden]="!showColAuthStatus"><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td> -->
+                        <!-- End Table Value -->
+                    </tr>
+                </tbody>
+            </core-table>
+        </div>
+    </div>
+</popup-frame>

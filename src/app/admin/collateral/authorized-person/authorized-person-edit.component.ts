@@ -144,50 +144,15 @@ export class AuthorizedPersonEditComponent extends DefaultComponentBase implemen
           if (!this.a_person_ID) {
               this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
-                      if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.addNewSuccess();
-                          if (!this.isApproveFunct) {
-                              this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_App(response.id, this.appSession.user.userName)
-                                  .pipe(finalize(() => { this.saving = false; }))
-                                  .subscribe((response) => {
-                                      if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
-                                      }
-                                  });
-                          }
-                      }
+                    this.addNewSuccess();
                   });
           }
           else {
               this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
-                      if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.updateSuccess();
-                          if (!this.isApproveFunct) {
-                              this.authorizedPersonService.rEA_AUTHORIZED_PEOPLE_App(this.inputModel.a_PERSON_ID, this.appSession.user.userName)
-                                  .pipe(finalize(() => { this.saving = false; }))
-                                  .subscribe((response) => {
-                                      if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
-                                      }
-                                      else {
-                                          this.inputModel.autH_STATUS = AuthStatusConsts.Approve;
-                                          this.appToolbar.setButtonApproveEnable(false);
-                                          this.updateView();
-                                      }
-                                  });
-                          }
-                          else {
-                              this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
-                              this.updateView();
-                          }
-                      }
+                    this.updateSuccess();
+                    this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
+                    this.updateView();
                   });
           }
       }

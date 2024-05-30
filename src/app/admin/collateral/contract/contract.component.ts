@@ -6,20 +6,23 @@ import {
   ViewEncapsulation,
 } from "@angular/core";
 import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts";
+import { base64ToBlob, saveFile } from "@app/ultilities/blob-exec";
 import { ListComponentBase } from "@app/ultilities/list-component-base";
+import { ListComponentBase2 } from "@app/ultilities/list-component-base2";
 import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
-import { AsposeServiceProxy, ContractServiceProxy, REA_CONTRACT_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
+import { AsposeServiceProxy, ContractServiceProxy, REA_CONTRACT_ENTITY, REA_CONTRACT_SEARCH_DTO, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
   templateUrl: "./contract.component.html",
   animations: [appModuleAnimation()],
   encapsulation: ViewEncapsulation.None,
 })
-export class ContractComponent extends ListComponentBase<REA_CONTRACT_ENTITY> implements IUiAction<REA_CONTRACT_ENTITY>, OnInit, AfterViewInit{
-  filterInput: REA_CONTRACT_ENTITY =new REA_CONTRACT_ENTITY();
+export class ContractComponent extends ListComponentBase2<REA_CONTRACT_ENTITY, REA_CONTRACT_SEARCH_DTO> implements IUiAction<REA_CONTRACT_ENTITY>, OnInit, AfterViewInit{
+  filterInput: REA_CONTRACT_SEARCH_DTO =new REA_CONTRACT_SEARCH_DTO();
   contracts: REA_CONTRACT_ENTITY[];
   records = [
       {
@@ -78,27 +81,15 @@ export class ContractComponent extends ListComponentBase<REA_CONTRACT_ENTITY> im
   }
 
   exportToExcel() {
-    let reportInfo = new ReportInfo();
-    reportInfo.typeExport = ReportTypeConsts.Excel;
-
-    let reportFilter = { ...this.filterInputSearch };
-
-    reportFilter.maxResultCount = -1;
-
-    reportInfo.parameters = this.GetParamsFromFilter(reportFilter)
-
-    reportInfo.values = this.GetParamsFromFilter({
-        A1 : this.l('CompanyReportHeader')
+    let reportInfo = new REA_CONTRACT_SEARCH_DTO(this.filterInput)
+    reportInfo.maxResultCount = 999;
+    reportInfo.skipCount = 0;
+    this._contractService.getContractExcel(reportInfo).subscribe(response=>{
+        let base64String = response.fileContent;
+        let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        saveFile(blob, "BC_HDT_BDS.xlsx")
     });
-
-    reportInfo.pathName = "/COMMON/BC_HDTBDS.xlsx";
-    //reportInfo.storeName = "rpt_BC_PHONGBAN";
-    reportInfo.storeName = "rEA_Contract_Search";
-
-    this.asposeService.getReport(reportInfo).subscribe(x => {
-        this.fileDownloadService.downloadTempFile(x);
-    });
-}
+  }
 
 search(): void {
       this.showTableLoading();
@@ -133,17 +124,18 @@ search(): void {
               if (isConfirmed) {
                   this.saving = true;
                   this._contractService.rEA_CONTRACT_Del(item.id)
-                      .pipe(finalize(() => { this.saving = false; }))
+                      .pipe(
+                        catchError(e=>{
+                          this.showErrorMessage("Lỗi");
+                          return throwError("Lỗi")
+                        }),
+                        finalize(() => { this.saving = false; })
+                      )
                       .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                              // this.filterInputSearch.totalCount = 0;
-                              this.reloadPage();
-                          }
-                      });
+                        this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                        this.reloadPage();
+                    });
+                    // this.filterInputSearch.totalCount = 0;
               }
           }
       );
@@ -162,7 +154,7 @@ search(): void {
   }
 
   onResetSearch(): void {
-      this.filterInput = new REA_CONTRACT_ENTITY();
+      this.filterInput = new REA_CONTRACT_SEARCH_DTO();
       this.changePage(0);
   }
 

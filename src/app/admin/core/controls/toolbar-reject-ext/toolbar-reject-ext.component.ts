@@ -44,22 +44,22 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
         ,approveKSS?:boolean,AccessStorekeepers?:boolean,ApproveDeputy?:boolean,ApproveKhoi?:boolean,FinishCheck?:boolean) {
         super.setRole(funct, add, edit, update, del, view, search, approve, resetSearch, forecast);
 
-        // if (reject) {
-        //     this.setButtonRejectVisible(reject &&this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
-        //     this.setButtonRejecHidden(reject &&!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
-        // }
-        // else
-        // {
-        //     this.setButtonRejecHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
-        // }
         if (reject) {
-            this.setButtonRejectVisible(true);
-            this.setButtonRejecHidden(false);
+            this.setButtonRejectVisible(reject &&this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
+            this.setButtonRejecHidden(reject &&!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
         }
         else
         {
-            this.setButtonRejecHidden(false);
+            this.setButtonRejecHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Reject));
         }
+        // if (reject) {
+        //     this.setButtonRejectVisible(true);
+        //     this.setButtonRejecHidden(false);
+        // }
+        // else
+        // {
+        //     this.setButtonRejecHidden(false);
+        // }
         // if (access) {
         //     this.setButtonAccessVisible(access && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
         //     this.setButtonaAccessHidden(access && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
@@ -69,46 +69,51 @@ export class ToolbarRejectExtComponent extends ToolbarComponent {
         //     this.setButtonaAccessHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.Access));
         // }
         this.setButtonaAccessHidden(true)
-        if (approveKSS) {
-            this.setButtonApproveKSSVisible(approveKSS && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
-            this.setButtonApproveKSSHidden(approveKSS && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
-        }
-        else
-        {
-            this.setButtonApproveKSSHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
-        }
-        if (AccessStorekeepers) {
-            this.setButtonAccessStorekeepersVisible(AccessStorekeepers && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.AccessStorekeepers));
-            this.setButtonAccessStorekeepersHidden(AccessStorekeepers && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.AccessStorekeepers));
-        }
-        else
-        {
-            this.setButtonAccessStorekeepersHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.AccessStorekeepers));
-        }
-        if (ApproveDeputy) {
-            this.setButtonApproveDeputyVisible(ApproveDeputy && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveDeputy));
-            this.setButtonApproveDeputyHidden(ApproveDeputy && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveDeputy));
-        }
-        else
-        {
-            this.setButtonApproveDeputyHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveDeputy));
-        }
-        if (ApproveKhoi) {
-            this.setButtonApproveKhoiVisible(ApproveKhoi && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKhoi));
-            this.setButtonApproveKhoiHidden(ApproveKhoi && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKhoi));
-        }
-        else
-        {
-            this.setButtonApproveKhoiHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKhoi));
-        }
-        if (FinishCheck) {
-            this.setButtonFinishCheckVisible(FinishCheck && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
-            this.setButtonFinishCheckHidden(FinishCheck && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
-        }
-        else
-        {
-            this.setButtonFinishCheckHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
-        }
+        this.setButtonApproveKSSHidden(true)
+        this.setButtonAccessStorekeepersHidden(true)
+        this.setButtonApproveDeputyHidden(true)
+        this.setButtonApproveKhoiHidden(true)
+        this.setButtonFinishCheckHidden(true)
+        // if (approveKSS) {
+        //     this.setButtonApproveKSSVisible(approveKSS && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
+        //     this.setButtonApproveKSSHidden(approveKSS && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
+        // }
+        // else
+        // {
+        //     this.setButtonApproveKSSHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKSS));
+        // }
+        // if (AccessStorekeepers) {
+        //     this.setButtonAccessStorekeepersVisible(AccessStorekeepers && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.AccessStorekeepers));
+        //     this.setButtonAccessStorekeepersHidden(AccessStorekeepers && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.AccessStorekeepers));
+        // }
+        // else
+        // {
+        //     this.setButtonAccessStorekeepersHidden(!this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.AccessStorekeepers));
+        // }
+        // if (ApproveDeputy) {
+        //     this.setButtonApproveDeputyVisible(ApproveDeputy && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveDeputy));
+        //     this.setButtonApproveDeputyHidden(ApproveDeputy && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveDeputy));
+        // }
+        // else
+        // {
+        //     this.setButtonApproveDeputyHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveDeputy));
+        // }
+        // if (ApproveKhoi) {
+        //     this.setButtonApproveKhoiVisible(ApproveKhoi && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKhoi));
+        //     this.setButtonApproveKhoiHidden(ApproveKhoi && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKhoi));
+        // }
+        // else
+        // {
+        //     this.setButtonApproveKhoiHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.ApproveKhoi));
+        // }
+        // if (FinishCheck) {
+        //     this.setButtonFinishCheckVisible(FinishCheck && this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
+        //     this.setButtonFinishCheckHidden(FinishCheck && !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
+        // }
+        // else
+        // {
+        //     this.setButtonFinishCheckHidden( !this.permission.isGranted('Pages.Administration.' + funct + '.' + ActionRole.FinishCheck));
+        // }
         if (revoke) {
             this.setButtonRevokeVisible(true);
             this.setButtonRevokeHidden(false);

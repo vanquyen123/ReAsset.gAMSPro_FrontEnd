@@ -1,4 +1,4 @@
-import { Component, Injector, Input, OnInit } from "@angular/core";
+import { Component, Injector, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { DefaultComponentBase } from "@app/ultilities/default-component-base";
 import { Chart } from "chart.js";
 import * as moment from "moment";
@@ -7,7 +7,7 @@ import * as moment from "moment";
     selector: 'project-sodo-chart',
     templateUrl: './project-sodo-chart.component.html',
 })
-export class ProjectSodoChart extends DefaultComponentBase implements OnInit {
+export class ProjectSodoChart extends DefaultComponentBase implements OnInit, OnChanges {
     constructor(
         injector: Injector
         ) {
@@ -16,40 +16,7 @@ export class ProjectSodoChart extends DefaultComponentBase implements OnInit {
 
     @Input() projectData;
     @Input() sodoData;
-    // projectData: any[] = [
-    //     {
-    //         month: 1,
-    //         year: 2024,
-    //         count: 100
-    //     },
-    //     {
-    //         month: 3,
-    //         year: 2024,
-    //         count: 300
-    //     },
-    //     {
-    //         month: 10,
-    //         year: 2023,
-    //         count: 1000
-    //     }
-    // ];
-    // sodoData: any[] = [
-    //     {
-    //         month: 1,
-    //         year: 2024,
-    //         count: 100
-    //     },
-    //     {
-    //         month: 3,
-    //         year: 2024,
-    //         count: 300
-    //     },
-    //     {
-    //         month: 10,
-    //         year: 2023,
-    //         count: 1000
-    //     }
-    // ];
+
     selectedYear = moment().year()
     yearNow = moment().year()
 
@@ -89,7 +56,15 @@ export class ProjectSodoChart extends DefaultComponentBase implements OnInit {
 
     ngOnInit(): void {
         this.createChart()
-        this.changeChart()
+        // this.changeChart()
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['projectData'] || changes['sodoData']) {
+            if(this.chart) {
+                this.changeChart();
+            }
+        }
     }
     
     createChart(){

@@ -18,11 +18,11 @@
                       <!-- End Title -->
                   </h3>
               </div>
-              <div class="col text-right mt-3 mt-md-0">
-                  <div class="btn-group dropdown mr-2">
+              <div class="col text-right mt-3 mt-md-0 mr-4">
+                  <div class="btn-group dropdown">
                       <button class="btn btn-outline-success"
                       *ngIf="appToolbar.buttonSearchEnable"
-                          (click)="exportExcel()">
+                          (click)="exportToExcel()">
                           <i class="far fa-file-excel"></i>
                           {{l("ExcelOperations")}}
                       </button>
@@ -75,7 +75,7 @@
                                   <date-control 
                                   #contracT_SIGN_DT="ngModel"
                                   name="contracT_SIGN_DT"
-                                  [(ngModel)]="filterInput.contracT_SIGN_DT"
+                                  [(ngModel)]="filterInput.contracT_SIGN_DT_FROM"
                                   autoFocus>
                                   </date-control>
                               </div>
@@ -87,7 +87,7 @@
                                   <date-control 
                                   #contracT_SIGN_DT="ngModel"
                                   name="contracT_SIGN_DT"
-                                  [(ngModel)]="filterInput.contracT_SIGN_DT"
+                                  [(ngModel)]="filterInput.contracT_SIGN_DT_TO"
                                   autoFocus>
                                   </date-control>
                               </div>
@@ -200,15 +200,15 @@
                                       </td>
                                       <!-- Mã phòng -->
                                       <td><span class="mo-header"></span>{{record.id}}</td>
-                                      <td><span class="mo-header"></span>{{record.contracT_SIGN_DT}}</td>
-                                      <td><span class="mo-header"></span>{{record.contracT_PARTNER_ID}}</td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span>{{record.creatE_DT}}</td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span>{{record.approvE_DT}}</td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{record.contracT_SIGN_DT ? (record.contracT_SIGN_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span>{{record.contracT_PARTNER_NAME}}</td>
+                                      <td><span class="mo-header"></span>{{record.totaL_REVENUE}}</td>
+                                      <td><span class="mo-header"></span>{{ record.creatE_DT ? (record.creatE_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span>{{ record.makeR_NAME }}</td>
+                                      <td><span class="mo-header"></span>{{ record.approvE_DT ? (record.approvE_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span>{{ record.checkeR_NAME }}</td>
+                                      <td><span class="mo-header"></span>{{ record.modifY_DT ? (record.modifY_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span>{{ record.modifieR_NAME }}</td>
                                       <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
                                       <td><span class="mo-header"></span>{{record.notes}}</td>
                                       <!-- End Table Value -->

@@ -7,12 +7,14 @@ import { CM_ALLCODE_ENTITY, UltilityServiceProxy, AllCodeServiceProxy, REA_LAND_
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { EditableTableComponent } from '@app/admin/core/controls/editable-table/editable-table.component';
 import { IUiActionRejectExt } from '@app/ultilities/ui-action-re';
 import * as moment from 'moment';
 import { DepartmentField, InvestorField, PartnerField, ProjectField, EmployeeField } from '@app/admin/core/ultils/consts/ComboboxConsts';
 import { floor } from 'lodash';
+import { base64ToBlob, saveFile } from '@app/ultilities/blob-exec';
+import { throwError } from 'rxjs';
 
 @Component({
   templateUrl: './land-area-edit.component.html',
@@ -42,7 +44,6 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
   @ViewChild('useRegistrationEditTable') useRegistrationEditTable: EditableTableComponent<REA_USE_REGISTRATION_ENTITY>;
   useRegistrationCheckList: number[] = []
   @ViewChild('sodoEditTable') sodoEditTable: EditableTableComponent<REA_LAND_AREA_SODO>;
-  @ViewChild('mortgageEditTable') mortgageEditTable: EditableTableComponent<REA_MORTGAGE_OVERALL>;
   @ViewChild('attachFile') attachFile: ElementRef;
 
     EditPageState = EditPageState;
@@ -97,6 +98,15 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
   ngAfterViewInit(): void {
     // COMMENT: this.stopAutoUpdateView();
     this.setupValidationMessage();
+  }
+
+  exportToExcel() {
+    this.landAreaService.getExcelLandAreaById(this.lanD_AREA_ID).subscribe(response=>{
+      let base64String = response.fileContent;
+      let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      let name = "BC_KHU_DAT_" + this.lanD_AREA_ID + ".xlsx"
+      saveFile(blob, name)
+    });
   }
 
   initIsApproveFunct() {
@@ -189,9 +199,6 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
         this.inputModel.usE_REGISTRATION_LIST = []
         if(response.lanD_AREA_SODO_LIST.length !==0) {
           this.sodoEditTable.setList(response.lanD_AREA_SODO_LIST)
-        }
-        if(response.mortgagE_OVERALL_LIST.length !==0) {
-          this.mortgageEditTable.setList(response.mortgagE_OVERALL_LIST)
         }
         if(response.recorD_STATUS === "1") {
           this.checkIsActive = true;
@@ -301,53 +308,30 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
 
           if (!this.lanD_AREA_ID) {
               this.inputModel.makeR_ID = this.appSession.user.userName;
-              this.landAreaService.rEA_LAND_AREA_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
-                  .subscribe((response) => {
-                      if (response.result != '0' && response.result != null) {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.addNewSuccess();
-                        //   if (!this.isApproveFunct) {
-                        //       this.landAreaService.rEA_LAND_AREA_App(response.id, this.appSession.user.userName, "")
-                        //           .pipe(finalize(() => { this.saving = false; }))
-                        //           .subscribe((response) => {
-                        //               if (response.result != '0') {
-                        //                   this.showErrorMessage(response.errorDesc);
-                        //               }
-                        //           });
-                        //   }
-                      }
-                  });
+              this.landAreaService.rEA_LAND_AREA_Ins(this.inputModel).pipe(
+                catchError(e=>{
+                  this.showErrorMessage("Lỗi");
+                  return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+              )
+              .subscribe((response) => {
+                  this.addNewSuccess();
+              });
           }
           else {
-              this.landAreaService.rEA_LAND_AREA_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
-                  .subscribe((response) => {
-                      if (response.result != '0' && response.result != null) {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.updateSuccess();
-                        //   if (!this.isApproveFunct) {
-                        //       this.landAreaService.rEA_LAND_AREA_App(this.inputModel.id, this.appSession.user.userName, "")
-                        //           .pipe(finalize(() => { this.saving = false; }))
-                        //           .subscribe((response) => {
-                        //               if (response.result != '0') {
-                        //                   this.showErrorMessage(response.errorDesc);
-                        //               }
-                        //               else {
-                        //                   this.inputModel.autH_STATUS = AuthStatusConsts.Approve;
-                        //                   this.appToolbar.setButtonApproveEnable(false);
-                        //                   this.updateView();
-                        //               }
-                        //           });
-                        //   }
-                        //   else {
-                        // }
-                        this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
-                        this.updateView();
-                      }
-                  });
+              this.landAreaService.rEA_LAND_AREA_Upd(this.inputModel).pipe(
+                catchError(e=>{
+                  this.showErrorMessage("Lỗi");
+                  return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+              )
+              .subscribe((response) => {
+                  this.updateSuccess();
+                  this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
+                  this.updateView();
+              });
           }
       }
   }
@@ -381,15 +365,16 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
               if (isConfirmed) {
                   this.saving = true;
                   this.landAreaService.rEA_LAND_AREA_App(this.inputModel.id, currentUserName, "")
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0' && response.errorDesc != null) {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.approveSuccess();
-                          }
-                      });
+                  .pipe(
+                    catchError(e=>{
+                      this.showErrorMessage("Lỗi");
+                      return throwError("Lỗi")
+                    }),
+                    finalize(() => { this.saving = false; })
+                  )
+                  .subscribe((response) => {
+                    this.approveSuccess();
+                  });
               }
           }
       );
@@ -426,15 +411,16 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
             if (isConfirmed) {
                 this.saving = true;
                 this.landAreaService.rEA_LAND_AREA_Rej(this.inputModel.id, currentUserName, rejectReason)
-                    .pipe(finalize(() => { this.saving = false; }))
-                    .subscribe((response) => {
-                        if (response.result != '0' && response.errorDesc != null) {
-                            this.showErrorMessage(response.errorDesc);
-                        }
-                        else {
-                            this.rejectSuccess();
-                        }
-                    });
+                .pipe(
+                  catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                  }),
+                  finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                    this.rejectSuccess();
+                });
             }
         }
     );
@@ -458,15 +444,16 @@ export class LandAreaEditComponent extends DefaultComponentBase implements OnIni
             if (isConfirmed) {
                 this.saving = true;
                 this.landAreaService.rEA_LAND_AREA_Can(this.inputModel.id, currentUserName, revokeReason)
-                    .pipe(finalize(() => { this.saving = false; }))
-                    .subscribe((response) => {
-                        if (response.result != '0' && response.errorDesc != null) {
-                            this.showErrorMessage(response.errorDesc);
-                        }
-                        else {
-                            this.revokeSuccess();
-                        }
-                    });
+                .pipe(
+                  catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                  }),
+                  finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                    this.revokeSuccess();
+                });
             }
         }
     );

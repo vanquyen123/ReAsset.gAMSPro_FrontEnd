@@ -11,7 +11,8 @@ import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { AsposeServiceProxy, OutsideShareholderServiceProxy, PagedResultDtoOfREA_OUTSIDE_SHAREHOLDER_ENTITY, REA_OUTSIDE_SHAREHOLDER_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
     // selector: 'app-outside-shareholder',
@@ -137,17 +138,18 @@ export class OutsideShareholderComponent extends ListComponentBase<REA_OUTSIDE_S
                 if (isConfirmed) {
                     this.saving = true;
                     this._outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Del(item.o_SHAREHOLDER_ID)
-                        .pipe(finalize(() => { this.saving = false; }))
-                        .subscribe((response) => {
-                            if (response.result != '0') {
-                                this.showErrorMessage(response.errorDesc);
-                            }
-                            else {
-                                this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                                // this.filterInputSearch.totalCount = 0;
-                                this.reloadPage();
-                            }
-                        });
+                    .pipe(
+                        catchError(e=>{
+                        this.showErrorMessage("Lỗi");
+                        return throwError("Lỗi")
+                        }),
+                        finalize(() => { this.saving = false; })
+                    )
+                    .subscribe((response) => {
+                      this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                      // this.filterInputSearch.totalCount = 0;
+                      this.reloadPage();
+                    });
                 }
             }
         );

@@ -38,41 +38,41 @@
                               <div class="col-md-4">
                                   <div class="form-group">
                                       <label>Công ty</label>
-                                      <input class="form-control" disabled type="text" name="companY_NAME" maxlength="15" >
+                                      <input class="form-control" disabled type="text" name="companY_NAME" [(ngModel)]="company.subsidiarY_NAME">
                                   </div>
                               </div>
                               <div class="col-md-4">
                                   <div class="form-group">
                                       <label>Loại hình công ty</label>
-                                      <input class="form-control" disabled type="text" name="companY_TYPE" maxlength="15" >
+                                      <input class="form-control" disabled type="text" name="companY_TYPE" [(ngModel)]="company.subsidiarY_COMPANY_TYPE">
                                   </div>
                               </div>
                               <div class="col-md-4">
                                   <div class="form-group">
                                       <label>Mệnh giá</label>
-                                      <input class="form-control" disabled type="text" name="companY_PAR_VALUE_PER_SHARE" maxlength="15">
+                                      <input class="form-control" disabled type="text" name="companY_PAR_VALUE_PER_SHARE" [(ngModel)]="company.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE">
                                   </div>
                               </div>
                               <div class="col-md-4">
                                   <div class="form-group">
                                       <label>Mã cổ đông</label>
-                                      <input class="form-control" disabled type="text" #id="ngModel" name="id" maxlength="15" [(ngModel)]="inputModel.id">
+                                      <input class="form-control" disabled type="text" #id="ngModel" name="id" [(ngModel)]="inputModel.id">
                                   </div>
                               </div>
                               
                               <div class="col-md-4">
                                 <div class="form-group required">
                                     <label>Loại cổ đông</label>
-                                    <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    <select2-custom (onChangeSelect2)="onSelectType($event)"
                                       class="transparent"
                                       required
                                       [disabled]="disableInput"
                                       #shareholdeR_TYPE="ngModel"
                                       name="shareholdeR_TYPE"
                                       [(ngModel)]="inputModel.shareholdeR_TYPE"
-                                      [(list)]="tempList"
-                                      [valueMember]="'value'"
-                                      [displayMember]="'value'"
+                                      [(list)]="shareholderType"
+                                      [valueMember]="'cdval'"
+                                      [displayMember]="'content'"
                                       >
                                   </select2-custom>
                                     <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
@@ -83,23 +83,63 @@
                                 </div>
                               </div>
                               <div class="col-md-4">
-                                <div class="form-group required">
+                                <div class="form-group required" *ngIf="inputModel.shareholdeR_TYPE=='CN'">
                                     <label>Tên cổ đông</label>
-                                    <select2-custom (onChangeSelect2)="onSelect($event)"
+                                    <select2-custom (onChangeSelect2)="onSelectName($event)"
                                       class="transparent"
                                       required
                                       [disabled]="disableInput"
-                                      #shareholdeR_NAME="ngModel"
-                                      name="shareholdeR_NAME"
-                                      [(ngModel)]="inputModel.shareholdeR_NAME"
-                                      [(list)]="tempList"
-                                      [valueMember]="'value'"
-                                      [displayMember]="'value'"
+                                      #shareholdeR_REF_ID="ngModel"
+                                      name="shareholdeR_REF_ID"
+                                      [(ngModel)]="inputModel.shareholdeR_REF_ID"
+                                      [(list)]="employeeList"
+                                      [valueMember]="'id'"
+                                      [displayMember]="'name'"
                                       >
                                   </select2-custom>
                                     <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
-                                    <div class="error-message" *ngIf="shareholdeR_NAME.invalid && isShowError">
-                                        <span *ngIf="shareholdeR_NAME?.errors.required">Tên cổ đông
+                                    <div class="error-message" *ngIf="shareholdeR_REF_ID.invalid && isShowError">
+                                        <span *ngIf="shareholdeR_REF_ID?.errors.required">Tên cổ đông
+                                            {{l("ValidationRequired")}}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group required" *ngIf="inputModel.shareholdeR_TYPE=='SUB'">
+                                    <label>Tên cổ đông</label>
+                                    <select2-custom (onChangeSelect2)="onSelectName($event)"
+                                      class="transparent"
+                                      required
+                                      [disabled]="disableInput"
+                                      #shareholdeR_REF_ID="ngModel"
+                                      name="shareholdeR_REF_ID"
+                                      [(ngModel)]="inputModel.shareholdeR_REF_ID"
+                                      [(list)]="companyList"
+                                      [valueMember]="'id'"
+                                      [displayMember]="'name'"
+                                      >
+                                  </select2-custom>
+                                    <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                    <div class="error-message" *ngIf="shareholdeR_REF_ID.invalid && isShowError">
+                                        <span *ngIf="shareholdeR_REF_ID?.errors.required">Tên cổ đông
+                                            {{l("ValidationRequired")}}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group required" *ngIf="inputModel.shareholdeR_TYPE=='CDN'">
+                                    <label>Tên cổ đông</label>
+                                    <select2-custom (onChangeSelect2)="onSelectName($event)"
+                                      class="transparent"
+                                      required
+                                      [disabled]="disableInput"
+                                      #shareholdeR_REF_ID="ngModel"
+                                      name="shareholdeR_REF_ID"
+                                      [(ngModel)]="inputModel.shareholdeR_REF_ID"
+                                      [(list)]="outsideShareholderList"
+                                      [valueMember]="'id'"
+                                      [displayMember]="'name'"
+                                      >
+                                  </select2-custom>
+                                    <!-- <input required class="form-control" [disabled]="disableInput" type="text" #a_PERSON_NAME="ngModel" name="a_PERSON_NAME" [(ngModel)]="inputModel.a_PERSON_NAME" maxlength="200"> -->
+                                    <div class="error-message" *ngIf="shareholdeR_REF_ID.invalid && isShowError">
+                                        <span *ngIf="shareholdeR_REF_ID?.errors.required">Tên cổ đông
                                             {{l("ValidationRequired")}}</span>
                                     </div>
                                 </div>
@@ -107,7 +147,7 @@
                               <div class="col-md-4">
                                   <div class="form-group required">
                                       <label>Số cổ phần</label>
-                                      <input required class="form-control" [disabled]="disableInput" type="text" #shareholdeR_SHARE="ngModel" name="shareholdeR_SHARE" [(ngModel)]="inputModel.shareholdeR_SHARE">
+                                      <input required class="form-control" [disabled]="disableInput" type="number" #shareholdeR_SHARE="ngModel" name="shareholdeR_SHARE" [(ngModel)]="inputModel.shareholdeR_SHARE">
                                   </div>
                                   <div class="error-message" *ngIf="shareholdeR_SHARE.invalid && isShowError">
                                     <span *ngIf="shareholdeR_SHARE?.errors.required">Số cổ phần
@@ -117,7 +157,7 @@
                               <div class="col-md-4">
                                   <div class="form-group required">
                                       <label>GT Vốn góp</label>
-                                      <input required class="form-control" [disabled]="disableInput" type="text" #shareholdeR_VALUE="ngModel" name="shareholdeR_VALUE" [(ngModel)]="inputModel.shareholdeR_VALUE">
+                                      <input required class="form-control" [disabled]="disableInput" type="number" #shareholdeR_VALUE="ngModel" name="shareholdeR_VALUE" [(ngModel)]="inputModel.shareholdeR_VALUE">
                                   </div>
                                   <div class="error-message" *ngIf="shareholdeR_VALUE.invalid && isShowError">
                                     <span *ngIf="shareholdeR_VALUE?.errors.required">GT Vốn góp

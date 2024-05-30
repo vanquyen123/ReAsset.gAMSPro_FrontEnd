@@ -6,13 +6,15 @@ import {
   ViewEncapsulation,
 } from "@angular/core";
 import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts";
+import { base64ToBlob, saveFile } from "@app/ultilities/blob-exec";
 import { ListComponentBase } from "@app/ultilities/list-component-base";
 import { ListComponentBase2 } from "@app/ultilities/list-component-base2";
 import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { AsposeServiceProxy, CM_ALLCODE_ENTITY, REA_SODO_ENTITY, REA_SODO_SEARCH_DTO, ReportInfo, SodoServiceProxy } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
   templateUrl: "./sodo.component.html",
@@ -63,7 +65,7 @@ export class SodoComponent extends ListComponentBase2<REA_SODO_ENTITY, REA_SODO_
   ngOnInit() {
     this.appToolbar.setUiAction(this);
     // set role toolbar
-    this.appToolbar.setRole('Sodo', true, true, false, true, true, true, false, true);
+    this.appToolbar.setRole('SoDo', true, true, false, true, true, true, false, true);
     this.appToolbar.setEnableForListPage();
 
     this._sodoService.rEA_SODO_Search(this.getFillterForCombobox()).subscribe(response => {
@@ -79,27 +81,15 @@ export class SodoComponent extends ListComponentBase2<REA_SODO_ENTITY, REA_SODO_
   }
 
   exportToExcel() {
-    let reportInfo = new ReportInfo();
-    reportInfo.typeExport = ReportTypeConsts.Excel;
-
-    let reportFilter = { ...this.filterInputSearch };
-
-    reportFilter.maxResultCount = -1;
-
-    reportInfo.parameters = this.GetParamsFromFilter(reportFilter)
-
-    reportInfo.values = this.GetParamsFromFilter({
-        A1 : this.l('CompanyReportHeader')
+    let reportInfo = new REA_SODO_SEARCH_DTO(this.filterInput)
+    reportInfo.maxResultCount = 999;
+    reportInfo.skipCount = 0;
+    this._sodoService.getExcelSoDo(reportInfo).subscribe(response=>{
+        let base64String = response.fileContent;
+        let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        saveFile(blob, "BC_SO_DO.xlsx")
     });
-
-    reportInfo.pathName = "/COMMON/BC_CODONGNGOAI.xlsx";
-    //reportInfo.storeName = "rpt_BC_PHONGBAN";
-    reportInfo.storeName = "rEA_SODO_Search";
-
-    this.asposeService.getReport(reportInfo).subscribe(x => {
-        this.fileDownloadService.downloadTempFile(x);
-    });
-}
+  }
 
 search(): void {
       this.showTableLoading();
@@ -119,11 +109,11 @@ search(): void {
   }
 
   onAdd(): void {
-      this.navigatePassParam('/app/admin/sodo-add', null, { filterInput: JSON.stringify(this.filterInputSearch) });
+      this.navigatePassParam('/app/admin/so-do-add', null, { filterInput: JSON.stringify(this.filterInputSearch) });
   }
 
   onUpdate(item: REA_SODO_ENTITY): void {
-      this.navigatePassParam('/app/admin/sodo-edit', { sodo: item.id }, { filterInput: JSON.stringify(this.filterInputSearch) });
+      this.navigatePassParam('/app/admin/so-do-edit', { sodo: item.id }, { filterInput: JSON.stringify(this.filterInputSearch) });
   }
 
   onDelete(item: REA_SODO_ENTITY): void {
@@ -134,17 +124,18 @@ search(): void {
               if (isConfirmed) {
                   this.saving = true;
                   this._sodoService.rEA_SODO_Del(item.id)
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                              // this.filterInputSearch.totalCount = 0;
-                              this.reloadPage();
-                          }
-                      });
+                  .pipe(
+                    catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                    }),
+                    finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                  this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                  // this.filterInputSearch.totalCount = 0;
+                  this.reloadPage();
+                });
               }
           }
       );
@@ -155,7 +146,7 @@ search(): void {
   }
 
   onViewDetail(item: REA_SODO_ENTITY): void {
-      this.navigatePassParam('/app/admin/sodo-view', { sodo: item.id }, { filterInput: JSON.stringify(this.filterInputSearch) });
+      this.navigatePassParam('/app/admin/so-do-view', { sodo: item.id }, { filterInput: JSON.stringify(this.filterInputSearch) });
   }
 
   onSave(): void {
@@ -169,5 +160,29 @@ search(): void {
 
   onSelectRecord(record: REA_SODO_ENTITY) {
       this.appToolbar.search();
+  }
+
+  calcNumOfLandPlot(lanD_PLOT_LIST, isInside:boolean) {
+    let num = 0;
+    if(lanD_PLOT_LIST) {
+        lanD_PLOT_LIST.forEach(land => {
+            if(land.lanD_PLOT_IS_INSIDE == isInside) {
+                num++;
+            }
+        });
+    }
+    return num;
+  }
+
+  calcAreaOfLandPlot(lanD_PLOT_LIST, isInside:boolean) {
+    let area = 0;
+    if(lanD_PLOT_LIST) {
+        lanD_PLOT_LIST.forEach(land => {
+            if(land.lanD_PLOT_IS_INSIDE == isInside) {
+                area+=land.lanD_PLOT_AREA;
+            }
+        });
+    }
+    return area;
   }
 }

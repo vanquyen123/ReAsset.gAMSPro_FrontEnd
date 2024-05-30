@@ -1,5 +1,5 @@
 import { ViewEncapsulation, Component, Output, EventEmitter, ViewChild, ElementRef, Input, Injector, OnInit} from "@angular/core";
-import { REA_FILE_ENTITY } from "@shared/service-proxies/service-proxies";
+import { FileServiceProxy, REA_FILE_ENTITY } from "@shared/service-proxies/service-proxies";
 import { ChangeDetectionComponent } from "../../ultils/change-detection.component";
 import * as moment from "moment";
 
@@ -12,6 +12,7 @@ import * as moment from "moment";
 export class FileSelectorComponent extends ChangeDetectionComponent{
     constructor(
         injector: Injector,
+        private fileService: FileServiceProxy,
     ) {
         super(injector);
     }
@@ -50,7 +51,7 @@ export class FileSelectorComponent extends ChangeDetectionComponent{
 
     removeFile() {
         var oldFile = new REA_FILE_ENTITY(this.uploadedFile)
-        if(this.uploadedFile.iS_CHANGED) {
+        if(!this.uploadedFile.iS_NEW) {
             this.uploadedFile = new REA_FILE_ENTITY()
         }
         this.uploadedFile.filE_NAME = ""
@@ -62,5 +63,41 @@ export class FileSelectorComponent extends ChangeDetectionComponent{
         })
         this.updateView()
     }
+
+    public downloadFile() {
+        if(!this.uploadedFile.filE_NAME) return;
+        if(!this.uploadedFile.iS_NEW) {
+            this.fileService.getFileBlob(this.uploadedFile.filE_ID).subscribe(response=>{
+                this.uploadedFile.filE_CONTENT = response.fileContent
+                this.handleDownload();
+            })
+        }
+        else {
+            this.handleDownload();
+        }        
+      }
+
+      private handleDownload(){
+        const fileType = this.getFileType(this.uploadedFile.filE_NAME);
+        const linkSource = `data:${fileType};base64,${this.uploadedFile.filE_CONTENT}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = this.uploadedFile.filE_NAME;
+        downloadLink.click();
+      }
+    
+      private getFileType(fileName: string): string {
+        const extension = fileName.split('.').pop();
+        const mimeTypes: { [key: string]: string } = {
+          'png': 'image/png',
+          'jpg': 'image/jpeg',
+          'jpeg': 'image/jpeg',
+          'gif': 'image/gif',
+          'pdf': 'application/pdf',
+          'txt': 'text/plain',
+          'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        };
+        return mimeTypes[extension] || 'application/octet-stream';
+      }
     
 }

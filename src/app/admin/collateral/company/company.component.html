@@ -14,19 +14,9 @@
                         class="m-subheader__title m-subheader__title--separator"
                     >
                         <!-- Begin Title -->
-                        <span>Danh mục Công ty</span>
+                        <span>Danh mục Công ty thành viên</span>
                         <!-- End Title -->
                     </h3>
-                </div>
-                <div class="col text-right mt-3 mt-md-0">
-                    <div class="btn-group dropdown mr-2">
-                        <button class="btn btn-outline-success"
-                        *ngIf="appToolbar.buttonSearchEnable"
-                            (click)="exportExcel()">
-                            <i class="far fa-file-excel"></i>
-                            {{l("ExcelOperations")}}
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -44,7 +34,7 @@
                                     <div class="form-group">
                                         <label>Mã công ty</label>
                                         <input 
-                                            [(ngModel)]="filterInput.companY_CODE"
+                                            [(ngModel)]="filterInput.subsidiarY_CODE"
                                             name="companY_CODEFilter"
                                             autoFocus
                                             class="form-control m-input"
@@ -55,7 +45,7 @@
                                     <div class="form-group">
                                         <label>Tên công ty</label>
                                         <input 
-                                            [(ngModel)]="filterInput.companY_NAME"
+                                            [(ngModel)]="filterInput.subsidiarY_NAME"
                                             name="companY_NAMEFilter"
                                             autoFocus
                                             class="form-control m-input"
@@ -69,7 +59,7 @@
                                         <select2-custom (onChangeSelect2)="onSelectRecord($event)"
                                             name="companY_TYPE"
                                             class="transparent"
-                                            [(ngModel)]="filterInput.companY_TYPE"
+                                            [(ngModel)]="filterInput.subsidiarY_COMPANY_TYPE"
                                             [emptyText]="l('SelectAll')"
                                             [(list)]="records"
                                             [valueMember]="'recorD_STATUS'"
@@ -78,7 +68,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Mệnh giá</label>
                                         <input 
@@ -88,14 +78,14 @@
                                             class="form-control m-input"
                                             type="number">
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Địa chỉ</label>
                                         <input 
-                                            [(ngModel)]="filterInput.companY_ADDRESS"
-                                            name="companY_ADDRESSFilter"
+                                            [(ngModel)]="filterInput.subsidiarY_ADDRESS"
+                                            name="subsidiarY_ADDRESSFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -106,8 +96,8 @@
                                     <div class="form-group">
                                         <label>Số điện thoại</label>
                                         <input 
-                                            [(ngModel)]="filterInput.companY_TEL"
-                                            name="companY_TELFilter"
+                                            [(ngModel)]="filterInput.subsidiarY_TEL"
+                                            name="subsidiarY_TELFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
@@ -118,27 +108,11 @@
                                     <div class="form-group">
                                         <label>Mã số thuế</label>
                                         <input 
-                                            [(ngModel)]="filterInput.companY_TEL"
-                                            name="companY_TELFilter"
+                                            [(ngModel)]="filterInput.subsidiarY_TAX_CODE"
+                                            name="subsidiarY_TAX_CODEFilter"
                                             autoFocus
                                             class="form-control m-input"
                                             type="text">
-                                    </div>
-                                </div>
-                                
-                                <!-- Khối -->
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Hoạt động</label>
-                                        <select2-custom (onChangeSelect2)="onSelectRecord($event)"
-                                            name="recorD_STATUS"
-                                            class="transparent"
-                                            [(ngModel)]="filterInput.recorD_STATUS"
-                                            [emptyText]="l('SelectAll')"
-                                            [(list)]="records"
-                                            [valueMember]="'recorD_STATUS'"
-                                            [displayMember]="'recordName'">
-                                        </select2-custom>
                                     </div>
                                 </div>
 
@@ -237,13 +211,13 @@
                                         <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
                                             + dataTable.records.indexOf(record)) + 1}}
                                         </td>
-                                        <td><span class="mo-header"></span>{{record.companY_CODE}}</td>
-                                        <td><span class="mo-header"></span>{{record.companY_NAME}}</td>
-                                        <td><span class="mo-header"></span>{{record.companY_TYPE}}</td>
-                                        <td><span class="mo-header"></span>{{record.companY_PAR_VALUE_PER_SHARE}}</td>
-                                        <td><span class="mo-header"></span>{{record.companY_ADDRESS}}</td>
-                                        <td><span class="mo-header"></span>{{record.companY_TEL}}</td>
-                                        <td><span class="mo-header"></span>{{record.companY_TAX_NO}}</td>
+                                        <td><span class="mo-header"></span>{{record.id}}</td>
+                                        <td><span class="mo-header"></span>{{record.subsidiarY_NAME}}</td>
+                                        <td><span class="mo-header"></span>{{record.subsidiarY_COMPANY_TYPE}}</td>
+                                        <td><span class="mo-header"></span>{{record.subsidiarY_COMPANY_PAR_VALUE_PER_SHARE}}</td>
+                                        <td><span class="mo-header"></span>{{record.subsidiarY_ADDRESS}}</td>
+                                        <td><span class="mo-header"></span>{{record.subsidiarY_TEL}}</td>
+                                        <td><span class="mo-header"></span>{{record.subsidiarY_TAX_CODE}}</td>
                                         <td><span class="mo-header"></span>{{record.recorD_STATUS_NAME}}</td>
                                         <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
                                         <td><span class="mo-header"></span>{{record.notes}}</td>

@@ -153,7 +153,7 @@ export class AssetLookupEditComponent extends DefaultComponentBase implements On
               this.ownerService.rEA_OWNER_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
+                          this.showErrorMessage("Lỗi");
                       }
                       else {
                           this.addNewSuccess();
@@ -162,7 +162,7 @@ export class AssetLookupEditComponent extends DefaultComponentBase implements On
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
+                                          this.showErrorMessage("Lỗi");
                                       }
                                   });
                           }
@@ -173,7 +173,7 @@ export class AssetLookupEditComponent extends DefaultComponentBase implements On
               this.ownerService.rEA_OWNER_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
                       if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
+                          this.showErrorMessage("Lỗi");
                       }
                       else {
                           this.updateSuccess();
@@ -182,7 +182,7 @@ export class AssetLookupEditComponent extends DefaultComponentBase implements On
                                   .pipe(finalize(() => { this.saving = false; }))
                                   .subscribe((response) => {
                                       if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
+                                          this.showErrorMessage("Lỗi");
                                       }
                                       else {
                                           this.inputModel.autH_STATUS = AuthStatusConsts.Approve;
@@ -233,7 +233,7 @@ export class AssetLookupEditComponent extends DefaultComponentBase implements On
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
                           if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
+                              this.showErrorMessage("Lỗi");
                           }
                           else {
                               this.approveSuccess();

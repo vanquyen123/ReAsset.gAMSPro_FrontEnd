@@ -5,14 +5,17 @@ import {
   OnInit,
   ViewEncapsulation,
 } from "@angular/core";
+import { PartnerField, ProjectField } from "@app/admin/core/ultils/consts/ComboboxConsts";
 import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts";
+import { ReaAllCode } from "@app/ultilities/enum/all-codes";
 import { ListComponentBase } from "@app/ultilities/list-component-base";
 import { ListComponentBase2 } from "@app/ultilities/list-component-base2";
 import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
-import { AsposeServiceProxy, CM_ALLCODE_ENTITY, InvestmentPropertyServiceProxy, REA_INVESTMENT_PROPERTY_ENTITY, REA_INVESTMENT_PROPERTY_SEARCH_DTO, ReportInfo } from "@shared/service-proxies/service-proxies";
+import { AllCodeServiceProxy, AsposeServiceProxy, CM_ALLCODE_ENTITY, ComboboxServiceProxy, InvestmentPropertyServiceProxy, REA_INVESTMENT_PROPERTY_ENTITY, REA_INVESTMENT_PROPERTY_SEARCH_DTO, REA_PROPERTY_INFORMATION_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
   templateUrl: "./investment-property.component.html",
@@ -42,13 +45,21 @@ export class InvestmentPropertyComponent extends ListComponentBase2<REA_INVESTME
           autH_STATUS_NAME: "Đã duyệt"
       }
   ];
+  projectList
+  partnerList
+
+  propertyStatus
+  legalStatus
+  GCNStatus
 
   constructor(
       injector: Injector,
       private fileDownloadService: FileDownloadService,
+      private allCodeService: AllCodeServiceProxy,
       private asposeService: AsposeServiceProxy,
       private _investPropService: InvestmentPropertyServiceProxy,
       private pageResultService: InvestmentPropertyServiceProxy,
+      private _comboboxService: ComboboxServiceProxy,
       // private branchService: BranchServiceProxy
   ) {
       super(injector);
@@ -60,6 +71,8 @@ export class InvestmentPropertyComponent extends ListComponentBase2<REA_INVESTME
   }
 
   ngOnInit() {
+    this.getAllTypes();
+    this.getInputField();
     this.appToolbar.setUiAction(this);
     // set role toolbar
     this.appToolbar.setRole('LandArea', true, true, false, true, true, true, false, true);
@@ -100,16 +113,49 @@ export class InvestmentPropertyComponent extends ListComponentBase2<REA_INVESTME
     });
 }
 
+getAllTypes() {
+    this.allCodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.INVEST_PROP_STATUS, "")
+    .subscribe(response =>{
+        this.propertyStatus = response
+        this.updateView();
+    })
+    this.allCodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.INVEST_PROP_LEGAL_STATUS, "")
+    .subscribe(response =>{
+        this.legalStatus = response
+        this.updateView();
+    })
+    this.allCodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.INVEST_PROP_GCN_STATUS, "")
+    .subscribe(response =>{
+        this.GCNStatus = response
+        this.updateView();
+    })
+  }
+
+  getInputField() {
+    this._comboboxService.getComboboxData(ProjectField.class, ProjectField.attribute).subscribe(response=>{
+        this.projectList = response
+        this.updateView()
+    })
+    this._comboboxService.getComboboxData(PartnerField.class, PartnerField.attribute).subscribe(response=>{
+        this.partnerList = response
+        this.updateView()
+    })
+  }
+
 search(): void {
       this.showTableLoading();
 
       this.setSortingForFilterModel(this.filterInputSearch);
 
-      this.filterInputSearch.id = ""
       this._investPropService.rEA_INVESTMENT_PROPERTY_Search(this.filterInputSearch)
           .pipe(finalize(() => this.hideTableLoading()))
           .subscribe(result => {
-              this.dataTable.records = result.items;
+            //   this.dataTable.records = result.items;
+              this.dataTable.records = [];
+              result.items.forEach(e=>{
+                e.propertY_INFORMATION = new REA_PROPERTY_INFORMATION_ENTITY(e.propertY_INFORMATION)
+                this.dataTable.records.push(e)
+              })
               this.dataTable.totalRecordsCount = result.totalCount;
               // this.filterInputSearch.totalCounT = result.totalCount; 
               this.appToolbar.setEnableForListPage();
@@ -134,17 +180,18 @@ search(): void {
               if (isConfirmed) {
                   this.saving = true;
                   this._investPropService.rEA_INVESTMENT_PROPERTY_Del(item.id)
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                              // this.filterInputSearch.totalCount = 0;
-                              this.reloadPage();
-                          }
-                      });
+                  .pipe(
+                    catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                    }),
+                    finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                  this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                  // this.filterInputSearch.totalCount = 0;
+                  this.reloadPage();
+                });
               }
           }
       );

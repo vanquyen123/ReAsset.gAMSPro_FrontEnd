@@ -7,11 +7,13 @@ import { CM_ALLCODE_ENTITY, UltilityServiceProxy, AllCodeServiceProxy, REA_PROJE
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { EditableTableComponent } from '@app/admin/core/controls/editable-table/editable-table.component';
 import { IUiActionRejectExt } from '@app/ultilities/ui-action-re';
 import * as moment from 'moment';
 import { DepartmentField, EmployeeField, InvestorField, LandAreaField, PartnerField, ProvinceField, ShareholderField } from '@app/admin/core/ultils/consts/ComboboxConsts';
+import { base64ToBlob, saveFile } from '@app/ultilities/blob-exec';
+import { throwError } from 'rxjs';
 
 @Component({
   templateUrl: './project-edit.component.html',
@@ -46,7 +48,6 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
   @ViewChild('cooperateStructureEditTable') cooperateStructureEditTable: EditableTableComponent<REA_PROJECT_COOPERATE_STRUCTURE_ENTITY>;
   @ViewChild('landAreaEditTable') landAreaEditTable: EditableTableComponent<REA_LAND_AREA_OVERALL>;
   @ViewChild('sodoEditTable') sodoEditTable: EditableTableComponent<REA_PROJECT_SODO_OVERALL>;
-  @ViewChild('mortgageEditTable') mortgageEditTable: EditableTableComponent<REA_MORTGAGE_OVERALL>;
   @ViewChild('attachFile') attachFile: ElementRef;
 
   propertyCheckList = []
@@ -65,7 +66,6 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     isApproveFunct: boolean;
     projecT_ID: string;
     checkIsActive = false;
-    tempList=[{value: "value"}]
     projectTypeList
     entityTypeList
     projectCompleteStatus
@@ -80,6 +80,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     landAreaList
     departmentList
     uploadedFile = new REA_FILE_ENTITY()
+    firstLoad = 2;
 
   get disableInput(): boolean {
     return this.editPageState == EditPageState.viewDetail;
@@ -120,6 +121,17 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     this.setupValidationMessage();
   }
 
+  exportToExcel() {
+    this.projectService.getExcelById(this.projecT_ID).subscribe(response=>{
+      let base64String = response.fileContent;
+      let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      let name = "BC_DU_AN_" + this.projecT_ID + ".xlsx"
+      saveFile(blob, name)
+    });
+  }
+
+  
+
   initIsApproveFunct() {
       this.ultilityService.isApproveFunct(this.getCurrentFunctionId()).subscribe(isApproveFunct => {
           this.isApproveFunct = isApproveFunct;
@@ -139,6 +151,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
 
   addNewProperty(){
     var item = new REA_PROJECT_PROPERTY_ENTITY();
+    item.iS_NEW = true;
     this.propertyEditTable.pushItem(item);
     this.updateView();
   }
@@ -175,6 +188,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
 
   addNewExploitation(){
     var item = new REA_PROJECT_EXPLOITATION_ENTITY();
+    item.iS_NEW = true;
     item.attacheD_IMAGE = new REA_FILE_ENTITY()
     item.attacheD_IMAGE.iS_NEW = true;
     this.exploitationEditTable.pushItem(item);
@@ -218,6 +232,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
 
   addNewRegistration(){
     var item = new REA_USE_REGISTRATION_ENTITY();
+    item.iS_NEW = true;
     this.registrationEditTable.pushItem(item);
     this.updateView();
   }
@@ -256,6 +271,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     var item = new REA_PROJECT_PROGRESS_ENTITY();
     item.attacheD_FILE = new REA_FILE_ENTITY();
     item.iS_NEW = true;
+    item.attacheD_FILE.iS_NEW = true
     this.progressEditTable.pushItem(item);
     this.updateView();
   }
@@ -297,6 +313,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
 
   addNewOwnStructure(){
     var item = new REA_PROJECT_OWN_STRUCTURE_ENTITY();
+    item.iS_NEW = true;
     this.ownStructureEditTable.pushItem(item);
     this.updateView();
   }
@@ -333,6 +350,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
 
   addNewCooperateStructure(){
     var item = new REA_PROJECT_COOPERATE_STRUCTURE_ENTITY();
+    item.iS_NEW = true;
     item.entitY_TYPE = 'CT'
     this.cooperateStructureEditTable.pushItem(item);
     this.updateView();
@@ -382,6 +400,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     this.inputModel.exploitatioN_LIST = []
     this.inputModel.registratioN_LIST = []
     this.inputModel.progresS_LIST = []
+    this.uploadedFile.iS_NEW = true;
 
     this.updateView();
   }
@@ -393,7 +412,8 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
           this.inputModel.valuation = new REA_VALUATION_ENTITY(response.valuation);
           if(response.attacheD_IMAGES[0]) {
             this.uploadedFile = new REA_FILE_ENTITY(response.attacheD_IMAGES[0])
-            this.uploadedFile.iS_CHANGED = true
+            this.uploadedFile.iS_CHANGED = false
+            this.uploadedFile.iS_NEW = false
           }
           if(response.owN_LIST != null) {
               response.owN_LIST.forEach(e=>{
@@ -405,7 +425,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
           if(response.cooperatE_LIST != null) {
               response.cooperatE_LIST.forEach(e=>{
                 e.iS_CHANGED = true;
-                this.updateView();
+                e.iS_NEW = false;
                 this.cooperateStructureEditTable.pushItem(e);
               })
           }
@@ -420,6 +440,15 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
               response.exploitatioN_LIST.forEach(e=>{
               e.iS_CHANGED = true;
               e.iS_NEW = false;
+              if(e.attacheD_IMAGE) {
+                e.attacheD_IMAGE.iS_CHANGED = false;
+                e.attacheD_IMAGE.iS_NEW = false;
+                e.attacheD_IMAGE = new REA_FILE_ENTITY(e.attacheD_IMAGE)
+              }
+              else {
+                e.attacheD_IMAGE = new REA_FILE_ENTITY()
+                e.attacheD_IMAGE.iS_NEW = true;
+              }
               this.exploitationEditTable.pushItem(e);
             })
           }
@@ -434,6 +463,15 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
               response.progresS_LIST.forEach(e=>{
               e.iS_CHANGED = true;
               e.iS_NEW = false;
+              if(e.attacheD_FILE) {
+                e.attacheD_FILE.iS_CHANGED = false;
+                e.attacheD_FILE.iS_NEW = false;
+                e.attacheD_FILE = new REA_FILE_ENTITY(e.attacheD_FILE)
+              }
+              else {
+                e.attacheD_FILE = new REA_FILE_ENTITY()
+                e.attacheD_FILE.iS_NEW = true;
+              }
               this.progressEditTable.pushItem(e);
             })
           }
@@ -447,17 +485,13 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
               this.sodoEditTable.setList(response.sodO_LIST)
             }
           }
-          if(response.mortgagE_LIST != null) {
-            if(response.mortgagE_LIST.length >0) {
-              this.mortgageEditTable.setList(response.mortgagE_LIST)
-            }
-          }
           this.inputModel.owN_LIST = []
           this.inputModel.cooperatE_LIST = []
           this.inputModel.propertY_LIST = []
           this.inputModel.exploitatioN_LIST = []
           this.inputModel.registratioN_LIST = []
           this.inputModel.progresS_LIST = []
+          this.inputModel.attacheD_IMAGES = []
 
           this.inputModel.deleteD_OWN_ID_LIST = []
           this.inputModel.deleteD_COOPERATE_ID_LIST = []
@@ -537,35 +571,35 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     })
   }
 
-  onUploadImage(event) {
-    var file = event.target.files[0]
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-        if(this.inputModel.attacheD_IMAGES[0]) {
-            this.inputModel.attacheD_IMAGES.pop()
-        }
-        if(this.uploadedFile.iS_CHANGED) {
-          this.inputModel.deletE_FILE_ID_LIST.push(this.uploadedFile.filE_ID)
-          this.uploadedFile = new REA_FILE_ENTITY()
-        }
-        let content = reader.result.toString().split(',')
-        this.uploadedFile.filE_NAME = event.target.files[0].name
-        this.uploadedFile.filE_CONTENT = content[1]
-        this.uploadedFile.iS_NEW = true;
-        this.uploadedFile.iS_CHANGED = false
-        this.uploadedFile.filE_ATTACH_DT = moment()
-        this.inputModel.attacheD_IMAGES.push(this.uploadedFile)
-        this.updateView()
-    };
-  }
-  selectFile(){
-    this.attachFile.nativeElement.click()
-  }
+  // onUploadImage(event) {
+  //   var file = event.target.files[0]
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = () => {
+  //       if(this.inputModel.attacheD_IMAGES[0]) {
+  //           this.inputModel.attacheD_IMAGES.pop()
+  //       }
+  //       if(this.uploadedFile.iS_CHANGED) {
+  //         this.inputModel.deletE_FILE_ID_LIST.push(this.uploadedFile.filE_ID)
+  //         this.uploadedFile = new REA_FILE_ENTITY()
+  //       }
+  //       let content = reader.result.toString().split(',')
+  //       this.uploadedFile.filE_NAME = event.target.files[0].name
+  //       this.uploadedFile.filE_CONTENT = content[1]
+  //       this.uploadedFile.iS_NEW = true;
+  //       this.uploadedFile.iS_CHANGED = false
+  //       this.uploadedFile.filE_ATTACH_DT = moment()
+  //       this.inputModel.attacheD_IMAGES.push(this.uploadedFile)
+  //       this.updateView()
+  //   };
+  // }
+  // selectFile(){
+  //   this.attachFile.nativeElement.click()
+  // }
 
   uploadFile(files: any, item) {
     var oldFile = files.oldFile
-    if(oldFile.iS_CHANGED) {
+    if(!oldFile.iS_NEW) {
         this.inputModel.deletE_FILE_ID_LIST.push(oldFile.filE_ID)
     }
     this.updateView()
@@ -573,7 +607,7 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
 
   removeFile(files: any, item) {
     var oldFile = files.oldFile
-    if(oldFile.iS_CHANGED) {
+    if(!oldFile.iS_NEW) {
         this.inputModel.deletE_FILE_ID_LIST.push(oldFile.filE_ID)
     }
     this.updateView()
@@ -620,32 +654,35 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
           this.cooperateStructureEditTable.allData.forEach(element=> {
             this.inputModel.cooperatE_LIST.push(new REA_PROJECT_COOPERATE_STRUCTURE_ENTITY(element))
           })
+          this.inputModel.attacheD_IMAGES.push(this.uploadedFile);
           console.log(this.inputModel)
 
           if (!this.projecT_ID) {
               this.inputModel.makeR_ID = this.appSession.user.userName;
-              this.projectService.rEA_PROJECT_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
-                  .subscribe((response) => {
-                      if (response.result != '0' && response.result != null) {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.addNewSuccess();
-                      }
-                  });
+              this.projectService.rEA_PROJECT_Ins(this.inputModel).pipe(
+                catchError(e=>{
+                  this.showErrorMessage("Lỗi");
+                  return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+              )
+              .subscribe((response) => {
+                  this.addNewSuccess();
+              });
           }
           else {
-              this.projectService.rEA_PROJECT_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
-                  .subscribe((response) => {
-                      if (response.result != '0' && response.result != null) {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.updateSuccess();
-                          this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
-                          this.updateView();
-                      }
-                  });
+              this.projectService.rEA_PROJECT_Upd(this.inputModel).pipe(
+                catchError(e=>{
+                  this.showErrorMessage("Lỗi");
+                  return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+              )
+              .subscribe((response) => {
+                  this.updateSuccess();
+                  this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
+                  this.updateView();
+              });
           }
       }
   }
@@ -679,15 +716,16 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
               if (isConfirmed) {
                   this.saving = true;
                   this.projectService.rEA_PROJECT_App(this.inputModel.id, currentUserName, "")
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0' && response.errorDesc != null) {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.approveSuccess();
-                          }
-                      });
+                  .pipe(
+                    catchError(e=>{
+                      this.showErrorMessage("Lỗi");
+                      return throwError("Lỗi")
+                    }),
+                    finalize(() => { this.saving = false; })
+                  )
+                  .subscribe((response) => {
+                    this.approveSuccess();
+                  });
               }
           }
       );
@@ -711,15 +749,16 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
             if (isConfirmed) {
                 this.saving = true;
                 this.projectService.rEA_PROJECT_Rej(this.inputModel.id, currentUserName, rejectReason)
-                    .pipe(finalize(() => { this.saving = false; }))
-                    .subscribe((response) => {
-                        if (response.result != '0' && response.errorDesc != null) {
-                            this.showErrorMessage(response.errorDesc);
-                        }
-                        else {
-                            this.rejectSuccess();
-                        }
-                    });
+                .pipe(
+                  catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                  }),
+                  finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                    this.rejectSuccess();
+                });
             }
         }
     );
@@ -743,15 +782,16 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
             if (isConfirmed) {
                 this.saving = true;
                 this.projectService.rEA_PROJECT_Can(this.inputModel.id, currentUserName, revokeReason)
-                    .pipe(finalize(() => { this.saving = false; }))
-                    .subscribe((response) => {
-                        if (response.result != '0' && response.errorDesc != null) {
-                            this.showErrorMessage(response.errorDesc);
-                        }
-                        else {
-                            this.revokeSuccess();
-                        }
-                    });
+                .pipe(
+                  catchError(e=>{
+                    this.showErrorMessage("Lỗi");
+                    return throwError("Lỗi")
+                  }),
+                  finalize(() => { this.saving = false; })
+                )
+                .subscribe((response) => {
+                    this.revokeSuccess();
+                });
             }
         }
     );
@@ -787,12 +827,12 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
   }
 
   onSelectProjectType(value){
-    if(value.cdval != 'RL') {
+    if(value.cdval != 'RL' && this.editPageState == EditPageState.add) {
         this.inputModel.id = ""
     }
     this.updateView()
   }
-  onSelectEntityType(value: string) {
+  onSelectEntityType(value) {
     this.updateView()
   }
   

@@ -6,7 +6,7 @@
     </div>
     <div class="list-group">
         <ng-template ngFor let-project [ngForOf]="projectList" let-i="index">
-            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between" (click)="onViewDetail(project.projecT_ID)" style="cursor: pointer;">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between" (dblclick)="onViewDetail(project.projecT_ID)" style="cursor: pointer;">
                 <p class="m-0">{{ project.projecT_NAME }}</p>
                 <p class="font-weight-light m-0">{{ project.projecT_VALUATION.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}) }}</p>
             </button>

@@ -32,17 +32,15 @@
                     <div class="col-md-6">
                         <expired-contract-chart [contractData]="expiredContractData"></expired-contract-chart>
                     </div>
-                    <div class="col-md-6 mt-5">
-                        <expired-mortgage-chart [mortgageData]="expiredMortgageData"></expired-mortgage-chart>
-                    </div>
-                    <div class="col-md-6 mt-5">
-                        <mortgage-progress-chart [mortgageData]="mortgageProgressData"></mortgage-progress-chart>
-                    </div>
+                    
                     <div class="col-md-6 mt-5">
                         <project-type-chart [projectTypeData]="projectTypeData"></project-type-chart>
                     </div>
                     <div class="col-md-6 mt-5">
-                        <top10-project></top10-project>
+                        <top10-project [projectList]="top10projects"></top10-project>
+                    </div>
+                    <div class="col-md-6 mt-5">
+                        <revenue-chart [revenueData]="revenueData"></revenue-chart>
                     </div>
                 </div>
             </div>

@@ -3,15 +3,16 @@ import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { EditPageState } from '@app/ultilities/enum/edit-page-state';
 import { AllCodes, ReaAllCode } from '@app/ultilities/enum/all-codes';
-import { UltilityServiceProxy, AllCodeServiceProxy, REA_INVESTMENT_PROPERTY_ENTITY, InvestmentPropertyServiceProxy, REA_FLOOR_MANAGEMENT_ENTITY, REA_PROPERTY_INFORMATION_ENTITY, CONTRACT_ITEM_ENTITY, REA_MORTGAGE_OVERALL, PropertyInformationServiceProxy, ComboboxServiceProxy} from '@shared/service-proxies/service-proxies';
+import { UltilityServiceProxy, AllCodeServiceProxy, REA_INVESTMENT_PROPERTY_ENTITY, InvestmentPropertyServiceProxy, REA_FLOOR_MANAGEMENT_ENTITY, REA_PROPERTY_INFORMATION_ENTITY, CONTRACT_ITEM_ENTITY, REA_MORTGAGE_OVERALL, PropertyInformationServiceProxy, ComboboxServiceProxy, CONTRACT_ITEM_RENTAL_PRICE_ENTITY} from '@shared/service-proxies/service-proxies';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { EditableTableComponent } from '@app/admin/core/controls/editable-table/editable-table.component';
 import { IUiActionRejectExt } from '@app/ultilities/ui-action-re';
 import { PartnerField, ProjectField } from '@app/admin/core/ultils/consts/ComboboxConsts';
 import * as moment from 'moment';
+import { throwError } from 'rxjs';
 
 @Component({
   templateUrl: './investment-property-edit.component.html',
@@ -41,7 +42,6 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
   @ViewChild('editForm') editForm: ElementRef;
   @ViewChild('floorEditTable') floorEditTable: EditableTableComponent<REA_FLOOR_MANAGEMENT_ENTITY>;
   @ViewChild('contractEditTable') contractEditTable: EditableTableComponent<CONTRACT_ITEM_ENTITY>;
-  @ViewChild('mortgageEditTable') mortgageEditTable: EditableTableComponent<REA_MORTGAGE_OVERALL>;
   floorCheckList = []
 
     EditPageState = EditPageState;
@@ -79,11 +79,13 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
       case EditPageState.edit:
           this.appToolbar.setRole('InvestProp', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
+          this.getInitInformation();
           this.getInvestProp();
           break;
       case EditPageState.viewDetail:
           this.appToolbar.setRole('InvestProp', false, false, false, false, false, false, true, false);
           this.appToolbar.setEnableForViewDetailPage();
+          this.getInitInformation();
           this.getInvestProp();
           break;
     }
@@ -125,22 +127,21 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
           this.inputModel = response;
           this.inputModel.propertY_INFORMATION = new REA_PROPERTY_INFORMATION_ENTITY(response.propertY_INFORMATION)
           if(response.flooR_LIST != null) {
-            if(response.flooR_LIST.length >0) {
-              this.floorEditTable.setList(response.flooR_LIST)
-            }
+            response.flooR_LIST.forEach(e=>{
+              e.iS_CHANGED = true;
+              e.iS_NEW = false;
+              this.floorEditTable.pushItem(e);
+            })
           }
           if(response.contracT_ITEM_LIST != null) {
-            if(response.contracT_ITEM_LIST.length >0) {
-              this.contractEditTable.setList(response.flooR_LIST)
-            }
-          }
-          if(response.mortgagE_OVERALL_LIST != null) {
-            if(response.mortgagE_OVERALL_LIST.length >0) {
-              this.mortgageEditTable.setList(response.flooR_LIST)
-            }
+            response.contracT_ITEM_LIST.forEach(e=>{
+              e.contracT_ITEM_RENTAL_PRICE = new CONTRACT_ITEM_RENTAL_PRICE_ENTITY(e.contracT_ITEM_RENTAL_PRICE)
+              this.contractEditTable.pushItem(e);
+            })
           }
 
           this.inputModel.flooR_LIST = []
+          this.inputModel.deleteD_FLOOR_ID_LIST = []
           
           if(response.recorD_STATUS === "1") {
             this.checkIsActive = true;
@@ -251,28 +252,30 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
 
         if (!this.invesT_PROP_ID) {
             this.inputModel.makeR_ID = this.appSession.user.userName;
-            this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
-                .subscribe((response) => {
-                    if (response.result != '0' && response.result != null) {
-                        this.showErrorMessage(response.errorDesc);
-                    }
-                    else {
-                        this.addNewSuccess();
-                    }
-                });
+            this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_Ins(this.inputModel).pipe(
+              catchError(e=>{
+                this.showErrorMessage("Lỗi");
+                return throwError("Lỗi")
+              }),
+              finalize(() => { this.saving = false; })
+            )
+            .subscribe((response) => {
+                this.addNewSuccess();
+            });
         }
         else {
-            this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
-                .subscribe((response) => {
-                    if (response.result != '0' && response.result != null) {
-                        this.showErrorMessage(response.errorDesc);
-                    }
-                    else {
-                        this.updateSuccess();
-                        this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
-                        this.updateView();
-                    }
-                });
+            this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_Upd(this.inputModel).pipe(
+              catchError(e=>{
+                this.showErrorMessage("Lỗi");
+                return throwError("Lỗi")
+              }),
+              finalize(() => { this.saving = false; })
+            )
+            .subscribe((response) => {
+                this.updateSuccess();
+                this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
+                this.updateView();
+              });
         }
     }
   }
@@ -306,14 +309,15 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
               if (isConfirmed) {
                   this.saving = true;
                   this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_App(this.inputModel.id, currentUserName, "")
-                      .pipe(finalize(() => { this.saving = false; }))
+                      .pipe(
+                        catchError(e=>{
+                          this.showErrorMessage("Lỗi");
+                          return throwError("Lỗi")
+                        }),
+                        finalize(() => { this.saving = false; })
+                      )
                       .subscribe((response) => {
-                          if (response.result != '0' && response.errorDesc != null) {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.approveSuccess();
-                          }
+                        this.approveSuccess();
                       });
               }
           }
@@ -338,15 +342,16 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
           if (isConfirmed) {
               this.saving = true;
               this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_Rej(this.inputModel.id, currentUserName, rejectReason)
-                  .pipe(finalize(() => { this.saving = false; }))
-                  .subscribe((response) => {
-                      if (response.result != '0' && response.errorDesc != null) {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.rejectSuccess();
-                      }
-                  });
+              .pipe(
+                catchError(e=>{
+                  this.showErrorMessage("Lỗi");
+                  return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+              )
+              .subscribe((response) => {
+                  this.rejectSuccess();
+              });
           }
       }
   );
@@ -370,15 +375,16 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
           if (isConfirmed) {
               this.saving = true;
               this.investmentPropertyService.rEA_INVESTMENT_PROPERTY_Can(this.inputModel.id, currentUserName, revokeReason)
-                  .pipe(finalize(() => { this.saving = false; }))
-                  .subscribe((response) => {
-                      if (response.result != '0' && response.errorDesc != null) {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.revokeSuccess();
-                      }
-                  });
+              .pipe(
+                catchError(e=>{
+                  this.showErrorMessage("Lỗi");
+                  return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+              )
+              .subscribe((response) => {
+                  this.revokeSuccess();
+              });
           }
       }
   );

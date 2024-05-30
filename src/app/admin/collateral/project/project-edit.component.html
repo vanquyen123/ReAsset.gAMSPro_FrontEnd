@@ -17,7 +17,15 @@
               </span>
               <!-- End Title -->
           </div>
-          <div class="col text-right mt-3 mt-md-0">
+          <div class="col text-right mt-3 mt-md-0 mr-4">
+            <div class="btn-group dropdown">
+                <button class="btn btn-outline-success"
+                *ngIf="editPageState=='ViewDetail'"
+                    (click)="exportToExcel()">
+                    <i class="far fa-file-excel"></i>
+                    {{l("ExcelOperations")}}
+                </button>
+            </div>
           </div>
       </div>
   </div>
@@ -186,7 +194,7 @@
                             <div class="col-md-4">
                               <div class="form-group">
                                   <label>Quy mô (m2)</label>
-                                  <input [disabled]="disableInput" class="form-control" type="text" #projecT_SCALE="ngModel" name="projecT_SCALE" [(ngModel)]="inputModel.projecT_SCALE">
+                                  <input [disabled]="disableInput" class="form-control" type="number" #projecT_SCALE="ngModel" name="projecT_SCALE" [(ngModel)]="inputModel.projecT_SCALE">
                               </div>
                             </div>
                             <div class="col-md-4" [hidden]="!(inputModel.projecT_TYPE == 'RL')">
@@ -236,19 +244,24 @@
                             <div class="col-md-4">
                               <div class="form-group">
                                   <label>Hình ảnh đính kèm</label>
-                                  <div class="file-input-group file-group">
+                                  <!-- <div class="file-input-group file-group">
                                     <input class="form-control" readonly type="text" [(ngModel)]="uploadedFile.filE_NAME" name="attacheD_IMAGE" />
                                     <input class="form-control" hidden type="file" #attachFile (change)="onUploadImage($event)" accept="image/x-png,image/gif,image/jpeg" />
                                     <button style="margin:0px !important;" *ngIf="!uploadedFile.filE_NAME" type="button" class="btn btn-primary" [disabled]="disableInput" (click)="selectFile()"><i class="fa fa-plus mx-auto"></i></button>
                                     <button *ngIf="uploadedFile.filE_NAME" type="button" class="btn btn-primary" [disabled]="disableInput" (click)="selectFile()"><i class="fa fa-pen"></i></button>
                                     <button style="margin:0px !important;" *ngIf="uploadedFile.filE_NAME" type="button" class="btn btn-danger" [disabled]="disableInput" (click)="removeFile()"><i class="fa fa-eraser"></i></button>
-                                  </div>
+                                  </div> -->
+                                  <file-selector 
+                                    [disabled]="disableInput"
+                                    [uploadedFile]="uploadedFile"
+                                    (uploadFileEvent)="uploadFile($event, uploadedFile)"
+                                    (removeFileEvent)="removeFile($event, uploadedFile)"></file-selector>
                               </div>
                             </div>
                             <div class="col-md-4" [hidden]="!(inputModel.projecT_TYPE == 'TM')">
                               <div class="form-group">
                                   <label>Tổng diện tích đã mua</label>
-                                  <input disabled class="form-control" type="text">
+                                  <input disabled class="form-control" type="number">
                               </div>
                             </div>
                             <div class="col-md-8">
@@ -629,7 +642,7 @@
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
-                                          <input [disabled]="disableInput" name="exP_USE_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.exP_USE_AREA">
+                                          <input [disabled]="disableInput" type="number" name="exP_USE_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.exP_USE_AREA">
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
@@ -651,7 +664,7 @@
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
-                                          <input [disabled]="disableInput" name="exP_REVENUE_PER_YEAR{{item.no}}" class="form-control m-input" [(ngModel)]="item.exP_REVENUE_PER_YEAR">
+                                          <input [disabled]="disableInput" type="number" name="exP_REVENUE_PER_YEAR{{item.no}}" class="form-control m-input" [(ngModel)]="item.exP_REVENUE_PER_YEAR">
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
@@ -745,7 +758,7 @@
                           <div class="col-md-4">
                             <div class="form-group">
                                 <label>Giá bán bình quân/m2 (triệu đồng)</label>
-                                <input [disabled]="disableInput" class="form-control" type="text" #legaL_STATUS_UNIT_PRICE="ngModel" name="legaL_STATUS_UNIT_PRICE" [(ngModel)]="inputModel.legaL_STATUS.legaL_STATUS_UNIT_PRICE">
+                                <input [disabled]="disableInput" class="form-control" type="number" #legaL_STATUS_UNIT_PRICE="ngModel" name="legaL_STATUS_UNIT_PRICE" [(ngModel)]="inputModel.legaL_STATUS.legaL_STATUS_UNIT_PRICE">
                             </div>
                           </div>
                         </div>
@@ -760,19 +773,19 @@
                           <div class="col-md-4">
                             <div class="form-group">
                                 <label>Giá trị định giá (Tỷ đồng) (không bao gồm Tsdđ)</label>
-                                <input [disabled]="disableInput" class="form-control" type="text" #valuatioN_BEFORE_VALUE="ngModel" name="valuatioN_BEFORE_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_BEFORE_VALUE">
+                                <input [disabled]="disableInput" class="form-control" type="number" #valuatioN_BEFORE_VALUE="ngModel" name="valuatioN_BEFORE_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_BEFORE_VALUE">
                             </div>
                           </div>
                           <div class="col-md-4">
                             <div class="form-group">
                                 <label>Tiền sử dụng đất (Tỷ đồng) “giá trị đất”</label>
-                                <input [disabled]="disableInput" class="form-control" type="text" #lanD_USE_FEE="ngModel" name="lanD_USE_FEE" [(ngModel)]="inputModel.valuation.lanD_USE_FEE">
+                                <input [disabled]="disableInput" class="form-control" type="number" #lanD_USE_FEE="ngModel" name="lanD_USE_FEE" [(ngModel)]="inputModel.valuation.lanD_USE_FEE">
                             </div>
                           </div>
                           <div class="col-md-4">
                             <div class="form-group">
                                 <label>Giá trị định giá (tỷ đồng)</label>
-                                <input [disabled]="disableInput" class="form-control" type="text" #valuatioN_VALUE="ngModel" name="valuatioN_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_VALUE">
+                                <input [disabled]="disableInput" class="form-control" type="number" #valuatioN_VALUE="ngModel" name="valuatioN_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_VALUE">
                             </div>
                           </div>
                           <div class="col-md-4">
@@ -966,7 +979,7 @@
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
-                                          <input [disabled]="disableInput" name="projecT_PROGRESS_ON_BUILD_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.projecT_PROGRESS_ON_BUILD_VALUE">
+                                          <input [disabled]="disableInput" type="number" name="projecT_PROGRESS_ON_BUILD_VALUE{{item.no}}" class="form-control m-input" [(ngModel)]="item.projecT_PROGRESS_ON_BUILD_VALUE">
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
@@ -1003,7 +1016,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of mortgageEditTable.dataInPage" #editRow ng-form [hidden]="item.page != mortgageEditTable.currentPage">
+                                <tr *ngFor="let item of landAreaEditTable.dataInPage" #editRow ng-form [hidden]="item.page != landAreaEditTable.currentPage">
                                     <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                     <td>
                                       <a href="/app/admin/land-area-view;landArea={{ item.id }}">
@@ -1033,7 +1046,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of mortgageEditTable.dataInPage" #editRow ng-form [hidden]="item.page != mortgageEditTable.currentPage">
+                                <tr *ngFor="let item of sodoEditTable.dataInPage" #editRow ng-form [hidden]="item.page != sodoEditTable.currentPage">
                                     <td class="center"><span class="mo-header"></span>{{item.no}}</td>
                                     <td>
                                       <a href="/app/admin/sodo-view;sodo={{ item.id }}">
@@ -1042,65 +1055,6 @@
                                     </td>
                                     <td>
                                       <span class="mo-header"></span>{{ item.sodO_AREA }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </editable-table>
-                      </div>
-                      <div class="col-md-12 mt-3" *ngIf="mortgageEditTable">
-                        <h4>TÌNH TRẠNG THẾ CHẤP</h4>
-                      </div>
-                      <div class="primeng-datatable-container col-md-12" *ngIf="mortgageEditTable">
-                        <editable-table #mortgageEditTable class="custom-table ui-table">
-                            <thead>
-                                <tr>
-                                    <th><span style="width: 40px">{{l("No")}}</span></th>
-                                    <th sortField="propertY_ID"><span style="width: 150px">Mã TP/ Khoản vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Tên TP/ Khoản vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Kỳ hạn</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày vay</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày đáo hạn</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Đơn vị định giá</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Ngày định giá</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Tình trạng thế chấp</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Chia sẻ thế chấp</span></th>
-                                    <th style="width:50%"><span style="width: 150px">Trạng thái</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let item of mortgageEditTable.dataInPage" #editRow ng-form [hidden]="item.page != mortgageEditTable.currentPage">
-                                    <td class="center"><span class="mo-header"></span>{{item.no}}</td>
-                                    <td>
-                                      <a href="/app/admin/mortgage-view;mortgage={{ item.id }}">
-                                        <span class="mo-header"></span>{{ item.id }}
-                                      </a>
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_TERM }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_DUE_DATE ? (item.mortgagE_DUE_DATE | momentFormat:'L') : '-'}}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.valuatioN_PARTY_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.valuatioN_DT ? (item.valuatioN_DT | momentFormat:'L') : '-'}}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_STATUS_NAME }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_ITEM_IS_SHARED ? 'Có chia sẻ' : 'Không chia sẻ' }}
-                                    </td>
-                                    <td>
-                                      <span class="mo-header"></span>{{ item.mortgagE_STATUS_NAME }}
                                     </td>
                                 </tr>
                             </tbody>

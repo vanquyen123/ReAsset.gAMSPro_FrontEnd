@@ -56,6 +56,7 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
           this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
           this.appToolbar.setRole('OutsideShareholder', false, false, true, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
+          this.getInitInformation();
           this.getNextId();
           break;
       case EditPageState.edit:
@@ -101,6 +102,15 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
     });
   }
 
+  getInitInformation() {
+    this.inputModel.o_SHAREHOLDER_NAME = ""
+    this.inputModel.o_SHAREHOLDER_PHONE = ""
+    this.inputModel.o_SHAREHOLDER_ADDRESS = ""
+    this.inputModel.o_SHAREHOLDER_EMAIL = ""
+    this.inputModel.o_SHAREHOLDER_CODE = ""
+    this.updateView();
+  }
+
   getOutsideShareholder() {
       this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_ById(this.inputModel.o_SHAREHOLDER_ID).subscribe(response => {
           this.inputModel = response;
@@ -140,50 +150,15 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
           if (!this.osh_ID) {
               this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Ins(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
-                      if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.addNewSuccess();
-                          if (!this.isApproveFunct) {
-                              this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_App(response.id, this.appSession.user.userName)
-                                  .pipe(finalize(() => { this.saving = false; }))
-                                  .subscribe((response) => {
-                                      if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
-                                      }
-                                  });
-                          }
-                      }
+                    this.addNewSuccess();
                   });
           }
           else {
               this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_Upd(this.inputModel).pipe(finalize(() => { this.saving = false; }))
                   .subscribe((response) => {
-                      if (response.result != '0') {
-                          this.showErrorMessage(response.errorDesc);
-                      }
-                      else {
-                          this.updateSuccess();
-                          if (!this.isApproveFunct) {
-                              this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_App(this.inputModel.o_SHAREHOLDER_ID, this.appSession.user.userName)
-                                  .pipe(finalize(() => { this.saving = false; }))
-                                  .subscribe((response) => {
-                                      if (response.result != '0') {
-                                          this.showErrorMessage(response.errorDesc);
-                                      }
-                                      else {
-                                          this.inputModel.autH_STATUS = AuthStatusConsts.Approve;
-                                          this.appToolbar.setButtonApproveEnable(false);
-                                          this.updateView();
-                                      }
-                                  });
-                          }
-                          else {
-                              this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
-                              this.updateView();
-                          }
-                      }
+                    this.updateSuccess();
+                    this.inputModel.autH_STATUS = AuthStatusConsts.NotApprove;
+                    this.updateView();
                   });
           }
       }
@@ -220,13 +195,8 @@ export class OutsideShareholderEditComponent extends DefaultComponentBase implem
                   this.outsideShareholderService.rEA_OUTSIDE_SHAREHOLDER_App(this.inputModel.o_SHAREHOLDER_ID, currentUserName)
                       .pipe(finalize(() => { this.saving = false; }))
                       .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.approveSuccess();
-                          }
-                      });
+                        this.approveSuccess();
+                    });
               }
           }
       );

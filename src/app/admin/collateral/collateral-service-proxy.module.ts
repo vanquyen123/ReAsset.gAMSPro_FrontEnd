@@ -21,8 +21,10 @@ import * as ApiServiceProxies from "../../../shared/service-proxies/service-prox
         ApiServiceProxies.LandAreaServiceProxy,
         ApiServiceProxies.InvestmentPropertyServiceProxy,
         ApiServiceProxies.ProjectServiceProxy,
-        ApiServiceProxies.CompanyServiceProxy,
         ApiServiceProxies.ComboboxServiceProxy,
+        ApiServiceProxies.SubsidiaryCompanyServiceProxy,
+        ApiServiceProxies.PredictionServiceProxy,
+        ApiServiceProxies.FileServiceProxy,
        
         {
             provide: HTTP_INTERCEPTORS,

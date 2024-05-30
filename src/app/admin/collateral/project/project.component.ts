@@ -6,13 +6,15 @@ import {
   ViewEncapsulation,
 } from "@angular/core";
 import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts";
+import { base64ToBlob, saveFile } from "@app/ultilities/blob-exec";
 import { ReaAllCode } from "@app/ultilities/enum/all-codes";
 import { ListComponentBase } from "@app/ultilities/list-component-base";
 import { IUiAction } from "@app/ultilities/ui-action";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { AllCodeServiceProxy, AsposeServiceProxy, CM_ALLCODE_ENTITY, ProjectServiceProxy, REA_PROJECT_ENTITY, ReportInfo } from "@shared/service-proxies/service-proxies";
 import { FileDownloadService } from "@shared/utils/file-download.service";
-import { finalize } from "rxjs/operators";
+import { throwError } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 
 @Component({
   templateUrl: "./project.component.html",
@@ -81,27 +83,17 @@ export class ProjectComponent extends ListComponentBase<REA_PROJECT_ENTITY> impl
   }
 
   exportToExcel() {
-    let reportInfo = new ReportInfo();
-    reportInfo.typeExport = ReportTypeConsts.Excel;
-
-    let reportFilter = { ...this.filterInputSearch };
-
-    // reportFilter.maxResultCount = -1;
-
-    reportInfo.parameters = this.GetParamsFromFilter(reportFilter)
-
-    reportInfo.values = this.GetParamsFromFilter({
-        A1 : this.l('CompanyReportHeader')
-    });
-
-    reportInfo.pathName = "/COMMON/BC_CODONGNGOAI.xlsx";
-    //reportInfo.storeName = "rpt_BC_PHONGBAN";
-    reportInfo.storeName = "REA_PROJECT_Search";
-
-    this.asposeService.getReport(reportInfo).subscribe(x => {
-        this.fileDownloadService.downloadTempFile(x);
+    let reportInfo = new REA_PROJECT_ENTITY(this.filterInput)
+    reportInfo.maxResultCount = 999;
+    reportInfo.skipCount = 0;
+    this._projectService.getExcelBySearch(reportInfo).subscribe(response=>{
+        let base64String = response.fileContent;
+        let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        saveFile(blob, "BC_DU_AN.xlsx")
     });
   }
+
+  
 
   getAllTypes() {
     this.allCodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.PROJECT_TYPE, "")
@@ -143,17 +135,18 @@ export class ProjectComponent extends ListComponentBase<REA_PROJECT_ENTITY> impl
               if (isConfirmed) {
                   this.saving = true;
                   this._projectService.rEA_PROJECT_Del(item.id)
-                      .pipe(finalize(() => { this.saving = false; }))
-                      .subscribe((response) => {
-                          if (response.result != '0') {
-                              this.showErrorMessage(response.errorDesc);
-                          }
-                          else {
-                              this.showSuccessMessage(this.l('SuccessfullyDeleted'));
-                              // this.filterInputSearch.totalCount = 0;
-                              this.reloadPage();
-                          }
-                      });
+                    .pipe(
+                        catchError(e=>{
+                        this.showErrorMessage("Lỗi");
+                        return throwError("Lỗi")
+                        }),
+                        finalize(() => { this.saving = false; })
+                    )
+                    .subscribe((response) => {
+                      this.showSuccessMessage(this.l('SuccessfullyDeleted'));
+                      // this.filterInputSearch.totalCount = 0;
+                      this.reloadPage();
+                    });
               }
           }
       );

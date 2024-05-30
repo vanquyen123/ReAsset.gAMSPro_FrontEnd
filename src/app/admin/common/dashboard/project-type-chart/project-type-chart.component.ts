@@ -1,4 +1,4 @@
-import { Component, Injector, Input, OnInit } from "@angular/core";
+import { Component, Injector, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { DefaultComponentBase } from "@app/ultilities/default-component-base";
 import { Chart } from "chart.js";
 
@@ -6,7 +6,7 @@ import { Chart } from "chart.js";
     selector: 'project-type-chart',
     templateUrl: './project-type-chart.component.html',
 })
-export class ProjectTypeChart extends DefaultComponentBase implements OnInit {
+export class ProjectTypeChart extends DefaultComponentBase implements OnInit, OnChanges {
     constructor(
         injector: Injector
         ) {
@@ -33,6 +33,14 @@ export class ProjectTypeChart extends DefaultComponentBase implements OnInit {
     ngOnInit(): void {
         this.createChart()
     }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['projectTypeData']) {
+            if(this.chart) {
+                this.changeChart();
+            }
+        }
+    }
     
     createChart(){
         this.chart = new Chart("ProjectTypeChart", {
@@ -54,5 +62,13 @@ export class ProjectTypeChart extends DefaultComponentBase implements OnInit {
           options: this.chartOptions
           
         });
-      }
+    }
+
+    changeChart() {
+        this.chart.data.datasets[0].data[0] = this.projectTypeData.dtProject
+        this.chart.data.datasets[0].data[1] = this.projectTypeData.tmProject
+        this.chart.data.datasets[0].data[2] = this.projectTypeData.rlProject
+        this.chart.update()
+        this.updateView()
+    }
 }

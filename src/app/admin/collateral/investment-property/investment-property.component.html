@@ -81,22 +81,9 @@
                                         class="transparent"
                                         [(ngModel)]="filterInput.projecT_ID"
                                         [emptyText]="l('SelectAll')"
-                                        [(list)]="records"
-                                        [valueMember]="'recorD_STATUS'"
-                                        [displayMember]="'recordName'">
-                                    </select2-custom>
-                                </div>
-                              </div>
-                              <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Loại bất động sản</label>
-                                    <select2-custom (onChangeSelect2)="onSelectRecord($event)"
-                                        name="investoR_ID"
-                                        class="transparent"
-                                        [emptyText]="l('SelectAll')"
-                                        [(list)]="records"
-                                        [valueMember]="'recorD_STATUS'"
-                                        [displayMember]="'recordName'">
+                                        [(list)]="projectList"
+                                        [valueMember]="'id'"
+                                        [displayMember]="'name'">
                                     </select2-custom>
                                 </div>
                               </div>
@@ -108,9 +95,9 @@
                                         class="transparent"
                                         [(ngModel)]="filterInput.invesT_PROP_STATUS"
                                         [emptyText]="l('SelectAll')"
-                                        [(list)]="records"
-                                        [valueMember]="'recorD_STATUS'"
-                                        [displayMember]="'recordName'">
+                                        [(list)]="propertyStatus"
+                                        [valueMember]="'cdval'"
+                                        [displayMember]="'content'">
                                     </select2-custom>
                                 </div>
                               </div>
@@ -122,9 +109,9 @@
                                         class="transparent"
                                         [(ngModel)]="filterInput.invesT_PROP_LEGAL_STATUS"
                                         [emptyText]="l('SelectAll')"
-                                        [(list)]="records"
-                                        [valueMember]="'recorD_STATUS'"
-                                        [displayMember]="'recordName'">
+                                        [(list)]="legalStatus"
+                                        [valueMember]="'cdval'"
+                                        [displayMember]="'content'">
                                     </select2-custom>
                                 </div>
                               </div>
@@ -132,6 +119,7 @@
                                 <div class="form-group">
                                     <label>Ngày tạo BĐS từ</label>
                                     <date-control 
+                                    [(ngModel)]="filterInput.creatE_DT_FROM"
                                     name="contracT_SIGN_DT"
                                     autoFocus>
                                     </date-control>
@@ -141,6 +129,7 @@
                                 <div class="form-group">
                                     <label>Ngày tạo BĐS đến</label>
                                     <date-control 
+                                    [(ngModel)]="filterInput.creatE_DT_TO"
                                     name="contracT_SIGN_DT"
                                     autoFocus>
                                     </date-control>
@@ -190,46 +179,40 @@
                                           <span style="width: 40px">{{l("No")}}</span>
                                       </th>
                                       <th style="width:30%"
-                                          sortField="owneR_ID">
+                                          sortField="id">
                                           <span style="width: 150px">Mã BĐS</span>
                                       </th>
                                       <th style="width:40%"
-                                          sortField="owneR_NAME">
+                                          sortField="invesT_PROP_NAME">
                                           <span style="width: 150px">Tên BĐS</span>
                                       </th>
                                       <th style="width:30%"
-                                          sortField="owneR_TYPE_NAME">
+                                          sortField="invesT_PROP_LOCATION">
                                           <span style="width: 150px">Địa điểm</span>
                                       </th>
-                                      <th sortField="RECORD_STATUS_NAME"
+                                      <th
                                           style="width:100%">
                                           <span style="width: 200px">Nguyên giá</span>
                                       </th>
-                                      <th sortField="AUTH_STATUS_NAME">
-                                          <span style="width: 150px">Hiện trạng BĐS</span>
-                                      </th>
-                                      <th sortField="notes">
-                                        <span style="width: 150px">Loại bất động sản</span>
-                                      </th>
-                                      <th sortField="notes">
+                                      <th sortField="creatE_DT">
                                         <span style="width: 150px">Ngày tạo</span>
                                       </th>
-                                      <th sortField="notes">
+                                      <th sortField="makeR_NAME">
                                         <span style="width: 150px">Người tạo</span>
                                       </th>
-                                      <th sortField="notes">
+                                      <th sortField="approvE_DT">
                                         <span style="width: 150px">Ngày duyệt</span>
                                       </th>
-                                      <th sortField="notes">
+                                      <th sortField="checkeR_NAME">
                                         <span style="width: 200px">Người duyệt</span>
                                       </th>
-                                      <th sortField="notes">
+                                      <th sortField="modifY_DT">
                                         <span style="width: 200px">Ngày chỉnh sửa cuối</span>
                                       </th>
-                                      <th sortField="notes">
+                                      <th sortField="modifieR_NAME">
                                         <span style="width: 200px">Người chỉnh sửa cuối</span>
                                       </th>
-                                      <th sortField="notes">
+                                      <th sortField="autH_STATUS_NAME">
                                         <span style="width: 150px">{{l("ApproveStatus")}}</span>
                                       </th>
                                       <th sortField="notes">
@@ -248,18 +231,16 @@
                                       <td class="center"><span class="mo-header"></span>{{(filterInputSearch.skipCount
                                           + dataTable.records.indexOf(record)) + 1}}
                                       </td>
-                                      <td><span class="mo-header"></span>{{record.invesT_PROP_ID}}</td>
+                                      <td><span class="mo-header"></span>{{record.id}}</td>
                                       <td><span class="mo-header"></span>{{record.invesT_PROP_NAME}}</td>
                                       <td><span class="mo-header"></span>{{record.invesT_PROP_LOCATION}}</td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span>{{record.invesT_PROP_STATUS}}</td>
-                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{ record.propertY_INFORMATION.originaL_PRICE }}</td>
                                       <td><span class="mo-header"></span>{{ record.creatE_DT ? (record.creatE_DT | momentFormat:'L') : '-'}}</td>
-                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{ record.makeR_NAME }}</td>
                                       <td><span class="mo-header"></span>{{ record.approvE_DT ? (record.approvE_DT | momentFormat:'L') : '-'}}</td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span></td>
-                                      <td><span class="mo-header"></span></td>
+                                      <td><span class="mo-header"></span>{{ record.checkeR_NAME }}</td>
+                                      <td><span class="mo-header"></span>{{ record.modifY_DT ? (record.modifY_DT | momentFormat:'L') : '-'}}</td>
+                                      <td><span class="mo-header"></span>{{ record.modifieR_NAME }}</td>
                                       <td><span class="mo-header"></span>{{record.autH_STATUS_NAME}}</td>
                                       <td><span class="mo-header"></span>{{record.notes}}</td>
                                       <!-- End Table Value -->
