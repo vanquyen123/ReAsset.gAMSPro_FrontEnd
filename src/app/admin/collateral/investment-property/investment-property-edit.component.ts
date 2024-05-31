@@ -13,6 +13,7 @@ import { IUiActionRejectExt } from '@app/ultilities/ui-action-re';
 import { PartnerField, ProjectField } from '@app/admin/core/ultils/consts/ComboboxConsts';
 import * as moment from 'moment';
 import { throwError } from 'rxjs';
+import { base64ToBlob, saveFile } from '@app/ultilities/blob-exec';
 
 @Component({
   templateUrl: './investment-property-edit.component.html',
@@ -72,18 +73,18 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
     switch (this.editPageState) {
       case EditPageState.add:
           this.inputModel.recorD_STATUS = RecordStatusConsts.Active;
-          this.appToolbar.setRole('InvestProp', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('InvestmentProperty', false, false, true, false, false, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
           this.getInitInformation();
           break;
       case EditPageState.edit:
-          this.appToolbar.setRole('InvestProp', false, false, true, false, false, false, false, false);
+          this.appToolbar.setRole('InvestmentProperty', false, false, true, false, false, false, false, false, false, false);
           this.appToolbar.setEnableForEditPage();
           this.getInitInformation();
           this.getInvestProp();
           break;
       case EditPageState.viewDetail:
-          this.appToolbar.setRole('InvestProp', false, false, false, false, false, false, true, false);
+          this.appToolbar.setRole('InvestmentProperty', false, false, false, false, false, false, true, false, true, true);
           this.appToolbar.setEnableForViewDetailPage();
           this.getInitInformation();
           this.getInvestProp();
@@ -95,6 +96,15 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
   ngAfterViewInit(): void {
     // COMMENT: this.stopAutoUpdateView();
     this.setupValidationMessage();
+  }
+
+  exportToExcel() {
+    this.investmentPropertyService.getExcelInvestmentPropertyById(this.invesT_PROP_ID).subscribe(response=>{
+      let base64String = response.fileContent;
+      let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      let name = response.fileName
+      saveFile(blob, name)
+    });
   }
 
   initIsApproveFunct() {
@@ -426,7 +436,7 @@ export class InvestmentPropertyEditComponent extends DefaultComponentBase implem
     this.inputModel.propertY_INFORMATION.propertY_SECOND_LEVEL_NAME = property.propertY_SECOND_LEVEL_NAME
     this.inputModel.propertY_INFORMATION.propertY_DESCRIPTION = property.propertY_DESCRIPTION
     this.inputModel.propertY_INFORMATION.originaL_PRICE = property.originaL_PRICE
-    this.inputModel.propertY_INFORMATION.originaL_PRICE = property.managemenT_COMPANY_NAME
+    this.inputModel.propertY_INFORMATION.managemenT_COMPANY_NAME = property.managemenT_COMPANY_NAME
     this.updateView()
   }
 

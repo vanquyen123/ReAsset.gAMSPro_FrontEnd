@@ -333,7 +333,7 @@
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
-                                          <select2-custom (onChangeSelect2)="onSelect($event)"
+                                          <select2-custom (onChangeSelect2)="onSelectShareholder($event)"
                                             class="transparent m-input"
                                             [disabled]="disableInput"
                                             #shareholdeR_ID="ngModel"
@@ -348,7 +348,7 @@
                                         
                                         <td>
                                           <span class="mo-header"></span>
-                                          <input [disabled]="disableInput" name="owN_STRUCTURE_SHARES{{item.no}}" class="form-control m-input" [(ngModel)]="item.owN_STRUCTURE_SHARES">
+                                          <input [disabled]="disableInput" name="owN_STRUCTURE_SHARES{{item.no}}" class="form-control m-input" [(ngModel)]="item.owN_STRUCTURE_SHARES" (change)="onChangeShares(item)">
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
@@ -642,7 +642,7 @@
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>
-                                          <input [disabled]="disableInput" type="number" name="exP_USE_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.exP_USE_AREA">
+                                          <input [disabled]="disableInput" type="number" name="exP_USE_AREA{{item.no}}" class="form-control m-input" [(ngModel)]="item.exP_USE_AREA" (change)="onChangeUseArea(item)">
                                         </td>
                                         <td>
                                           <span class="mo-header"></span>

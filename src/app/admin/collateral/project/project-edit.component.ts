@@ -3,7 +3,7 @@ import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { EditPageState } from '@app/ultilities/enum/edit-page-state';
 import { AllCodes, ReaAllCode } from '@app/ultilities/enum/all-codes';
-import { CM_ALLCODE_ENTITY, UltilityServiceProxy, AllCodeServiceProxy, REA_PROJECT_ENTITY, ProjectServiceProxy, REA_PROJECT_PROPERTY_ENTITY, REA_PROJECT_EXPLOITATION_ENTITY, REA_USE_REGISTRATION_ENTITY, REA_PROJECT_PROGRESS_ENTITY, REA_PROJECT_LEGAL_STATUS_ENTITY, REA_VALUATION_ENTITY, REA_PROJECT_OWN_STRUCTURE_ENTITY, REA_PROJECT_COOPERATE_STRUCTURE_ENTITY, ComboboxServiceProxy, REA_FILE_ENTITY, REA_LAND_AREA_OVERALL, REA_PROJECT_SODO_OVERALL, REA_MORTGAGE_OVERALL} from '@shared/service-proxies/service-proxies';
+import { CM_ALLCODE_ENTITY, UltilityServiceProxy, AllCodeServiceProxy, REA_PROJECT_ENTITY, ProjectServiceProxy, REA_PROJECT_PROPERTY_ENTITY, REA_PROJECT_EXPLOITATION_ENTITY, REA_USE_REGISTRATION_ENTITY, REA_PROJECT_PROGRESS_ENTITY, REA_PROJECT_LEGAL_STATUS_ENTITY, REA_VALUATION_ENTITY, REA_PROJECT_OWN_STRUCTURE_ENTITY, REA_PROJECT_COOPERATE_STRUCTURE_ENTITY, ComboboxServiceProxy, REA_FILE_ENTITY, REA_LAND_AREA_OVERALL, REA_PROJECT_SODO_OVERALL, REA_MORTGAGE_OVERALL, ShareholderServiceProxy, LandAreaServiceProxy} from '@shared/service-proxies/service-proxies';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
@@ -27,6 +27,8 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
     private ultilityService: UltilityServiceProxy,
     private projectService: ProjectServiceProxy,
     private allCodeService: AllCodeServiceProxy,
+    private shareholderService: ShareholderServiceProxy,
+    private landAreaService: LandAreaServiceProxy,
     private _comboboxService: ComboboxServiceProxy,
     ) { 
     super(injector);
@@ -654,7 +656,9 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
           this.cooperateStructureEditTable.allData.forEach(element=> {
             this.inputModel.cooperatE_LIST.push(new REA_PROJECT_COOPERATE_STRUCTURE_ENTITY(element))
           })
-          this.inputModel.attacheD_IMAGES.push(this.uploadedFile);
+          if(this.uploadedFile.filE_CONTENT) {
+            this.inputModel.attacheD_IMAGES.push(this.uploadedFile);
+          }
           console.log(this.inputModel)
 
           if (!this.projecT_ID) {
@@ -838,6 +842,37 @@ export class ProjectEditComponent extends DefaultComponentBase implements OnInit
   
   onSelectRea(value) {
     this.inputModel.id = value.id
+  }
+
+  onSelectShareholder(item) {
+    item.owN_STRUCTURE_SHARES = 0
+    item.owN_STRUCTURE_SHARE_VALUE = 0
+  }
+
+  onChangeShares(item) {
+    if(item.shareholderId) {
+      this.shareholderService.rEA_SHAREHOLDER_ById(item.shareholderId).subscribe(response=>{
+        if(item.owN_STRUCTURE_SHARES > response.shareholdeR_SHARE) {
+          item.owN_STRUCTURE_SHARES = response.shareholdeR_SHARE
+        }
+        if(item.owN_STRUCTURE_SHARES < 0) {
+          item.owN_STRUCTURE_SHARES = 0
+        }
+        this.updateView();
+      })
+    }
+  }
+
+  onChangeUseArea(item) {
+    this.landAreaService.rEA_LAND_AREA_ById(item.lanD_AREA_ID).subscribe(response=>{
+      if(item.usE_AREA > response.lanD_AREA_SCALE) {
+        item.usE_AREA = response.lanD_AREA_SCALE
+      }
+      if(item.usE_AREA < 0) {
+        item.usE_AREA = 0
+      }
+      this.updateView();
+    })
   }
 
 }

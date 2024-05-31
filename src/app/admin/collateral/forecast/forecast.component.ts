@@ -1,12 +1,14 @@
 import { AfterViewInit, Component, ElementRef, Injector, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ReportTypeConsts } from '@app/admin/core/ultils/consts/ReportTypeConsts';
+import { base64ToBlob, saveFile } from '@app/ultilities/blob-exec';
 import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { ListComponentBase } from '@app/ultilities/list-component-base';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AsposeServiceProxy, AuthorizedPersonServiceProxy, PredictRequestDto, PredictionServiceProxy, REA_AUTHORIZED_PERSON_ENTITY, REA_VALUATION_RESPONSE_ENTITY, ReportInfo } from '@shared/service-proxies/service-proxies';
 import { FileDownloadService } from '@shared/utils/file-download.service';
-import { finalize } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 
 @Component({
   // selector: 'app-authorized-person',
@@ -51,6 +53,15 @@ export class ForecastComponent extends DefaultComponentBase implements OnInit, A
             autH_STATUS_NAME: "Đã duyệt"
         }
     ]
+
+    predictTypes = [
+        {
+            name: "Linear"
+        },
+        {
+            name: "MLP"
+        }
+    ]
     
     districtList;
     wardList;
@@ -58,8 +69,11 @@ export class ForecastComponent extends DefaultComponentBase implements OnInit, A
 
     selectedDate;
     predictionResult = 0;
+    saiSo = 0;
     numberOfBedrooms = '0';
     area = '0';
+
+    selectedPredictType = 'Linear';
 
     isShowError = false;
 
@@ -68,6 +82,7 @@ export class ForecastComponent extends DefaultComponentBase implements OnInit, A
     }
 
     ngOnInit() {
+        this.filterInput2.actualPrice = 0;
     }
 
     ngAfterViewInit(): void {
@@ -75,21 +90,12 @@ export class ForecastComponent extends DefaultComponentBase implements OnInit, A
     }
 
     exportToExcel() {
-      let reportInfo = new ReportInfo();
-      reportInfo.typeExport = ReportTypeConsts.Excel;
-
-      reportInfo.values = this.GetParamsFromFilter({
-          A1 : this.l('CompanyReportHeader')
-      });
-
-      reportInfo.pathName = "/COMMON/BC_NGUOIDUOCUYQUYEN.xlsx";
-      //reportInfo.storeName = "rpt_BC_PHONGBAN";
-      reportInfo.storeName = "rEA_AUTHORIZED_PEOPLE_Search";
-
-      this.asposeService.getReport(reportInfo).subscribe(x => {
-          this.fileDownloadService.downloadTempFile(x);
-      });
-    }
+        this.predictionService.getExcel().subscribe(response=>{
+            let base64String = response.fileContent;
+            let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            saveFile(blob, response.fileName)
+        });
+      }
 
     getInputField(){
         this.predictionService.getComboBoxData().subscribe(response=>{
@@ -133,10 +139,18 @@ export class ForecastComponent extends DefaultComponentBase implements OnInit, A
         this.filterInput.date = this.selectedDate.format('MM/DD/YYYY').toString()
         this.filterInput.numberOfBedrooms = Number.parseFloat(this.numberOfBedrooms)
         this.filterInput.area = Number.parseFloat(this.area)
-        this.predictionService.getPredictValuationByMLP(this.filterInput).subscribe(response=>{
-            this.predictionResult = response
+        if(this.selectedPredictType == 'Linear') {
+            this.predictionService.getPredictValuationByLinear(this.filterInput).subscribe(response=>{
+                this.predictionResult = response
             this.updateView()
-        })
+            })
+        }
+        else {
+            this.predictionService.getPredictValuationByMLP(this.filterInput).subscribe(response=>{
+                this.predictionResult = response
+                this.updateView()
+            })
+        }
     }
 
     onValuationResponse() {
@@ -149,10 +163,21 @@ export class ForecastComponent extends DefaultComponentBase implements OnInit, A
         this.filterInput2.ward = this.filterInput.ward
         this.filterInput2.predictedPrice = this.predictionResult
         if(this.predictionResult!=0) {
-            this.predictionService.getValuationResponse(this.filterInput2).subscribe(response=>{
-
+            this.predictionService.getValuationResponse(this.filterInput2).pipe(
+                catchError(e=>{
+                this.showErrorMessage("Lỗi");
+                return throwError("Lỗi")
+                }),
+                finalize(() => { this.saving = false; })
+            ).subscribe(response=>{
+                this.showSuccessMessage("Gửi phản hồi thành công");
             })
         }
+    }
+
+    onChangeActualPrice() {
+        this.saiSo = Math.abs(this.filterInput2.actualPrice - this.predictionResult);
+        this.updateView()
     }
 
     onSelectRecord(record: REA_AUTHORIZED_PERSON_ENTITY) {

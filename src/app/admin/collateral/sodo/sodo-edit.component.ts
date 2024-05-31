@@ -3,7 +3,7 @@ import { DefaultComponentBase } from '@app/ultilities/default-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { EditPageState } from '@app/ultilities/enum/edit-page-state';
 import { AllCodes, ReaAllCode } from '@app/ultilities/enum/all-codes';
-import { CM_ALLCODE_ENTITY, UltilityServiceProxy, AllCodeServiceProxy, REA_SODO_ENTITY, SodoServiceProxy, REA_SODO_CO_OWNER_ENTITY, REA_SODO_LAND_PLOT_ENTITY, REA_FILE_ENTITY, REA_SODO_STORE_LOCATION_ENTITY, REA_SODO_PAY_ENTITY, REA_SODO_COMPENSATION_ENTITY, REA_SODO_ADVANCE_PAYMENT_ENTITY, REA_SODO_BRIEF_1_ENTITY, REA_SODO_BRIEF_2_ENTITY, REA_SODO_BRIEF_3_ENTITY, REA_SODO_BRIEF_4_ENTITY, REA_SODO_BRIEF_5_ENTITY, SessionServiceProxy, REA_SODO_CONTRACT_ENTITY, ComboboxServiceProxy, REA_USE_REGISTRATION_ENTITY, REA_MORTGAGE_OVERALL} from '@shared/service-proxies/service-proxies';
+import { CM_ALLCODE_ENTITY, UltilityServiceProxy, AllCodeServiceProxy, REA_SODO_ENTITY, SodoServiceProxy, REA_SODO_CO_OWNER_ENTITY, REA_SODO_LAND_PLOT_ENTITY, REA_FILE_ENTITY, REA_SODO_STORE_LOCATION_ENTITY, REA_SODO_PAY_ENTITY, REA_SODO_COMPENSATION_ENTITY, REA_SODO_ADVANCE_PAYMENT_ENTITY, REA_SODO_BRIEF_1_ENTITY, REA_SODO_BRIEF_2_ENTITY, REA_SODO_BRIEF_3_ENTITY, REA_SODO_BRIEF_4_ENTITY, REA_SODO_BRIEF_5_ENTITY, SessionServiceProxy, REA_SODO_CONTRACT_ENTITY, ComboboxServiceProxy, REA_USE_REGISTRATION_ENTITY, REA_MORTGAGE_OVERALL, FileServiceProxy} from '@shared/service-proxies/service-proxies';
 import { IUiAction } from '@app/ultilities/ui-action';
 import { RecordStatusConsts } from '@app/admin/core/ultils/consts/RecordStatusConsts';
 import { AuthStatusConsts } from '@app/admin/core/ultils/consts/AuthStatusConsts';
@@ -14,6 +14,8 @@ import { AuthPersonField, DepartmentField, EmployeeField, LandAreaField, OwnerFi
 import * as moment from 'moment';
 import { base64ToBlob, saveFile } from '@app/ultilities/blob-exec';
 import { throwError } from 'rxjs';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
   templateUrl: './sodo-edit.component.html',
@@ -28,6 +30,7 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
     private sodoService: SodoServiceProxy,
     private allCodeService: AllCodeServiceProxy,
     private sessionService: SessionServiceProxy,
+    private fileService: FileServiceProxy,
     private _comboboxService: ComboboxServiceProxy,
   ) { 
     super(injector);
@@ -41,8 +44,9 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
   
   @ViewChild('editForm') editForm: ElementRef;
   @ViewChild('coOwnerEditTable') coOwnerEditTable: EditableTableComponent<REA_SODO_CO_OWNER_ENTITY>;
-  @ViewChild('landPlotInsideEditTable') landPlotInsideEditTable: EditableTableComponent<REA_SODO_LAND_PLOT_ENTITY>;
-  @ViewChild('landPlotOutsideEditTable') landPlotOutsideEditTable: EditableTableComponent<REA_SODO_LAND_PLOT_ENTITY>;
+  // @ViewChild('landPlotEditTable') landPlotEditTable: EditableTableComponent<REA_SODO_LAND_PLOT_ENTITY>;
+  // @ViewChild('landPlotOutsideEditTable') landPlotOutsideEditTable: EditableTableComponent<REA_SODO_LAND_PLOT_ENTITY>;
+  @ViewChild('landPlotEditTable') landPlotEditTable: EditableTableComponent<REA_SODO_LAND_PLOT_ENTITY>;
   @ViewChild('fileEditTable') fileEditTable: EditableTableComponent<REA_FILE_ENTITY>;
   @ViewChild('payEditTable') payEditTable: EditableTableComponent<REA_SODO_PAY_ENTITY>;
   @ViewChild('storeLocationEditTable') storeLocationEditTable: EditableTableComponent<REA_SODO_STORE_LOCATION_ENTITY>;
@@ -51,8 +55,8 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
   @ViewChild('useRegistrationEditTable') useRegistrationEditTable: EditableTableComponent<REA_USE_REGISTRATION_ENTITY>;
 
   coOwnerCheckList = []
-  landPlotInsideCheckList = []
-  landPlotOutsideCheckList = []
+  landPlotCheckList = []
+  // landPlotOutsideCheckList = []
   fileCheckList = []
   payCheckList = []
   storeLocationCheckList = []
@@ -83,6 +87,16 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
     partnerList;
     employeeList;
     departmentList;
+    landPlotList = [];
+
+    typeLandPlot = [
+      {
+        value: "Trong sổ",
+      },
+      {
+        value: "Ngoài sổ",
+      }
+    ]
 
   get disableInput(): boolean {
     return this.editPageState == EditPageState.viewDetail;
@@ -186,84 +200,90 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
     this.coOwnerEditTable.checkAll(checked)
   }
 
-  addLandPlotInside(){
+  addLandPlot(){
     var item = new REA_SODO_LAND_PLOT_ENTITY();
-    item.lanD_PLOT_IS_INSIDE = true;
     item.lanD_PLOT_AREA = 0;
-    this.landPlotInsideEditTable.pushItem(item);
+    this.landPlotEditTable.pushItem(item);
+    this.landPlotList = this.landPlotEditTable.allData;
+    console.log(this.landPlotList)
+    this.updateView();
   }
 
-  checkedLandPlotInside(item, checked: boolean) {
+  checkedLandPlot(item, checked: boolean) {
     item.isChecked = checked;
     if(checked && item.iS_CHANGED) {
-      this.landPlotInsideCheckList.push(item.id)
+      this.landPlotCheckList.push(item.id)
     }
     else if(!checked && item.iS_CHANGED) {
-      this.landPlotInsideCheckList = this.landPlotInsideCheckList.filter(e=>e != item.id)
+      this.landPlotCheckList = this.landPlotCheckList.filter(e=>e != item.id)
     }
   }
 
-  removeLandPlotInside() {
-    this.landPlotInsideCheckList.forEach(e=> {
+  removeLandPlot() {
+    this.landPlotCheckList.forEach(e=> {
       this.inputModel.deleteD_LAND_PLOT_ID_LIST.push(e)
     })
-    this.landPlotInsideCheckList = []
-    this.landPlotInsideEditTable.removeAllCheckedItem()
+    this.landPlotCheckList = []
+    this.landPlotEditTable.removeAllCheckedItem()
+    this.landPlotList = this.landPlotEditTable.allData;
   }
   
-  checkAllLandPlotInside(checked: boolean) {
-    this.landPlotInsideCheckList = []
+  checkAllLandPlot(checked: boolean) {
+    this.landPlotCheckList = []
     if(checked) {
-      this.landPlotInsideEditTable.allData.forEach(e=>{
+      this.landPlotEditTable.allData.forEach(e=>{
         if(e.iS_CHANGED) {
-          this.landPlotInsideCheckList.push(e.id)
+          this.landPlotCheckList.push(e.id)
         }
       })
     }
-    this.landPlotInsideEditTable.checkAll(checked)
+    this.landPlotEditTable.checkAll(checked)
   }
 
-  addLandPlotOutside(){
-    var item = new REA_SODO_LAND_PLOT_ENTITY();
-    item.lanD_PLOT_IS_INSIDE = false;
-    item.lanD_PLOT_AREA = 0;
-    this.landPlotOutsideEditTable.pushItem(item);
-  }
+  // addLandPlotOutside(){
+  //   var item = new REA_SODO_LAND_PLOT_ENTITY();
+  //   item.lanD_PLOT_IS_INSIDE = false;
+  //   item.lanD_PLOT_AREA = 0;
+  //   this.landPlotOutsideEditTable.pushItem(item);
+  //   console.log(this.landPlotEditTable.allData)
+  //   this.updateView();
+  // }
 
-  checkedLandPlotOutside(item, checked: boolean) {
-    item.isChecked = checked;
-    if(checked && item.iS_CHANGED) {
-      this.landPlotOutsideCheckList.push(item.id)
-    }
-    else if(!checked && item.iS_CHANGED) {
-      this.landPlotOutsideCheckList = this.landPlotOutsideCheckList.filter(e=>e != item.id)
-    }
-  }
+  // checkedLandPlotOutside(item, checked: boolean) {
+  //   item.isChecked = checked;
+  //   if(checked && item.iS_CHANGED) {
+  //     this.landPlotOutsideCheckList.push(item.id)
+  //   }
+  //   else if(!checked && item.iS_CHANGED) {
+  //     this.landPlotOutsideCheckList = this.landPlotOutsideCheckList.filter(e=>e != item.id)
+  //   }
+  // }
 
-  removeLandPlotOutside() {
-    this.landPlotOutsideCheckList.forEach(e=> {
-      this.inputModel.deleteD_LAND_PLOT_ID_LIST.push(e)
-    })
-    this.landPlotOutsideCheckList = []
-    this.landPlotOutsideEditTable.removeAllCheckedItem()
-  }
+  // removeLandPlotOutside() {
+  //   this.landPlotOutsideCheckList.forEach(e=> {
+  //     this.inputModel.deleteD_LAND_PLOT_ID_LIST.push(e)
+  //   })
+  //   this.landPlotOutsideCheckList = []
+  //   this.landPlotOutsideEditTable.removeAllCheckedItem()
+  // }
   
-  checkAllLandPlotOutside(checked: boolean) {
-    this.landPlotOutsideCheckList = []
-    if(checked) {
-      this.landPlotOutsideEditTable.allData.forEach(e=>{
-        if(e.iS_CHANGED) {
-          this.landPlotOutsideCheckList.push(e.id)
-        }
-      })
-    }
-    this.landPlotOutsideEditTable.checkAll(checked)
-  }
+  // checkAllLandPlotOutside(checked: boolean) {
+  //   this.landPlotOutsideCheckList = []
+  //   if(checked) {
+  //     this.landPlotOutsideEditTable.allData.forEach(e=>{
+  //       if(e.iS_CHANGED) {
+  //         this.landPlotOutsideCheckList.push(e.id)
+  //       }
+  //     })
+  //   }
+  //   this.landPlotOutsideEditTable.checkAll(checked)
+  // }
 
   addNewFile(){
     var item = new REA_FILE_ENTITY();
     item.iS_NEW = true;
     item.iS_CHANGED = false;
+    item.filE_ATTACH_DT = moment();
     this.fileEditTable.pushItem(item);
     this.updateView();
   }
@@ -271,10 +291,10 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
   checkedFile(item, checked: boolean) {
     item.isChecked = checked;
     if(checked && !item.iS_NEW) {
-      this.fileCheckList.push(item.id)
+      this.fileCheckList.push(item.filE_ID)
     }
     else if(!checked && !item.iS_NEW) {
-      this.fileCheckList = this.fileCheckList.filter(e=>e != item.id)
+      this.fileCheckList = this.fileCheckList.filter(e=>e != item.filE_ID)
     }
   }
 
@@ -356,6 +376,7 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
     })
     this.storeLocationCheckList = []
     this.storeLocationEditTable.removeAllCheckedItem()
+    this.updateView();
   }
   
   checkAllStoreLocation(checked: boolean) {
@@ -531,12 +552,13 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
                 e.iS_CHANGED = true;
                 e.iS_NEW = false;
                 if(e.lanD_PLOT_IS_INSIDE) {
-                  this.landPlotInsideEditTable.pushItem(e);
+                  this.landPlotEditTable.pushItem(e);
                 }
                 else {
-                  this.landPlotOutsideEditTable.pushItem(e)
+                  this.landPlotEditTable.pushItem(e)
                 }
               })
+              this.landPlotList = this.landPlotEditTable.allData
           }
           if(response.compensatioN_LIST != null) {
               response.compensatioN_LIST.forEach(e=>{
@@ -623,7 +645,7 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
         this.updateView();
     })
     // storageLocations haven't yet;
-    this.allCodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.SODO_TYPE, "")
+    this.allCodeService.rEA_ALLCODE_GetByCDNAME("SODO_STORE_LOCATION_TYPE", "")
     .subscribe(response =>{
         this.storageLocations = response
         this.updateView();
@@ -689,10 +711,7 @@ export class SodoEditComponent extends DefaultComponentBase implements OnInit, I
           this.payEditTable.allData.forEach(element=> {
             this.inputModel.paY_LIST.push(new REA_SODO_PAY_ENTITY(element))
           })
-          this.landPlotInsideEditTable.allData.forEach(element=> {
-            this.inputModel.lanD_PLOT_LIST.push(new REA_SODO_LAND_PLOT_ENTITY(element))
-          })
-          this.landPlotOutsideEditTable.allData.forEach(element=> {
+          this.landPlotEditTable.allData.forEach(element=> {
             this.inputModel.lanD_PLOT_LIST.push(new REA_SODO_LAND_PLOT_ENTITY(element))
           })
           this.compensationEditTable.allData.forEach(element=> {
@@ -885,14 +904,43 @@ onReject(rejectReason: string): void {
 
   onChangeArea(){
     let newArea = 0;
-    this.landPlotInsideEditTable.allData.forEach(e=>{
-      newArea += Number(e.lanD_PLOT_AREA)
-    })
-    this.landPlotOutsideEditTable.allData.forEach(e=>{  
+    this.landPlotEditTable.allData.forEach(e=>{
       newArea += Number(e.lanD_PLOT_AREA)
     })
     this.inputModel.sodO_TOTAL_AREA = newArea;
     this.updateView()
+  }
+
+  downloadFile() {
+    console.log(this.fileCheckList)
+    this.fileService.getZipFileBlob(this.fileCheckList).subscribe(response=>{
+      const zip = new JSZip();
+
+      response.forEach(file => {
+        const base64String = file.fileContent;
+        const byteCharacters = atob(base64String);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+        zip.file(file.fileName, blob);
+      });
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        saveAs(content, 'files.zip');
+      });
+    })
+  }
+
+  onSelectLandPlotType(item, type) {
+    if(type.value == "Trong sổ") {
+      item.lanD_PLOT_IS_INSIDE = true;
+    }
+    else {
+      item.lanD_PLOT_IS_INSIDE = false;
+    }
+    this.updateView();
   }
 
 }

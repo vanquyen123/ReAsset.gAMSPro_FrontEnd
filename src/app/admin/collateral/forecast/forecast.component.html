@@ -17,19 +17,18 @@
                       <!-- End Title -->
                   </h3>
               </div>
-              <!-- <div class="col text-right mt-3 mt-md-0">
-                  <div class="btn-group dropdown mr-2">
-                      <button class="btn btn-outline-success"
-                      *ngIf="appToolbar.buttonSearchEnable"
-                          (click)="exportExcel()">
-                          <i class="far fa-file-excel"></i>
-                          {{l("ExcelOperations")}}
-                      </button>
-                  </div>
-              </div> -->
+              <div class="col text-right mt-3 mt-md-0 mr-3">
+                <div class="btn-group dropdown">
+                    <button class="btn btn-outline-success"
+                        (click)="exportToExcel()">
+                        <i class="far fa-file-excel"></i>
+                        {{l("ExcelOperations")}}
+                    </button>
+                </div>
+            </div>
           </div>
       </div>
-
+      <div class="my-2"></div>
       <div id="content"
           class="m-content">
           <div class="m-portlet m-portlet--mobile">
@@ -37,7 +36,20 @@
                   <form class="horizontal-form filter-form" #editForm="ngForm" id="editForm"
                       autocomplete="off">
                       <div class="m-form m-form--label-align-right">
+                        
                           <div class="row align-items-center m--margin-bottom-30">
+                            <div class="col-md-6 d-flex flex-row align-items-center" style="width: 300px;">
+                                <p class="w-25 font-weight-bold">Dự đoán theo</p>
+                                <select2-custom (onChangeSelect2)="onSelectRecord($event)"
+                                    name="predictType"
+                                    class="transparent"
+                                    [(ngModel)]="selectedPredictType"
+                                    [(list)]="predictTypes"
+                                    [valueMember]="'name'"
+                                    [displayMember]="'name'">
+                                </select2-custom>
+                            </div>
+                            <div class="col-md-6"></div>
                               <!-- Begin Filter -->
                               <!-- Mã cổ đông ngoài -->
                               <div class="col-md-4">
@@ -131,7 +143,8 @@
                                     autoFocus>
                                     </date-control>
                                 </div>
-                              </div>
+                            </div>
+                            
                             
                             <div class="col-md-12" style="height: 10vh;"></div>
                             <div class="col-md-4">
@@ -140,26 +153,29 @@
                                         <div class="form-group">
                                             <label>Giá trị chính xác</label>
                                             <input 
-                                                name="actualPrice"
-                                                [(ngModel)]="filterInput2.actualPrice"
-                                                autoFocus
-                                                class="form-control m-input"
-                                                type="number">
+                                            (change)="onChangeActualPrice()"
+                                            name="actualPrice"
+                                            [(ngModel)]="filterInput2.actualPrice"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="number">
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">
                                             <label>Sai số</label>
                                             <input 
-                                                name="lanD_AREA_LOCATIONFilter"
-                                                autoFocus
-                                                class="form-control m-input"
-                                                type="text">
+                                            name="saiSo"
+                                            disabled
+                                            [(ngModel)]="saiSo"
+                                            autoFocus
+                                            class="form-control m-input"
+                                            type="text">
                                         </div>
                                     </div>
                                     <div class="col-md-3"></div>
                                     <div class="col-md-6 mt-3">
-                                        <button type="button" class="btn btn-primary w-100" (click)="onValuationResponse()">Gửi phản hồi</button>
+                                        <button type="button" [disabled]="!filterInput2.actualPrice" class="btn btn-primary w-100" (click)="onValuationResponse()">Gửi phản hồi</button>
                                     </div>
                                 </div>
                             </div>
@@ -175,7 +191,7 @@
                                             <p class="font-weight-bold">Giá trị dự đoán</p>
                                             <div class="form-group w-75">
                                                 <input 
-                                                    name="lanD_AREA_LOCATIONFilter"
+                                                    name="predictionResult"
                                                     [(ngModel)]="predictionResult"
                                                     disabled
                                                     autoFocus

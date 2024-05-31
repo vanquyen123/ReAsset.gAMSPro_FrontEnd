@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { PartnerField, ProjectField } from "@app/admin/core/ultils/consts/ComboboxConsts";
 import { ReportTypeConsts } from "@app/admin/core/ultils/consts/ReportTypeConsts";
+import { base64ToBlob, saveFile } from "@app/ultilities/blob-exec";
 import { ReaAllCode } from "@app/ultilities/enum/all-codes";
 import { ListComponentBase } from "@app/ultilities/list-component-base";
 import { ListComponentBase2 } from "@app/ultilities/list-component-base2";
@@ -91,27 +92,15 @@ export class InvestmentPropertyComponent extends ListComponentBase2<REA_INVESTME
   }
 
   exportToExcel() {
-    let reportInfo = new ReportInfo();
-    reportInfo.typeExport = ReportTypeConsts.Excel;
-
-    let reportFilter = { ...this.filterInputSearch };
-
-    // reportFilter.maxResultCount = -1;
-
-    reportInfo.parameters = this.GetParamsFromFilter(reportFilter)
-
-    reportInfo.values = this.GetParamsFromFilter({
-        A1 : this.l('CompanyReportHeader')
+    let reportInfo = new REA_INVESTMENT_PROPERTY_SEARCH_DTO(this.filterInput)
+    reportInfo.maxResultCount = 999;
+    reportInfo.skipCount = 0;
+    this._investPropService.getExcelInvestmentProperty(reportInfo).subscribe(response=>{
+        let base64String = response.fileContent;
+        let blob = base64ToBlob(base64String, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        saveFile(blob, response.fileName)
     });
-
-    reportInfo.pathName = "/COMMON/BC_CODONGNGOAI.xlsx";
-    //reportInfo.storeName = "rpt_BC_PHONGBAN";
-    reportInfo.storeName = "REA_LANDAREA_Search";
-
-    this.asposeService.getReport(reportInfo).subscribe(x => {
-        this.fileDownloadService.downloadTempFile(x);
-    });
-}
+  }
 
 getAllTypes() {
     this.allCodeService.rEA_ALLCODE_GetByCDNAME(ReaAllCode.INVEST_PROP_STATUS, "")

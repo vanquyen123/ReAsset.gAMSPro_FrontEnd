@@ -10910,7 +10910,7 @@ export class FileServiceProxy {
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processGetZipFileBlob(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -20607,7 +20607,7 @@ export class PredictionServiceProxy {
     /**
      * @return Success
      */
-    getExcel(): Observable<void> {
+    getExcel(): Observable<REA_FILE_RESPONSE> {
         let url_ = this.baseUrl + "/api/Prediction/GetExcel";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -20615,6 +20615,7 @@ export class PredictionServiceProxy {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -20625,14 +20626,14 @@ export class PredictionServiceProxy {
                 try {
                     return this.processGetExcel(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<REA_FILE_RESPONSE>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<REA_FILE_RESPONSE>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetExcel(response: HttpResponseBase): Observable<void> {
+    protected processGetExcel(response: HttpResponseBase): Observable<REA_FILE_RESPONSE> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -20641,14 +20642,17 @@ export class PredictionServiceProxy {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? REA_FILE_RESPONSE.fromJS(resultData200) : new REA_FILE_RESPONSE();
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<REA_FILE_RESPONSE>(<any>null);
     }
 
     /**
@@ -22162,6 +22166,66 @@ export class ProjectServiceProxy {
             }));
         }
         return _observableOf<REA_FILE_RESPONSE>(<any>null);
+    }
+
+    /**
+     * @param projectId (optional) 
+     * @return Success
+     */
+    getRelatedLandAreas(projectId: string | undefined): Observable<ComboboxResult[]> {
+        let url_ = this.baseUrl + "/api/Project/GetRelatedLandAreas?";
+        if (projectId === null)
+            throw new Error("The parameter 'projectId' cannot be null.");
+        else if (projectId !== undefined)
+            url_ += "projectId=" + encodeURIComponent("" + projectId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRelatedLandAreas(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRelatedLandAreas(<any>response_);
+                } catch (e) {
+                    return <Observable<ComboboxResult[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ComboboxResult[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetRelatedLandAreas(response: HttpResponseBase): Observable<ComboboxResult[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ComboboxResult.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ComboboxResult[]>(<any>null);
     }
 }
 

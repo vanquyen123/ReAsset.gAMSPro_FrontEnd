@@ -106,6 +106,7 @@ export class ProjectComponent extends ListComponentBase<REA_PROJECT_ENTITY> impl
       this.showTableLoading();
 
       this.setSortingForFilterModel(this.filterInputSearch);
+      this.filterInputSearch.maxResultCount = 15;
 
       this._projectService.rEA_PROJECT_Search(this.filterInputSearch)
           .pipe(finalize(() => this.hideTableLoading()))

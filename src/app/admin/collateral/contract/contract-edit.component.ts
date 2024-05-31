@@ -427,7 +427,7 @@ export class ContractEditComponent extends DefaultComponentBase implements OnIni
   }
 
   goBack() {
-      this.navigatePassParam('/app/admin/subsidiary-company', null, undefined);
+      this.navigatePassParam('/app/admin/contract', null, undefined);
   }
 
   onAdd(): void {

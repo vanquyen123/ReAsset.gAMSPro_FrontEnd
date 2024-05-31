@@ -407,10 +407,10 @@
                                     <th sortField="rentAl_PRICE_EFFECT_DT" style="width:50%" ><span style="width: 150px">Từ ngày</span></th>
                                     <th sortField="rentaL_PRICE_MONTH_NUMBER"><span style="width: 150px">Số tháng</span></th>
                                     <th sortField="rentaL_PRICE_EXPIRE_DT"><span style="width: 150px">Đến ngày</span></th>
-                                    <th sortField="rentaL_PRICE_UNIT_PRICE_VND"><span style="width: 150px">Đơn giá cho thuê/m2</span></th>
-                                    <th sortField="rentaL_PRICE_UNIT_PRICE_USD"><span style="width: 150px">Đơn giá cho thuê (ngoại tệ)</span></th>
-                                    <th sortField="rentaL_PRICE_REVENUE_PER_MOUNTH"><span style="width: 150px">Doanh thu/tháng</span></th>
-                                    <th sortField="rentaL_PRICE_TOTAL_REVENUE"><span style="width: 150px">Doanh thu</span></th>
+                                    <th sortField="rentaL_PRICE_UNIT_PRICE_VND"><span style="width: 150px">Đơn giá cho thuê (triệu)/m2</span></th>
+                                    <th sortField="rentaL_PRICE_UNIT_PRICE_USD"><span style="width: 150px">Đơn giá cho thuê USD/m2</span></th>
+                                    <th sortField="rentaL_PRICE_REVENUE_PER_MOUNTH"><span style="width: 150px">Doanh thu (triệu)/tháng</span></th>
+                                    <th sortField="rentaL_PRICE_TOTAL_REVENUE"><span style="width: 150px">Doanh thu (triệu)</span></th>
                                     <th sortField="notes"><span style="width: 150px">Ghi chú</span></th>
 
                                 </tr>
@@ -532,6 +532,7 @@
                             <label>Ngày chấm dứt hợp đồng</label>
                             <date-control
                             #contracT_TERMINATE_DT="ngModel"
+                            [disabled]="disableInput"
                             name="contracT_TERMINATE_DT"
                             [(ngModel)]="inputModel.contracT_TERMINATE_DT"
                             autoFocus>

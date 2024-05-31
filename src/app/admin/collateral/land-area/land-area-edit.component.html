@@ -223,20 +223,14 @@
                             </div>
                             <div class="col-md-4">
                               <div class="form-group">
-                                  <label>Giá trị định giá (không bao gồm tiền sử dụng đất)</label>
-                                  <input [disabled]="disableInput" class="form-control" type="text" #valuatioN_BEFORE_VALUE="ngModel" name="valuatioN_BEFORE_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_BEFORE_VALUE">
+                                  <label>Giá trị định giá (tỷ đồng) (không bao gồm tiền sử dụng đất)</label>
+                                  <input [disabled]="disableInput" class="form-control" type="number" #valuatioN_BEFORE_VALUE="ngModel" name="valuatioN_BEFORE_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_BEFORE_VALUE">
                               </div>
                             </div>
                             <div class="col-md-4">
                               <div class="form-group">
-                                  <label>Tiền sử dụng đất</label>
-                                  <input [disabled]="disableInput" class="form-control" type="text" #lanD_USE_FEE="ngModel" name="lanD_USE_FEE" [(ngModel)]="inputModel.valuation.lanD_USE_FEE">
-                              </div>
-                            </div>
-                            <div class="col-md-4">
-                              <div class="form-group">
-                                  <label>Giá trị định giá</label>
-                                  <input [disabled]="disableInput" class="form-control" type="text" #valuatioN_VALUE="ngModel" name="valuatioN_VALUE" [(ngModel)]="inputModel.valuation.valuatioN_VALUE">
+                                  <label>Tiền sử dụng đất (tỷ đồng)</label>
+                                  <input [disabled]="disableInput" class="form-control" type="number" #lanD_USE_FEE="ngModel" name="lanD_USE_FEE" [(ngModel)]="inputModel.valuation.lanD_USE_FEE">
                               </div>
                             </div>
                             <div class="col-md-4">

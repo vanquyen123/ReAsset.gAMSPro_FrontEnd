@@ -17,7 +17,15 @@
               </span>
               <!-- End Title -->
           </div>
-          <div class="col text-right mt-3 mt-md-0">
+          <div class="col text-right mt-3 mt-md-0 mr-4">
+            <div class="btn-group dropdown">
+                <button class="btn btn-outline-success"
+                *ngIf="editPageState=='ViewDetail'"
+                    (click)="exportToExcel()">
+                    <i class="far fa-file-excel"></i>
+                    {{l("ExcelOperations")}}
+                </button>
+            </div>
           </div>
       </div>
   </div>
@@ -185,7 +193,7 @@
                                   <label>Nguyên giá tài sản</label>
                                   <input disabled class="form-control" type="text" name="originaL_PRICE" [(ngModel)]="inputModel.propertY_INFORMATION.originaL_PRICE">
                                   <div class="error-message" *ngIf="property_ID.invalid && isShowError">
-                                    <span *ngIf="property_ID?.errors.required">Tài sản
+                                    <span *ngIf="property_ID?.errors.required">Nguyên giá tài sản
                                         {{l("ValidationRequired")}}</span>
                                   </div>
                               </div>

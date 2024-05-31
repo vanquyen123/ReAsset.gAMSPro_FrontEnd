@@ -203,10 +203,10 @@
                                       <td><span class="mo-header"></span>{{record.id}}</td>
                                       <td><span class="mo-header"></span>{{record.sodO_SO_VAO_SO}}</td>
                                       <td><span class="mo-header"></span>{{ record.projecT_NAME }}</td>
-                                      <td><span class="mo-header"></span>{{ calcNumOfLandPlot(record.lanD_PLOT_LIST, true) }}</td>
-                                      <td><span class="mo-header"></span>{{ calcAreaOfLandPlot(record.lanD_PLOT_LIST, true) }}</td>
-                                      <td><span class="mo-header"></span>{{ calcNumOfLandPlot(record.lanD_PLOT_LIST, false) }}</td>
-                                      <td><span class="mo-header"></span>{{ calcAreaOfLandPlot(record.lanD_PLOT_LIST, false) }}</td>
+                                      <td><span class="mo-header"></span>{{ record.lanD_PLOT_INSIDE_COUNT }}</td>
+                                      <td><span class="mo-header"></span>{{ record.lanD_PLOT_INSIDE_AREA }}</td>
+                                      <td><span class="mo-header"></span>{{ record.lanD_PLOT_OUTSIDE_COUNT }}</td>
+                                      <td><span class="mo-header"></span>{{ record.lanD_PLOT_OUTSIDE_AREA }}</td>
                                       <td><span class="mo-header"></span>{{record.sodO_TOTAL_AREA}}</td>
                                       <td><span class="mo-header"></span>{{ record.creatE_DT ? (record.creatE_DT | momentFormat:'L') : '-'}}</td>
                                       <td><span class="mo-header"></span>{{ record.makeR_NAME }}</td>
