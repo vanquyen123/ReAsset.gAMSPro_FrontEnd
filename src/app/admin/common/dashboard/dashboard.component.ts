@@ -45,9 +45,10 @@ export class DashboardComponent extends DefaultComponentBase implements OnInit{
             this.expiredContractData = response.dueDateContractAndMortgage.dueDateContractMetrics
             this.projectTypeData = response.projectTypeDashboard
             this.top10projects = response.top10ProjectValuation.valuations;
-            this.top10projects.forEach((project, index) => {
-                project.projecT_NAME = "Dự án Evest " + (index + 1);
-            })
+            // this.top10projects.forEach((project, index) => {
+            //     project.projecT_NAME = "Dự án Evest " + (index + 1);
+            //     console.log(project.projecT_NAME)
+            // })
             this.revenueData = response.totalRevenuePerMonth.totalRevenueMetrics;
             this.updateView()
         })
